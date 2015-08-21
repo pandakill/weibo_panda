@@ -2,13 +2,20 @@
     <string name="app_name">微博_panda</string>
 
     <string name="action_settings">Settings</string>
+
+    <!-- 授权按钮的相关描述 -->
     <string name="pwb_get_token_all_in_one">授权登录微博</string>
+    <string name="pwb_logout">退出登录</string>
 
 
-    <string name="pwb_toast_auth_success">授权成功,现在登录</string>
+    <!-- 授权动作的提示信息 -->
+    <string name="pwb_toast_auth_success">授权成功</string>
     <string name="pwb_toast_auth_failed">授权失败</string>
     <string name="pwb_toast_auth_canceled">取消授权</string>
-    <string name="pwb_token_to_string_format_1">授权登录微博</string>
-    <string name="pwb_token_has_existed">授权登录微博</string>
+    <string name="pwb_token_to_string_format_1">Token:%1$s \n有效期: %2$s</string>
+    <string name="pwb_token_has_existed">Token 仍在有效期内，无需再次登录。</string>
+    <string name="pwb_logout_text">%1$s ：退出登录成功！</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>

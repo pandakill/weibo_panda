@@ -1,19 +1,24 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".PWBMainActivity">
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context=".PWBMainActivity"
+    android:id="@+id/pwb_activity_auth"
+    android:background="@color/white">
 
 
-    <Button
+    <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/pwb_get_token_all_in_one"
+        android:background="@drawable/ic_com_sina_weibo_sdk_login_with_account_text_focused"
         android:id="@+id/pwb_btn_get_token_all_in_one"
+        android:layout_marginTop="165dp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="165dp" />
+        android:layout_centerHorizontal="true"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -23,4 +28,13 @@
         android:layout_below="@+id/pwb_btn_get_token_all_in_one"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="43dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pwb_logout"
+        android:id="@+id/pwb_btn_logout"
+        android:layout_below="@+id/pwb_show_token_text_view"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>

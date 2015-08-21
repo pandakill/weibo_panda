@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="main"><source path="E:\Android\weibo_panda\uil\src\main\res"/><source path="E:\Android\weibo_panda\uil\build\generated\res\rs\release"/><source path="E:\Android\weibo_panda\uil\build\generated\res\generated\release"/></dataSet><dataSet config="release"><source path="E:\Android\weibo_panda\uil\src\release\res"/></dataSet><mergedItems/></merger>

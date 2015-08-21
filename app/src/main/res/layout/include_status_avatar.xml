@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:orientation="horizontal"
+    android:background="@color/white">
+
+    <!-- 左侧头像显示 BEGIN -->
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/pwb_imageview_item_status_avatar"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="16dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/pwb_avatar" />
+    <!-- 左侧头像显示 BEGIN -->
+
+    <!-- 右侧用户昵称信息 BEGIN -->
+    <RelativeLayout
+        android:id="@+id/pwb_rl_content"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:padding="16dp" >
+
+        <TextView
+            android:id="@+id/pwb_textview_sender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16dp"
+            style="@style/BlackBoldTextStyle"
+            android:text="panda潘达潘达" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="昨天 13:04 来自weibo_panda客户端"
+            android:id="@+id/pwb_textview_item_status_from_and_when"
+            android:layout_below="@+id/pwb_textview_sender"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+    </RelativeLayout>
+    <!-- 右侧用户昵称信息 END -->
+</LinearLayout>

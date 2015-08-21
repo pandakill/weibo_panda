@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white">
+
+    <!-- 微博的头部：包括头像、发布者昵称、时间和来自于应用 BEGIN -->
+    <include
+        android:id="@+id/include_status_avatar"
+        layout="@layout/include_status_avatar" />
+    <!-- 微博的头部：包括头像、发布者昵称、时间和来自于应用 END -->
+
+    <!-- 微博的正文部分 BEGIN -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/pwb_textview_content"
+        style="@style/BlackBoldTextStyle"
+        android:text="发一条静态的微博看一下效果"
+        android:layout_marginTop="-16dp"
+        android:padding="16dp" />
+    <!-- 微博的正文部分 END -->
+
+    <!-- 微博的底部按钮控件 BEGIN -->
+    <include
+        android:id="@+id/include_status_control"
+        layout="@layout/include_status_control"
+        />
+    <!-- 微博的底部按钮控件 END -->
+
+
+</LinearLayout>

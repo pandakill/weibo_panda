@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+    
+    <FrameLayout
+        android:id="@+id/fl_content"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#d7d7d7" />
+
+    <RadioGroup
+        android:id="@+id/pwb_radiogroup_fragment_tab"
+        android:layout_width="fill_parent"
+        android:layout_height="48dp"
+        android:layout_gravity="bottom"
+        android:background="#fafafa"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/pwb_radiobutton_home"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:background="@color/white"
+            android:button="@null"
+            android:drawableTop="@drawable/fragment_home"
+            android:checked="true"
+            android:text="首页"/>
+
+        <RadioButton
+            android:id="@+id/pwb_radiobutton_message"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:background="@color/white"
+            android:button="@null"
+            android:drawableTop="@drawable/fragment_message"
+            android:text="消息"/>
+
+        <ImageButton
+            android:id="@+id/pwb_imagebutton_add"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:background="@drawable/pwb_icon_add_black"/>
+
+        <RadioButton
+            android:id="@+id/pwb_radiobutton_search"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:background="@color/white"
+            android:button="@null"
+            android:drawableTop="@drawable/fragment_search"
+            android:text="发现"/>
+
+        <RadioButton
+            android:id="@+id/pwb_radiobutton_pesonal"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:background="@color/white"
+            android:button="@null"
+            android:drawableTop="@drawable/fragment_personal"
+            android:text="我"/>
+    </RadioGroup>
+
+</LinearLayout>
+
