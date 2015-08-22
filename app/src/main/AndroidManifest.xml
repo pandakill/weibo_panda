@@ -26,7 +26,6 @@
         <activity android:name=".activity.PWBAuthActivity" />
 
         <!-- 首页显示微博的activity -->
-        <activity android:name=".activity.PWBItemStatusActivity" />
 
         <!-- 必须注册在微博授权，分享微博时候用到 -->
         <activity

@@ -35,7 +35,7 @@
             android:button="@null"
             android:drawableTop="@drawable/fragment_home"
             android:checked="true"
-            android:text="首页"/>
+            android:text="@string/pwb_bottombar_home"/>
 
         <RadioButton
             android:id="@+id/pwb_radiobutton_message"
@@ -46,7 +46,7 @@
             android:background="@color/white"
             android:button="@null"
             android:drawableTop="@drawable/fragment_message"
-            android:text="消息"/>
+            android:text="@string/pwb_bottombar_message"/>
 
         <ImageButton
             android:id="@+id/pwb_imagebutton_add"
@@ -64,7 +64,7 @@
             android:background="@color/white"
             android:button="@null"
             android:drawableTop="@drawable/fragment_search"
-            android:text="发现"/>
+            android:text="@string/pwb_bottombar_search"/>
 
         <RadioButton
             android:id="@+id/pwb_radiobutton_pesonal"
@@ -75,7 +75,7 @@
             android:background="@color/white"
             android:button="@null"
             android:drawableTop="@drawable/fragment_personal"
-            android:text="我"/>
+            android:text="@string/pwb_bottombar_me"/>
     </RadioGroup>
 
 </LinearLayout>

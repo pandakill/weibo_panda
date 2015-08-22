@@ -7,6 +7,11 @@
     <string name="pwb_get_token_all_in_one">授权登录微博</string>
     <string name="pwb_logout">退出登录</string>
 
+    <!-- 底部导航栏标题 -->
+    <string name="pwb_bottombar_home">首页</string>
+    <string name="pwb_bottombar_message">消息</string>
+    <string name="pwb_bottombar_search">发现</string>
+    <string name="pwb_bottombar_me">我</string>
 
     <!-- 授权动作的提示信息 -->
     <string name="pwb_toast_auth_success">授权成功</string>

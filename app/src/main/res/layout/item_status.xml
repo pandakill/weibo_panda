@@ -3,6 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:id="@+id/pwb_ll_item_status"
     android:background="@color/white">
 
     <!-- 微博的头部：包括头像、发布者昵称、时间和来自于应用 BEGIN -->

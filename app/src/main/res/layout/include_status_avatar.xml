@@ -39,6 +39,7 @@
             android:id="@+id/pwb_textview_item_status_from_and_when"
             android:layout_below="@+id/pwb_textview_sender"
             android:layout_alignParentLeft="true"
+            android:textColor="@color/txt_gray"
             android:layout_alignParentStart="true" />
 
     </RelativeLayout>

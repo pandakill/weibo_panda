@@ -19,7 +19,7 @@ public class SplashActivity extends Activity {
 
     private static final int    WHAT_INTENT2LOGIN   =   1;      //未登录的标记
     private static final int    WHAT_INTENT2MAIN    =   2;      //已经登录标记
-    private static final long   SPLASH_DUE_TIME     =   5000;   //欢迎页面停留时间
+    private static final long   SPLASH_DUE_TIME     =   1000;   //欢迎页面停留时间
 
     private Oauth2AccessToken   accessToken;                    //读取授权信息
 

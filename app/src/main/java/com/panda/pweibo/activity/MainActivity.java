@@ -23,24 +23,15 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
     @Override
     protected void onCreate(Bundle saveInstanceState) {
 
-        requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         super.onCreate(saveInstanceState);
         setContentView(R.layout.activity_main);
-
-        //初始化activity
-        radioGroup = (RadioGroup) findViewById(R.id.pwb_radiogroup_fragment_tab);
-        imageButton = (ImageButton) findViewById(R.id.pwb_imagebutton_add);
-        getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.include_home_title);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         controller = FragmentController.getInstance(MainActivity.this, R.id.fl_content);
         //默认展示第一个
         controller.showFragment(0);
 
-        radioGroup.setOnCheckedChangeListener(MainActivity.this);
-        imageButton.setOnClickListener(MainActivity.this);
-
-        //radioGroup.getCheckedRadioButtonId();
+        initView();
     }
 
     private void initView() {

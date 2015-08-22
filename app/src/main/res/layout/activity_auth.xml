@@ -20,21 +20,4 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:id="@+id/pwb_show_token_text_view"
-        android:layout_below="@+id/pwb_btn_get_token_all_in_one"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="43dp" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/pwb_logout"
-        android:id="@+id/pwb_btn_logout"
-        android:layout_below="@+id/pwb_show_token_text_view"
-        android:layout_centerHorizontal="true" />
-
 </RelativeLayout>

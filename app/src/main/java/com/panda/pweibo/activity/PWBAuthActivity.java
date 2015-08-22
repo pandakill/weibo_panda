@@ -7,8 +7,8 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,17 +20,14 @@ import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.auth.WeiboAuthListener;
 import com.sina.weibo.sdk.auth.sso.SsoHandler;
 import com.sina.weibo.sdk.exception.WeiboException;
-import com.sina.weibo.sdk.openapi.LogoutAPI;
 
 import java.text.SimpleDateFormat;
 
 public class PWBAuthActivity extends Activity {
 
-    private     TextView    stTextView;     //文本提示框
-    private     Button      getTokenBtn;    //获取授权按钮
-    private     Button      logouBtn;       //退出按钮
+    private     ImageButton     getTokenBtn;    //获取授权按钮
 
-    private     AuthInfo    mAuthInfo;      //授权信息
+    private     AuthInfo        mAuthInfo;      //授权信息
 
     /** 封装了 "access_token"，"expires_in"，"refresh_token"，并提供了他们的管理功能  */
     private     Oauth2AccessToken       mAccessToken;
@@ -40,13 +37,10 @@ public class PWBAuthActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
 
-        stTextView      =   (TextView)  findViewById(R.id.pwb_show_token_text_view);
-        getTokenBtn     =   (Button)    findViewById(R.id.pwb_btn_get_token_all_in_one);
-        logouBtn        =   (Button)    findViewById(R.id.pwb_btn_logout);
+        getTokenBtn     =   (ImageButton)    findViewById(R.id.pwb_btn_get_token_all_in_one);
 
         /** 快速授权时，请不要传入 SCOPE，否则可能会授权不成功 */
         mAuthInfo       =   new         AuthInfo(this, Constants.APP_KEY, Constants.REDIRECT_URL, Constants.SCOPE);
@@ -57,19 +51,6 @@ public class PWBAuthActivity extends Activity {
             @Override
             public void onClick(View v) {
                 mSsoHandler.authorize(new AuthListener());
-            }
-        });
-
-        /** 退出按钮的实现 */
-        logouBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
-                /**
-                 * TODO
-                 */
-                new LogoutAPI(PWBAuthActivity.this, Constants.APP_KEY, AccessTokenKeeper.readAccessToken(PWBAuthActivity.this));
-                stTextView.setText(String.format(getString(R.string.pwb_logout_text),date));
             }
         });
 
@@ -168,7 +149,7 @@ public class PWBAuthActivity extends Activity {
     }
 
     /**
-     * 显示当前 Token 信息。
+     * 授权成功,进入主页
      *
      * @param hasExisted 配置文件中是否已存在 token 信息并且合法
      */
@@ -176,16 +157,14 @@ public class PWBAuthActivity extends Activity {
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(
                 new java.util.Date(mAccessToken.getExpiresTime()));
         String format = getString(R.string.pwb_token_to_string_format_1);
-        stTextView.setText(String.format(format, mAccessToken.getToken(), date));
         //Toast.makeText(PWBAuthActivity.this, String.format(format, mAccessToken.getToken(), date), Toast.LENGTH_SHORT);
 
         String message = String.format(format, mAccessToken.getToken(), date);
         if (hasExisted) {
             message = getString(R.string.pwb_token_has_existed) + "\n" + message;
         }
-        stTextView.setText(message);
 
-        Intent intent = new Intent(PWBAuthActivity.this, PWBItemStatusActivity.class);
+        Intent intent = new Intent(PWBAuthActivity.this, MainActivity.class);
         startActivity(intent);
     }
 }
