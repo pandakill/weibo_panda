@@ -56,11 +56,7 @@ public class StatusGridViewAdapter extends BaseAdapter{
         final ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
-            if (inflate.findViewById(R.id.include_status_image) != null) {
-                convertView = View.inflate(context, R.layout.include_status_image, null);
-            } else if (inflate.findViewById(R.id.include_retweeted_status_image) != null) {
-                convertView = View.inflate(context, R.layout.include_status_image, null);
-            }
+            convertView = View.inflate(context, R.layout.include_grid_image, null);
             init(holder, convertView);
             convertView.setTag(holder);
         } else {

@@ -198,17 +198,9 @@ public class StatusAdapter extends BaseAdapter {
 
     /** 重置holder控件,将图片布局和转发部分设置为隐藏、其他布局设置为空 */
     public void resetViewHolder(ViewHolder holder) {
-        holder.pwb_textview_sender.setText(null);
-        holder.pwb_textview_item_status_from_and_when.setText(null);
-        holder.pwb_textview_content.setText(null);
         holder.include_status_image.setVisibility(View.GONE);
-//        holder.pwb_gridview_status_image.setAdapter(null);
-        holder.pwb_imageview_status_image.setImageDrawable(null);
         holder.include_retweeted_status.setVisibility(View.GONE);
-        holder.pwb_textview_retweeted_content.setText(null);
         holder.include_retweeted_status_image.setVisibility(View.GONE);
-//        holder.pwb_gridview_retweeted_status_image.setAdapter(null);
-        holder.pwb_imageview_retweeted_status_image.setImageDrawable(null);
     }
 
     /** 每个item的控件 */
