@@ -1,19 +1,18 @@
 package com.panda.pweibo.models;
 
-import org.json.JSONArray;
-import org.json.JSONException;
+import com.panda.pweibo.utils.DateUtils;
+
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Administrator on 2015/8/22:9:35.
  */
 public class Status {
     private     String              created_at;                 // 微博创建时间
-    private     int                 id;                         // 微博ID
-    private     int                 mid;                        // 微博MID
+    private     long                 id;                         // 微博ID
+    private     long                 mid;                        // 微博MID
     private     String              idstr;                      // 字符串型的微博ID
     private     String              text;                       // 微博信息内容
     private     String              source;                     // 微博来源
@@ -46,19 +45,19 @@ public class Status {
         this.created_at = created_at;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public int getMid() {
+    public long getMid() {
         return mid;
     }
 
-    public void setMid(int mid) {
+    public void setMid(long mid) {
         this.mid = mid;
     }
 
@@ -158,7 +157,7 @@ public class Status {
         this.geo = geo;
     }
 
-    public Object getUser() {
+    public User getUser() {
         return user;
     }
 
@@ -238,32 +237,31 @@ public class Status {
         return super.equals(o);
     }
 
-//    public List<Status> parseJson(JSONObject jsonObject) {
-//        if (null != jsonObject) {
-//            try {
-//                JSONArray statuses = jsonObject.getJSONArray("statuses");
-//                ArrayList<Status> listStatus = null;
-//
-//                for (int i = 0; i < statuses.length(); i ++) {
-//                    JSONObject s = statuses.getJSONObject(i);
-//                    Status status = new Status();
-//                    status.setCreated_at(s.optString("created_at"));
-//                    status.setId(s.optInt("id"));
-//                    status.setText(s.optString("text"));
-//                    status.setSource(s.optString("source"));
-//                    status.setFavorited(s.optBoolean("favorited"));
-//                    status.setTruncated(s.optBoolean("truncated"));
-//                    status.setGeo(s.opt("geo"));
-//                    status.setMid(s.optInt("mid"));
-//                    status.setReposts_count(s.optInt("reposts_count"));
-//                    status.setComments_count(s.optInt("comments_count"));
-//                    status.setUser((User)s.opt("user"));
-//
-//                }
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        return null;
-//    }
+    public Status parseJson(JSONObject jsonObject) {
+        if (null != jsonObject) {
+            Status status = new Status();
+            status.setCreated_at(new DateUtils().String2Date(jsonObject.optString("created_at")));
+            status.setId(jsonObject.optInt("id"));
+            status.setText(jsonObject.optString("text"));
+            status.setSource(jsonObject.optString("source"));
+            status.setFavorited(jsonObject.optBoolean("favorited"));
+            status.setTruncated(jsonObject.optBoolean("truncated"));
+            status.setGeo(jsonObject.opt("geo"));
+            status.setMid(jsonObject.optInt("mid"));
+            status.setReposts_count(jsonObject.optInt("reposts_count"));
+            status.setComments_count(jsonObject.optInt("comments_count"));
+            status.setUser(new User().parseJson((JSONObject) jsonObject.opt("user")));
+            status.setRetweeted_status(new Status().parseJson((JSONObject) jsonObject.opt("retweeted_status")));
+            status.setReposts_count(jsonObject.optInt("reposts_count"));
+            status.setComments_count(jsonObject.optInt("comments_count"));
+            status.setAttitudes_count(jsonObject.optInt("comments_count"));
+            status.setMlevel(jsonObject.optInt("mlevel"));
+            status.setVisible(jsonObject.opt("visible"));
+            status.setPic_ids(jsonObject.opt("pic_ids"));
+            //status.setAd(jsonObject.opt("ad"));
+
+            return status;
+        }
+        return null;
+    }
 }

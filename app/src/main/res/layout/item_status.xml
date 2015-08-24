@@ -20,8 +20,23 @@
         style="@style/BlackBoldTextStyle"
         android:text="发一条静态的微博看一下效果"
         android:layout_marginTop="-16dp"
+        android:textColor="@color/txt_gray"
         android:padding="16dp" />
     <!-- 微博的正文部分 END -->
+
+    <!-- 微博的图片部分 BEGIN -->
+    <include
+        android:id="@+id/include_status_image"
+        layout="@layout/include_status_image"
+        android:visibility="gone" />
+    <!-- 微博的图片部分 END -->
+
+    <!-- 微博的转发内容部分 BEGIN -->
+    <include
+        android:id="@+id/include_retweeted_status"
+        layout="@layout/include_retweeted_status"
+        android:visibility="visible" />
+    <!-- 微博的转发内容部分 END -->
 
     <!-- 微博的底部按钮控件 BEGIN -->
     <include

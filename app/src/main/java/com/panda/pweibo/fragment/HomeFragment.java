@@ -1,12 +1,13 @@
 package com.panda.pweibo.fragment;
 
-import android.app.ProgressDialog;
-import android.content.Context;
+import android.annotation.TargetApi;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
+import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -14,32 +15,33 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.ImageLoader.ImageCache;
+import com.android.volley.toolbox.ImageLoader.ImageListener;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+
 import com.panda.pweibo.R;
 import com.panda.pweibo.activity.MainActivity;
 import com.panda.pweibo.activity.PWBAuthActivity;
+import com.panda.pweibo.adapter.StatusAdapter;
 import com.panda.pweibo.constants.AccessTokenKeeper;
-import com.panda.pweibo.constants.Constants;
 import com.panda.pweibo.constants.Uri;
-import com.panda.pweibo.models.response.HomeTimelineResponse;
+import com.panda.pweibo.models.Status;
 import com.panda.pweibo.utils.TitlebarUtils;
 import com.panda.pweibo.utils.ToastUtils;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
-import com.sina.weibo.sdk.exception.WeiboException;
-import com.sina.weibo.sdk.net.RequestListener;
-import com.sina.weibo.sdk.openapi.LogoutAPI;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 
 /**
@@ -47,13 +49,15 @@ import org.json.JSONObject;
  */
 public class HomeFragment extends Fragment {
 
-    private     View            view;
-    private     Context         context;
-    private     ListView        listView;
-    private     RequestQueue    requestQueue;
-    private     ProgressDialog  pd;
+    private     View                        view;
+    private     ListView                    listView;
+    //private     RequestQueue                requestQueue;
+    private     LruCache<String, Bitmap>    avatarCache;
+    private     ImageCache                  imageCache;
 
     protected   MainActivity    activity;
+
+    private Oauth2AccessToken mAccesssToken;
 
     public HomeFragment() {
     }
@@ -63,7 +67,8 @@ public class HomeFragment extends Fragment {
         super.onCreate(saveInstanceState);
 
         activity = (MainActivity) getActivity();
-        requestQueue = Volley.newRequestQueue(activity);
+        //requestQueue = Volley.newRequestQueue(activity);
+        mAccesssToken = AccessTokenKeeper.readAccessToken(activity);
     }
 
     @Override
@@ -71,6 +76,7 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         initView();
+        loadData(1);
         return view;
     }
 
@@ -88,39 +94,13 @@ public class HomeFragment extends Fragment {
                     }
                 })
                 /** 调用微博官方接口,设置退出按钮监听器 */
-                // TODO token不合法
                 .setRightOnClickListner(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-//                        new LogoutAPI(activity, Constants.APP_KEY, AccessTokenKeeper.readAccessToken(HomeFragment.super.getView().getContext()))
-//                                .logout(new RequestListener() {
-//                                            @Override
-//                                            public void onComplete(String response) {
-//                                                if (!TextUtils.isEmpty(response)) {
-//                                                    try {
-//                                                        JSONObject jsonObject = new JSONObject(response);
-//                                                        String value = jsonObject.getString("result");
-//
-//                                                        if (value.equals("true")) {
-//                                                            ToastUtils.showToast(activity, "退出成功", Toast.LENGTH_LONG);
-//                                                            Intent intent = new Intent(activity, PWBAuthActivity.class);
-//                                                            startActivity(intent);
-//                                                        }
-//                                                    } catch (JSONException e) {
-//                                                        e.printStackTrace();
-//                                                    }
-//                                                }
-//                                            }
-//
-//                                            @Override
-//                                            public void onWeiboException(WeiboException e) {
-//                                                ToastUtils.showToast(activity, "退出异常", Toast.LENGTH_SHORT);
-//                                            }
-//                                        }
-//                                );
-                        /** TODO 还未完成,需要将参数转为JSONObject */
-                        JSONObject jsonRequest = new JSONObject();
-                        JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET, Uri.revokeoauth2, jsonRequest, new Response.Listener<JSONObject>() {
+                        String uri = Uri.revokeoauth2 + "?access_token=" + mAccesssToken.getToken();
+                        Log.i("tag", "uri=" + uri);
+                        ToastUtils.showToast(activity, "退出按钮被点击", Toast.LENGTH_SHORT);
+                        JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET, uri, null, new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject response) {
                                 if (null != response) {
@@ -142,35 +122,65 @@ public class HomeFragment extends Fragment {
                         }, new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-
+                                ToastUtils.showToast(activity, "退出发生异常", Toast.LENGTH_SHORT);
                             }
                         });
-                        requestQueue.add(stringRequest);
+                        activity.requestQueue.add(stringRequest);
                     }
                 });
         listView = (ListView) view.findViewById(R.id.listview_home);
     }
 
-    public void loadData() {
-        pd = ProgressDialog.show(activity, "正在加载数据...", "加载ing...");
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
+    public void loadData(int page) {
+        //pd = ProgressDialog.show(activity, "正在加载数据...", "加载ing...");
 
         /**
-         * TODO 请求的参数未设置
+         * TODO 测试的token有效期为一天，所以必须每天重新授权获取token
          */
         String uri = Uri.home_timeline;
-        uri += "?access_token=" + Oauth2AccessToken.KEY_ACCESS_TOKEN;
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, Uri.home_timeline, null, new Response.Listener<JSONObject>() {
+        uri += "?access_token=" + mAccesssToken.getToken();
+        uri += "&since_id=0&max_id=0&count=25&base_app=0&feature=0&trim_user=0&page=" + page;
+        final ArrayList<Status> listStatus = new ArrayList<Status>();
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, uri, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                HomeTimelineResponse homeTimelineResponse = new Gson().fromJson(response.toString(), HomeTimelineResponse.class);
+                try {
+                    JSONArray statuses = response.getJSONArray("statuses");
+                    for (int i = 0; i < statuses.length(); i ++) {
+                        Status status = new Status().parseJson(statuses.getJSONObject(i));
+                        listStatus.add(status);
+                        ImageLoader imageLoader = new ImageLoader(activity.requestQueue, imageCache);
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                listView.setAdapter(new StatusAdapter(activity, listStatus, activity.requestQueue));
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                error.printStackTrace();
+                ToastUtils.showToast(activity, "加载失败", Toast.LENGTH_SHORT);
             }
         });
-    }
 
+        String url = "";
+        avatarCache = new LruCache<String, Bitmap>(25);
+        imageCache = new ImageCache() {
+            @Override
+            public Bitmap getBitmap(String key) {
+                return avatarCache.get(key);
+            }
+
+            @Override
+            public void putBitmap(String key, Bitmap bitmap) {
+                avatarCache.put(key, bitmap);
+            }
+        };
+
+        activity.requestQueue.add(jsonObjectRequest);
+    }
 
 }

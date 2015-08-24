@@ -60,7 +60,7 @@ public class SplashActivity extends Activity {
                     break;
 
                 case WHAT_INTENT2MAIN:
-                    intent = new Intent(SplashActivity.this, MainActivity.class);
+                    intent = new Intent(SplashActivity.this, PWBAuthActivity.class);
                     startActivity(intent);
                     finish();
                     break;

@@ -2,18 +2,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@color/bg_agray">
 
     <!-- 转发微博当中的正文部分 -->
     <TextView
         android:id="@+id/pwb_textview_retweeted_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""/>
+        android:textColor="@color/txt_gray"
+        android:text="ddd"/>
 
     <!-- 转发微博当中的图片,若有图片,则将隐藏属性去除 -->
     <include
-        android:id="@+id/include_status_image"
+        android:id="@+id/include_retweeted_status_image"
         layout="@layout/include_status_image"
         android:visibility="gone" />
 

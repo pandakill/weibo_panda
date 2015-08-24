@@ -1,5 +1,7 @@
 package com.panda.pweibo.models;
 
+import org.json.JSONObject;
+
 /**
  * Created by Administrator on 2015/8/22:9:57.
  */
@@ -309,5 +311,48 @@ public class User {
 
     public void setLang(String lang) {
         this.lang = lang;
+    }
+
+    public User parseJson(JSONObject jsonObject) {
+        if (jsonObject != null) {
+            User user = new User();
+            user.setId(jsonObject.optInt("id"));
+            user.setIdstr(jsonObject.optString("idstr"));
+            user.setScreen_name(jsonObject.optString("screen_name"));
+            user.setName(jsonObject.optString("name"));
+            user.setProvince(jsonObject.optInt("province"));
+            user.setCity(jsonObject.optInt("city"));
+            user.setLocation(jsonObject.optString("location"));
+            user.setDescription(jsonObject.optString("description"));
+            user.setUrl(jsonObject.optString("url"));
+            user.setProfile_image_url(jsonObject.optString("profile_image_url"));
+            user.setProfile_url(jsonObject.optString("profile_url"));
+            user.setDomain(jsonObject.optString("domain"));
+            user.setWeihao(jsonObject.optString("weihao"));
+            user.setGender(jsonObject.optString("gender"));
+            user.setFollowers_count(jsonObject.optInt("followers_count"));
+            user.setFriends_count(jsonObject.optInt("friends_count"));
+            user.setStatuses_count(jsonObject.optInt("statuses_count"));
+            user.setFavourites_count(jsonObject.optInt("favourites_count"));
+            user.setCreated_at(jsonObject.optString("created_at"));
+            user.setFollowing(jsonObject.optBoolean("following"));
+            user.setAllow_all_act_msg(jsonObject.optBoolean("allow_all_act_msg"));
+            user.setGeo_enabled(jsonObject.optBoolean("geo_enabled"));
+            user.setVerified(jsonObject.optBoolean("verified"));
+            user.setVerified_type(jsonObject.optInt("verified_type"));
+            user.setRemark(jsonObject.optString("remark"));
+            user.setStatus(new Status().parseJson((JSONObject) jsonObject.opt("status")));
+            user.setAllow_all_comment(jsonObject.optBoolean("allow_all_comment"));
+            user.setAvatar_large(jsonObject.optString("avatar_large"));
+            user.setAvatar_hd(jsonObject.optString("avatar_hd"));
+            user.setVerified_reason(jsonObject.optString("verified_reason"));
+            user.setFollow_me(jsonObject.optBoolean("follow_me"));
+            user.setOnline_status(jsonObject.optInt("online_status"));
+            user.setBi_followers_count(jsonObject.optInt("bi_followers_count"));
+            user.setLang(jsonObject.optString("lang"));
+
+            return user;
+        }
+        return null;
     }
 }

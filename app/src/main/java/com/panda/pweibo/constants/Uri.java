@@ -16,5 +16,5 @@ public interface Uri {
     String revokeoauth2 = "https://api.weibo.com/oauth2/revokeoauth2";
 
     /** 获取当前登录用户及其所关注用户的最新微博  */
-    String home_timeline = baseUri + "statuses/home_timeline";
+    String home_timeline = baseUri + "statuses/home_timeline.json";
 }

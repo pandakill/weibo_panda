@@ -9,6 +9,8 @@ import android.widget.ImageButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.panda.pweibo.R;
 import com.panda.pweibo.fragment.FragmentController;
 import com.panda.pweibo.utils.ToastUtils;
@@ -20,6 +22,8 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
     private     ImageButton         imageButton;
     private     FragmentController  controller;
 
+    public      RequestQueue        requestQueue;
+
     @Override
     protected void onCreate(Bundle saveInstanceState) {
 
@@ -30,6 +34,7 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
         controller = FragmentController.getInstance(MainActivity.this, R.id.fl_content);
         //默认展示第一个
         controller.showFragment(0);
+        requestQueue = Volley.newRequestQueue(this);
 
         initView();
     }
