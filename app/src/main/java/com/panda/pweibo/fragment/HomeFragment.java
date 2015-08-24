@@ -166,20 +166,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        String url = "";
-        avatarCache = new LruCache<String, Bitmap>(25);
-        imageCache = new ImageCache() {
-            @Override
-            public Bitmap getBitmap(String key) {
-                return avatarCache.get(key);
-            }
-
-            @Override
-            public void putBitmap(String key, Bitmap bitmap) {
-                avatarCache.put(key, bitmap);
-            }
-        };
-
         activity.requestQueue.add(jsonObjectRequest);
     }
 

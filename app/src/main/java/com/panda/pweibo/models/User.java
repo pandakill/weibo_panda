@@ -1,5 +1,6 @@
 package com.panda.pweibo.models;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -313,7 +314,7 @@ public class User {
         this.lang = lang;
     }
 
-    public User parseJson(JSONObject jsonObject) {
+    public User parseJson(JSONObject jsonObject) throws JSONException {
         if (jsonObject != null) {
             User user = new User();
             user.setId(jsonObject.optInt("id"));

@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/txt_gray"
-        android:text="ddd"/>
+        android:text="转发的内容"/>
 
     <!-- 转发微博当中的图片,若有图片,则将隐藏属性去除 -->
     <include

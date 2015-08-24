@@ -2,6 +2,8 @@ package com.panda.pweibo.models;
 
 import com.panda.pweibo.utils.DateUtils;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -33,7 +35,7 @@ public class Status {
     private     int                 mlevel;                     // 暂未支持
     private     Object              visible;                    // 微博的可见性及指定可见分组信息。
                                                                 // 该object中type取值，0：普通微博，1：私密微博，3：指定分组微博，4：密友微博；list_id为分组的组号
-    private     Object              pic_ids;                    // 微博配图ID。多图时返回多图ID，用来拼接图片url。
+    private     ArrayList<PicUrls>  pic_ids;                    // 微博配图ID。多图时返回多图ID，用来拼接图片url。
                                                                 // 用返回字段thumbnail_pic的地址配上该返回字段的图片ID，即可得到多个图片url。
     private     ArrayList<Object>   ad;                         // 微博流内的推广微博ID
 
@@ -165,7 +167,7 @@ public class Status {
         this.user = user;
     }
 
-    public Object getRetweeted_status() {
+    public Status getRetweeted_status() {
         return retweeted_status;
     }
 
@@ -213,11 +215,11 @@ public class Status {
         this.visible = visible;
     }
 
-    public Object getPic_ids() {
+    public ArrayList<PicUrls> getPic_ids() {
         return pic_ids;
     }
 
-    public void setPic_ids(Object pic_ids) {
+    public void setPic_ids(ArrayList<PicUrls> pic_ids) {
         this.pic_ids = pic_ids;
     }
 
@@ -237,7 +239,7 @@ public class Status {
         return super.equals(o);
     }
 
-    public Status parseJson(JSONObject jsonObject) {
+    public Status parseJson(JSONObject jsonObject) throws JSONException {
         if (null != jsonObject) {
             Status status = new Status();
             status.setCreated_at(new DateUtils().String2Date(jsonObject.optString("created_at")));
@@ -257,7 +259,17 @@ public class Status {
             status.setAttitudes_count(jsonObject.optInt("comments_count"));
             status.setMlevel(jsonObject.optInt("mlevel"));
             status.setVisible(jsonObject.opt("visible"));
-            status.setPic_ids(jsonObject.opt("pic_ids"));
+            if (jsonObject.getJSONArray("pic_urls").length() != 0) {
+                JSONArray jsonArray = jsonObject.getJSONArray("pic_urls");
+                ArrayList<PicUrls> list = new ArrayList<PicUrls>();
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject obj = jsonArray.getJSONObject(i);
+                    PicUrls picUrls = new PicUrls().parseJson(obj);
+                    list.add(picUrls);
+                }
+                status.setPic_ids(list);
+            }
+            //status.setPic_ids(jsonObject.opt("pic_ids"));
             //status.setAd(jsonObject.opt("ad"));
 
             return status;
