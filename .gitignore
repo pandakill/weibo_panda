@@ -1,7 +1,5 @@
 .gradle
 /local.properties
-/.idea/workspace.xml
-/.idea/libraries
 .DS_Store
 /build
 /captures
@@ -12,9 +10,7 @@ out/*
 androidannotations.log
 app/build/*
 .gradle/*
-.gradle/2.2.1/taskArtifacts/cache.properties
-.gradle/2.2.1/taskArtifacts/outputFileStates.bin
 app/app.iml
 local.properties
 *.iml
-/.gitignore
+
