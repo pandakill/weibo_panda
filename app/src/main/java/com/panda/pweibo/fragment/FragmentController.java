@@ -37,7 +37,7 @@ public class FragmentController {
         for (Fragment fragment : fragments) {
             ft.add(containerId, fragment);
         }
-        ft.commit();
+        ft.commitAllowingStateLoss();
     }
 
     /** 打开fragment并展示 */
@@ -46,7 +46,7 @@ public class FragmentController {
         Fragment fragment = fragments.get(position);
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.show(fragment);
-        ft.commit();
+        ft.commitAllowingStateLoss();
     }
 
     /** 隐藏不显示的fragment */
@@ -57,7 +57,7 @@ public class FragmentController {
                 ft.hide(fragment);
             }
         }
-        ft.commit();
+        ft.commitAllowingStateLoss();
     }
 
     /** 根据下标获取fragment */

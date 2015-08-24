@@ -8,6 +8,7 @@ import android.os.Build;
 import android.text.Html;
 import android.util.Log;
 import android.util.LruCache;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -17,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.android.volley.RequestQueue;
@@ -28,6 +30,7 @@ import com.panda.pweibo.models.PicUrls;
 import com.panda.pweibo.models.Status;
 import com.panda.pweibo.models.User;
 import com.android.volley.toolbox.ImageLoader.ImageCache;
+import com.panda.pweibo.utils.ToastUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,8 +93,8 @@ public class StatusAdapter extends BaseAdapter {
 
         if (convertView == null) {
             holder = new ViewHolder();
-            convertView = View.inflate(context, R.layout.item_status, null);
-
+            //convertView = View.inflate(context, R.layout.item_status, null);
+            convertView = LayoutInflater.from(context).inflate(R.layout.item_status,null);
             /** 调用init方法,初始化控件 */
             init(holder, convertView);
 
@@ -109,22 +112,18 @@ public class StatusAdapter extends BaseAdapter {
         holder.pwb_textview_item_status_from_and_when.setText(status.getCreated_at() + " 来自 " + Html.fromHtml(status.getSource()));
         holder.pwb_textview_content.setText(status.getText());
 
-        /** 如果微博有图片,则加载图片 */
-//        if (status.getThumbnail_pic() != null) {
-//            holder.include_status_image.setVisibility(View.VISIBLE);
-//            holder.pwb_imageview_status_image.setTag(status.getThumbnail_pic());
-//            holder.pwb_imageview_status_image.setImageUrl(status.getThumbnail_pic(), imageLoader);
-//        }
-
-        /** 如果有转发的微博,则显示转发微博内容 */
+        /** 如果微博有图片,且不是转发的微博,则在正文部分显示图片 */
+        if ( status.getPic_ids() != null && status.getRetweeted_status() == null) {
+            setImages(holder.include_status_image, holder.pwb_gridview_status_image, holder.pwb_imageview_status_image, status);
+        }
+        /** 如果有转发的微博,则显示转发微博内容;如果转发的微博有图片,则显示转发微博布局的图片 */
         if (retweeted_status != null) {
             String sender = "@" + retweeted_status.getUser().getName() + ":";
-
             holder.include_retweeted_status.setVisibility(View.VISIBLE);
             holder.pwb_textview_retweeted_content.setText(sender + retweeted_status.getText());
-            setImages(holder.include_retweeted_status_image, holder.pwb_gridview_retweeted_status_image, holder.pwb_imageview_retweeted_status_image, retweeted_status);
-        } else {
-            setImages(holder.include_status_image, holder.pwb_gridview_status_image, holder.pwb_imageview_status_image, status);
+            if (status.getPic_ids() != null) {
+                setImages(holder.include_retweeted_status_image, holder.pwb_gridview_retweeted_status_image, holder.pwb_imageview_retweeted_status_image, status);
+            }
         }
         holder.textview_share_bottom.setText(status.getReposts_count() == 0 ? "转发" : status.getReposts_count() + "");
         holder.textview_comment_bottom.setText(status.getComments_count() == 0 ? "评论" : status.getComments_count() + "");
@@ -140,7 +139,6 @@ public class StatusAdapter extends BaseAdapter {
     /** 加载微博图片,如果为多图的话,显示九宫格形式,否则显示单图形式 */
     public void setImages(FrameLayout imgContainer, GridView gv, NetworkImageView iv, Status status) {
         ArrayList<PicUrls> list = status.getPic_ids();
-        String thumbnail_pic = status.getThumbnail_pic();
 
         if (list != null && list.size() > 1) {
             imgContainer.setVisibility(View.VISIBLE);
@@ -148,17 +146,16 @@ public class StatusAdapter extends BaseAdapter {
             iv.setVisibility(View.GONE);
 
             StatusGridViewAdapter gridViewAdapter;
-            gridViewAdapter = new StatusGridViewAdapter(context, list, imageLoader);
-            Log.i("tag", "list[0].toString=" + list.get(0).getThumbnail_pic().toString());
+            gridViewAdapter = new StatusGridViewAdapter(context, list, imageLoader, imgContainer);
             gv.setAdapter(gridViewAdapter);
 
-        } else if (thumbnail_pic != null) {
+        } else if (list != null && list.size() == 1) {
             imgContainer.setVisibility(View.VISIBLE);
             gv.setVisibility(View.GONE);
             iv.setVisibility(View.VISIBLE);
 
-            iv.setTag(thumbnail_pic);
-            iv.setImageUrl(thumbnail_pic, imageLoader);
+            iv.setTag(list.get(0).getThumbnail_pic());
+            iv.setImageUrl(list.get(0).getThumbnail_pic(), imageLoader);
         } else {
             imgContainer.setVisibility(View.GONE);
         }
@@ -199,30 +196,19 @@ public class StatusAdapter extends BaseAdapter {
         return null;
     }
 
+    /** 重置holder控件,将图片布局和转发部分设置为隐藏、其他布局设置为空 */
     public void resetViewHolder(ViewHolder holder) {
-//        holder.pwb_ll_item_status.setLin
-        holder.pwb_imageview_item_status_avatar.setImageDrawable(null);
-//        holder.pwb_rl_content
         holder.pwb_textview_sender.setText(null);
         holder.pwb_textview_item_status_from_and_when.setText(null);
         holder.pwb_textview_content.setText(null);
-//        holder.include_status_image
-        holder.pwb_gridview_status_image.setAdapter(null);
+        holder.include_status_image.setVisibility(View.GONE);
+//        holder.pwb_gridview_status_image.setAdapter(null);
         holder.pwb_imageview_status_image.setImageDrawable(null);
-//        holder.include_retweeted_status
+        holder.include_retweeted_status.setVisibility(View.GONE);
         holder.pwb_textview_retweeted_content.setText(null);
-//        holder.include_retweeted_status_image
-        holder.pwb_gridview_retweeted_status_image.setAdapter(null);
+        holder.include_retweeted_status_image.setVisibility(View.GONE);
+//        holder.pwb_gridview_retweeted_status_image.setAdapter(null);
         holder.pwb_imageview_retweeted_status_image.setImageDrawable(null);
-//        holder.pwb_ll_share_tottom
-        holder.pwb_imageview_share_bottom.setImageDrawable(null);
-        holder.textview_share_bottom.setText(null);
-//        holder.pwb_ll_comment_tottom
-        holder.pwb_imageview_comment_bottom.setImageDrawable(null);
-        holder.textview_comment_bottom.setText(null);
-//        holder.pwb_ll_praise_tottom
-        holder.pwb_imageview_praise_bottom.setImageDrawable(null);
-        holder.textview_praise_bottom.setText(null);
     }
 
     /** 每个item的控件 */

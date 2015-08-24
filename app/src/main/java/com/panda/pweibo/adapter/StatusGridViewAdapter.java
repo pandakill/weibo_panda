@@ -26,11 +26,13 @@ public class StatusGridViewAdapter extends BaseAdapter{
     private Context context;
     private ArrayList<PicUrls> listPicUrls;
     private ImageLoader imageLoader;
+    private View inflate;
 
-    public StatusGridViewAdapter(Context context, ArrayList<PicUrls> listPicUrls, ImageLoader imageLoader) {
+    public StatusGridViewAdapter(Context context, ArrayList<PicUrls> listPicUrls, ImageLoader imageLoader, View inflate) {
         this.context     = context;
         this.listPicUrls = listPicUrls;
         this.imageLoader = imageLoader;
+        this.inflate = inflate;
     }
 
     @Override
@@ -54,7 +56,11 @@ public class StatusGridViewAdapter extends BaseAdapter{
         final ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
-            convertView = View.inflate(context, R.layout.include_status_image, null);
+            if (inflate.findViewById(R.id.include_status_image) != null) {
+                convertView = View.inflate(context, R.layout.include_status_image, null);
+            } else if (inflate.findViewById(R.id.include_retweeted_status_image) != null) {
+                convertView = View.inflate(context, R.layout.include_status_image, null);
+            }
             init(holder, convertView);
             convertView.setTag(holder);
         } else {

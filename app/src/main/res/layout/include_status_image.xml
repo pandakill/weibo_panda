@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="16dp"
-    android:background="@drawable/bg_retweet_sel">
+    android:background="@color/transparent">
 
     <GridView
         android:id="@+id/pwb_gridview_status_image"
@@ -13,7 +13,8 @@
         android:horizontalSpacing="4dp"
         android:verticalSpacing="4dp"
         android:cacheColorHint="@color/transparent"
-        android:scrollbars="none" />
+        android:scrollbars="none"
+        android:visibility="gone"/>
 
 
     <com.android.volley.toolbox.NetworkImageView
