@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="debug"><source path="E:\Android\weibo_panda\uil\build\intermediates\bundles\debug\res"/></dataSet><dataSet config="main"><source path="E:\Android\weibo_panda\uil\src\androidTest\res"/><source path="E:\Android\weibo_panda\uil\build\generated\res\rs\androidTest\debug"/><source path="E:\Android\weibo_panda\uil\build\generated\res\generated\androidTest\debug"/></dataSet><mergedItems/></merger>
