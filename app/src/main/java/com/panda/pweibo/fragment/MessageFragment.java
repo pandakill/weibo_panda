@@ -1,4 +1,4 @@
-package com.panda.pweibo.fragment;
+﻿package com.panda.pweibo.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

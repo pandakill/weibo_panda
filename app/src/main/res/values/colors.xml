@@ -19,5 +19,6 @@
     <color name="txt_gray">#565656</color>
     <color name="txt_light_gray">#898989</color>
     <color name="txt_at_blue">#507daf</color>
+    <color name="divider_gray">#d7d7d7</color>
 
 </resources>

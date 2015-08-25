@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_agray">
+
+    <include layout="@layout/include_title_bar" />
+
+    <RelativeLayout
+        android:id="@+id/pwb_rl_body"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <com.handmark.pulltorefresh.library.PullToRefreshExpandableListView
+            android:id="@+id/pwb_plv_status_detail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:cacheColorHint="@color/transparent"
+            android:listSelector="@color/transparent"
+            android:divider="@color/divider_gray"
+            android:dividerHeight="1px"
+            android:scrollbars="vertical">
+        </com.handmark.pulltorefresh.library.PullToRefreshExpandableListView>
+
+        <include
+            android:id="@+id/include_status_detail_tab"
+            layout="@layout/include_status_detail_tab"
+            />
+
+    </RelativeLayout>
+
+    <include
+        android:id="@+id/inlude_status_control"
+        layout="@layout/include_status_control" />
+
+</LinearLayout>
