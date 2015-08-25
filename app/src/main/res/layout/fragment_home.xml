@@ -12,10 +12,11 @@
         android:layout_height="1px"
         android:background="@color/txt_gray"/>
 
-    <ListView
+    <com.handmark.pulltorefresh.library.PullToRefreshListView
         android:id="@+id/listview_home"
         style="@style/ListViewCommon"
-        android:dividerHeight="8dp">
+        android:dividerHeight="8dp"
+        android:scrollbars="vertical" >
 
-    </ListView>
+    </com.handmark.pulltorefresh.library.PullToRefreshListView>
 </LinearLayout>
