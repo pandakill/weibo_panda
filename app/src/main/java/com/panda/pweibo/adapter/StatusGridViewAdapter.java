@@ -15,6 +15,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.panda.pweibo.R;
 import com.panda.pweibo.models.PicUrls;
+import com.panda.pweibo.widget.WrapHeightGridView;
 
 import java.util.ArrayList;
 
@@ -54,6 +55,8 @@ public class StatusGridViewAdapter extends BaseAdapter{
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         final ViewHolder holder;
+        WrapHeightGridView gv = (WrapHeightGridView) parent;
+
         if (convertView == null) {
             holder = new ViewHolder();
             convertView = View.inflate(context, R.layout.include_grid_image, null);
@@ -63,7 +66,6 @@ public class StatusGridViewAdapter extends BaseAdapter{
             holder = (ViewHolder) convertView.getTag();
         }
 
-        GridView gv = (GridView) parent;
         int horizontalSpacing = gv.getHorizontalSpacing();
         int numColumns = gv.getNumColumns();
         int itemWidth = (gv.getWidth() - (numColumns-1) * horizontalSpacing

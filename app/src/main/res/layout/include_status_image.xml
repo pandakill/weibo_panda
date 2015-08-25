@@ -2,10 +2,12 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp"
-    android:background="@color/transparent">
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="0dp"
+    android:background="@drawable/bg_retweet_sel">
 
-    <GridView
+    <com.panda.pweibo.widget.WrapHeightGridView
         android:id="@+id/pwb_gridview_status_image"
         android:layout_width="272dp"
         android:layout_height="wrap_content"

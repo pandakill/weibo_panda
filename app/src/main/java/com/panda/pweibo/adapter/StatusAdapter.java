@@ -31,6 +31,7 @@ import com.panda.pweibo.models.Status;
 import com.panda.pweibo.models.User;
 import com.android.volley.toolbox.ImageLoader.ImageCache;
 import com.panda.pweibo.utils.ToastUtils;
+import com.panda.pweibo.widget.WrapHeightGridView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -172,13 +173,13 @@ public class StatusAdapter extends BaseAdapter {
 
             holder.pwb_textview_content                     = (TextView)            convertView.findViewById(R.id.pwb_textview_content);
             holder.include_status_image                     = (FrameLayout)         convertView.findViewById(R.id.include_status_image);
-            holder.pwb_gridview_status_image                = (GridView)            holder.include_status_image.findViewById(R.id.pwb_gridview_status_image);
+            holder.pwb_gridview_status_image                = (WrapHeightGridView)  holder.include_status_image.findViewById(R.id.pwb_gridview_status_image);
             holder.pwb_imageview_status_image               = (NetworkImageView)    holder.include_status_image.findViewById(R.id.pwb_imageview_status_image);
 
             holder.include_retweeted_status                 = (LinearLayout)        convertView.findViewById(R.id.include_retweeted_status);
             holder.pwb_textview_retweeted_content           = (TextView)            convertView.findViewById(R.id.pwb_textview_retweeted_content);
             holder.include_retweeted_status_image           = (FrameLayout)         convertView.findViewById(R.id.include_retweeted_status_image);
-            holder.pwb_gridview_retweeted_status_image      = (GridView)            holder.include_retweeted_status_image.findViewById(R.id.pwb_gridview_status_image);
+            holder.pwb_gridview_retweeted_status_image      = (WrapHeightGridView)  holder.include_retweeted_status_image.findViewById(R.id.pwb_gridview_status_image);
             holder.pwb_imageview_retweeted_status_image     = (NetworkImageView)    holder.include_retweeted_status_image.findViewById(R.id.pwb_imageview_status_image);
 
             holder.pwb_ll_share_tottom                      = (LinearLayout)        convertView.findViewById(R.id.pwb_ll_share_tottom);
@@ -214,13 +215,13 @@ public class StatusAdapter extends BaseAdapter {
 
         public  TextView            pwb_textview_content;                       // 微博正文
         public  FrameLayout         include_status_image;                       // 微博的图片布局
-        public  GridView            pwb_gridview_status_image;                  // 微博的九宫格图片部分
+        public  WrapHeightGridView  pwb_gridview_status_image;                  // 微博的九宫格图片部分
         public  NetworkImageView    pwb_imageview_status_image;                 // 微博的图片部分
 
         public  LinearLayout        include_retweeted_status;                   // 转发微博内容的布局
         public  TextView            pwb_textview_retweeted_content;             // 转发微博的内容
         public  FrameLayout         include_retweeted_status_image;             // 转发微博的图片布局
-        public  GridView            pwb_gridview_retweeted_status_image;        // 转发微博的九宫格图片部分
+        public  WrapHeightGridView  pwb_gridview_retweeted_status_image;        // 转发微博的九宫格图片部分
         public  NetworkImageView    pwb_imageview_retweeted_status_image;       // 转发微博的图片部分
 
         public  LinearLayout        pwb_ll_share_tottom;                        // 底部分享按钮的linearlayout布局
