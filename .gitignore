@@ -8,4 +8,5 @@ target
 local.properties
 .DS_Store
 captures
-*.iml
+weiboSDK
+pulltorefresh
