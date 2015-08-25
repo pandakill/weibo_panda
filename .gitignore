@@ -4,9 +4,9 @@ geb
 build
 .setting
 target
-*.iml
+/*.iml
 local.properties
 .DS_Store
 captures
-weiboSDK
-pulltorefresh
+/weiboSDK
+/pulltorefresh
