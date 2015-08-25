@@ -11,6 +11,14 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    signingConfigs {
+        debug {
+            storeFile file("weibo_panda_singed.jks")
+        }
+        release {
+            storeFile file("weibo_panda_singed.jks")
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
