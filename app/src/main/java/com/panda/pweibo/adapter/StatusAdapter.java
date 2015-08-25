@@ -122,8 +122,8 @@ public class StatusAdapter extends BaseAdapter {
             String sender = "@" + retweeted_status.getUser().getName() + ":";
             holder.include_retweeted_status.setVisibility(View.VISIBLE);
             holder.pwb_textview_retweeted_content.setText(sender + retweeted_status.getText());
-            if (status.getPic_ids() != null) {
-                setImages(holder.include_retweeted_status_image, holder.pwb_gridview_retweeted_status_image, holder.pwb_imageview_retweeted_status_image, status);
+            if (retweeted_status.getPic_ids() != null) {
+                setImages(holder.include_retweeted_status_image, holder.pwb_gridview_retweeted_status_image, holder.pwb_imageview_retweeted_status_image, retweeted_status);
             }
         }
         holder.textview_share_bottom.setText(status.getReposts_count() == 0 ? "转发" : status.getReposts_count() + "");
