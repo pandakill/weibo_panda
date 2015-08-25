@@ -18,5 +18,6 @@
     <color name="txt_black">#232323</color>
     <color name="txt_gray">#565656</color>
     <color name="txt_light_gray">#898989</color>
+    <color name="txt_at_blue">#507daf</color>
 
 </resources>

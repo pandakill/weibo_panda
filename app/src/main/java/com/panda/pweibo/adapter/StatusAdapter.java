@@ -3,10 +3,8 @@ package com.panda.pweibo.adapter;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Build;
 import android.text.Html;
-import android.util.Log;
 import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,11 +23,14 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageLoader.ImageListener;
 import com.android.volley.toolbox.NetworkImageView;
+import com.panda.pweibo.listener.ControlbarClickListener;
 import com.panda.pweibo.R;
 import com.panda.pweibo.models.PicUrls;
 import com.panda.pweibo.models.Status;
 import com.panda.pweibo.models.User;
 import com.android.volley.toolbox.ImageLoader.ImageCache;
+import com.panda.pweibo.utils.DateUtils;
+import com.panda.pweibo.utils.StringUtils;
 import com.panda.pweibo.utils.ToastUtils;
 import com.panda.pweibo.widget.WrapHeightGridView;
 
@@ -41,12 +42,12 @@ import java.util.List;
  */
 public class StatusAdapter extends BaseAdapter {
 
-    private Context context;
-    private List<Status> listStatus;
-    private RequestQueue requestQueue;
-    private ImageCache imageCache;
-    private LruCache<String, Bitmap> lruCache;
-    private ImageLoader imageLoader;
+    private Context                     context;
+    private List<Status>                listStatus;
+    private RequestQueue                requestQueue;
+    private ImageCache                  imageCache;
+    private LruCache<String, Bitmap>    lruCache;
+    private ImageLoader                 imageLoader;
 
     public StatusAdapter(Context context, List<Status> listStatus, RequestQueue requestQueue) {
         this.context        = context;
@@ -110,35 +111,67 @@ public class StatusAdapter extends BaseAdapter {
         Status retweeted_status = status.getRetweeted_status();
 
         holder.pwb_textview_sender.setText(user.getScreen_name());
-        holder.pwb_textview_item_status_from_and_when.setText(status.getCreated_at() + " 来自 " + Html.fromHtml(status.getSource()));
-        holder.pwb_textview_content.setText(status.getText());
+        holder.pwb_textview_item_status_from_and_when.setText(
+                new DateUtils().String2Date(status.getCreated_at())
+                        + " 来自 " + Html.fromHtml(status.getSource()));
+        holder.pwb_textview_content.setText(new StringUtils().getWeiboContent(context,
+                holder.pwb_textview_content, status.getText()));
 
         /** 如果微博有图片,且不是转发的微博,则在正文部分显示图片 */
         if ( status.getPic_ids() != null && status.getRetweeted_status() == null) {
-            setImages(holder.include_status_image, holder.pwb_gridview_status_image, holder.pwb_imageview_status_image, status);
+            setImages(holder.include_status_image,
+                    holder.pwb_gridview_status_image,
+                    holder.pwb_imageview_status_image,
+                    status);
         }
         /** 如果有转发的微博,则显示转发微博内容;如果转发的微博有图片,则显示转发微博布局的图片 */
         if (retweeted_status != null) {
-            String sender = "@" + retweeted_status.getUser().getName() + ":";
+
             holder.include_retweeted_status.setVisibility(View.VISIBLE);
-            holder.pwb_textview_retweeted_content.setText(sender + retweeted_status.getText());
+
+            String retweeted_content = "@" + retweeted_status.getUser().getName() + ":"
+                                          + retweeted_status.getText();
+
+            holder.pwb_textview_retweeted_content.setText(
+                    StringUtils.getWeiboContent(context, holder.pwb_textview_retweeted_content,
+                            retweeted_content));
+
             if (retweeted_status.getPic_ids() != null) {
-                setImages(holder.include_retweeted_status_image, holder.pwb_gridview_retweeted_status_image, holder.pwb_imageview_retweeted_status_image, retweeted_status);
+                setImages(holder.include_retweeted_status_image,
+                        holder.pwb_gridview_retweeted_status_image,
+                        holder.pwb_imageview_retweeted_status_image,
+                        retweeted_status);
             }
         }
-        holder.textview_share_bottom.setText(status.getReposts_count() == 0 ? "转发" : status.getReposts_count() + "");
-        holder.textview_comment_bottom.setText(status.getComments_count() == 0 ? "评论" : status.getComments_count() + "");
-        holder.textview_praise_bottom.setText(status.getAttitudes_count() == 0 ? "点赞" : status.getAttitudes_count() + "");
+
+        holder.textview_share_bottom.setText(
+                status.getReposts_count() == 0 ? "转发" : status.getReposts_count() + "");
+        holder.textview_comment_bottom.setText(
+                status.getComments_count() == 0 ? "评论" : status.getComments_count() + "");
+        holder.textview_praise_bottom.setText(
+                status.getAttitudes_count() == 0 ? "点赞" : status.getAttitudes_count() + "");
+
+        /** 设置分享按钮监听器 */
+        holder.textview_share_bottom.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ToastUtils.showToast(context,"转发按钮被点击", Toast.LENGTH_LONG);
+                    }
+                });
 
         /** 加载用户头像图片 */
-        ImageListener listener = ImageLoader.getImageListener(holder.pwb_imageview_item_status_avatar,
+        ImageListener listener;
+        listener = ImageLoader.getImageListener(holder.pwb_imageview_item_status_avatar,
                 R.drawable.ic_com_sina_weibo_sdk_logo, R.drawable.pwb_avatar);
         imageLoader.get(user.getProfile_image_url(), listener);
+
         return convertView;
     }
 
     /** 加载微博图片,如果为多图的话,显示九宫格形式,否则显示单图形式 */
-    public void setImages(FrameLayout imgContainer, GridView gv, NetworkImageView iv, Status status) {
+    public void setImages(FrameLayout imgContainer, GridView gv,
+                          NetworkImageView iv, Status status) {
         ArrayList<PicUrls> list = status.getPic_ids();
 
         if (list != null && list.size() > 1) {

@@ -24,12 +24,13 @@ import java.util.ArrayList;
  */
 public class StatusGridViewAdapter extends BaseAdapter{
 
-    private Context context;
-    private ArrayList<PicUrls> listPicUrls;
-    private ImageLoader imageLoader;
-    private View inflate;
+    private Context             context;
+    private ArrayList<PicUrls>  listPicUrls;
+    private ImageLoader         imageLoader;
+    private View                inflate;
 
-    public StatusGridViewAdapter(Context context, ArrayList<PicUrls> listPicUrls, ImageLoader imageLoader, View inflate) {
+    public StatusGridViewAdapter(Context context, ArrayList<PicUrls> listPicUrls,
+                                 ImageLoader imageLoader, View inflate) {
         this.context     = context;
         this.listPicUrls = listPicUrls;
         this.imageLoader = imageLoader;
@@ -66,6 +67,7 @@ public class StatusGridViewAdapter extends BaseAdapter{
             holder = (ViewHolder) convertView.getTag();
         }
 
+        /** 设置gridveiw当中每个item的高度和宽度 */
         int horizontalSpacing = gv.getHorizontalSpacing();
         int numColumns = gv.getNumColumns();
         int itemWidth = (gv.getWidth() - (numColumns-1) * horizontalSpacing
@@ -74,6 +76,7 @@ public class StatusGridViewAdapter extends BaseAdapter{
         LayoutParams params = new LayoutParams(itemWidth, itemWidth);
         holder.imageView.setLayoutParams(params);
 
+        /** 加载图片 */
         PicUrls urls = getItem(position);
         holder.imageView.setTag(urls.getThumbnail_pic());
         holder.imageView.setImageUrl(urls.getThumbnail_pic(), imageLoader);
@@ -81,10 +84,13 @@ public class StatusGridViewAdapter extends BaseAdapter{
         return convertView;
     }
 
+    /** 初始化控件 */
     public void init(ViewHolder holder,View convertView) {
-        holder.imageView = (NetworkImageView) convertView.findViewById(R.id.pwb_imageview_status_image);
+        holder.imageView =
+                (NetworkImageView) convertView.findViewById(R.id.pwb_imageview_status_image);
     }
 
+    /** 设置gridview控件内容 */
     public static class ViewHolder {
         public NetworkImageView imageView;
     }

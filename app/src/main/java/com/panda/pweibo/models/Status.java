@@ -242,7 +242,7 @@ public class Status {
     public Status parseJson(JSONObject jsonObject) throws JSONException {
         if (null != jsonObject) {
             Status status = new Status();
-            status.setCreated_at(new DateUtils().String2Date(jsonObject.optString("created_at")));
+            status.setCreated_at(jsonObject.optString("created_at"));
             status.setId(jsonObject.optInt("id"));
             status.setText(jsonObject.optString("text"));
             status.setSource(jsonObject.optString("source"));

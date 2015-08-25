@@ -1,6 +1,7 @@
 package com.panda.pweibo.fragment;
 
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
@@ -32,6 +33,7 @@ import com.panda.pweibo.activity.PWBAuthActivity;
 import com.panda.pweibo.adapter.StatusAdapter;
 import com.panda.pweibo.constants.AccessTokenKeeper;
 import com.panda.pweibo.constants.Uri;
+import com.panda.pweibo.listener.LogoutListener;
 import com.panda.pweibo.models.Status;
 import com.panda.pweibo.utils.TitlebarUtils;
 import com.panda.pweibo.utils.ToastUtils;
@@ -54,6 +56,7 @@ public class HomeFragment extends Fragment {
     //private     RequestQueue                requestQueue;
     private     LruCache<String, Bitmap>    avatarCache;
     private     ImageCache                  imageCache;
+    private     ProgressDialog              pd;
 
     protected   MainActivity    activity;
 
@@ -94,46 +97,14 @@ public class HomeFragment extends Fragment {
                     }
                 })
                 /** 调用微博官方接口,设置退出按钮监听器 */
-                .setRightOnClickListner(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String uri = Uri.revokeoauth2 + "?access_token=" + mAccesssToken.getToken();
-                        Log.i("tag", "uri=" + uri);
-                        ToastUtils.showToast(activity, "退出按钮被点击", Toast.LENGTH_SHORT);
-                        JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET, uri, null, new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                if (null != response) {
-                                    try {
-                                        String value = response.getString("result");
-
-                                        if (value.equals("true")) {
-                                            ToastUtils.showToast(activity, "退出成功", Toast.LENGTH_SHORT);
-                                            Intent intent = new Intent(activity, PWBAuthActivity.class);
-                                            startActivity(intent);
-                                        } else {
-                                            ToastUtils.showToast(activity, "退出发生异常", Toast.LENGTH_SHORT);
-                                        }
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }
-                        }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                ToastUtils.showToast(activity, "退出发生异常", Toast.LENGTH_SHORT);
-                            }
-                        });
-                        activity.requestQueue.add(stringRequest);
-                    }
-                });
+                .setRightOnClickListner(new LogoutListener(activity, mAccesssToken,
+                        activity.requestQueue, this));
         listView = (ListView) view.findViewById(R.id.listview_home);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     public void loadData(int page) {
-        //pd = ProgressDialog.show(activity, "正在加载数据...", "加载ing...");
+        pd = ProgressDialog.show(activity, "正在加载数据...", "加载ing...");
 
         /**
          * TODO 测试的token有效期为一天，所以必须每天重新授权获取token
@@ -150,8 +121,7 @@ public class HomeFragment extends Fragment {
                     for (int i = 0; i < statuses.length(); i ++) {
                         Status status = new Status().parseJson(statuses.getJSONObject(i));
                         listStatus.add(status);
-                        ImageLoader imageLoader = new ImageLoader(activity.requestQueue, imageCache);
-
+                        pd.dismiss();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
