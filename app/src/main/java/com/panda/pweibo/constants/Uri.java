@@ -17,4 +17,7 @@ public interface Uri {
 
     /** 获取当前登录用户及其所关注用户的最新微博  */
     String home_timeline = baseUri + "statuses/home_timeline.json";
+
+    /** 根据微博ID返回某条微博的评论列表  */
+    String comments_show = baseUri + "comments/show.json";
 }
