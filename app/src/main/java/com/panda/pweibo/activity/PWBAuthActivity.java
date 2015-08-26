@@ -23,14 +23,11 @@ import com.sina.weibo.sdk.exception.WeiboException;
 
 import java.text.SimpleDateFormat;
 
-public class PWBAuthActivity extends Activity {
+public class PWBAuthActivity extends BaseActivity {
 
     private     ImageButton     getTokenBtn;    //获取授权按钮
 
     private     AuthInfo        mAuthInfo;      //授权信息
-
-    /** 封装了 "access_token"，"expires_in"，"refresh_token"，并提供了他们的管理功能  */
-    private     Oauth2AccessToken       mAccessToken;
 
     /** 注意：SsoHandler 仅当 SDK 支持 SSO 时有效 */
     private     SsoHandler              mSsoHandler;

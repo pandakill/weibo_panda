@@ -63,19 +63,14 @@ import java.util.List;
 /**
  * Created by Administrator on 2015/8/26:9:52.
  */
-public class StatusDetailActivity extends Activity implements OnClickListener,OnCheckedChangeListener {
+public class StatusDetailActivity extends BaseActivity implements OnClickListener,OnCheckedChangeListener {
 
     /** 跳转至写评论页面code */
     private static final int REQUEST_CODE_WRITE_COMMENT = 2333;
 
     private Status              status;
-    private ImageLoader         imageLoader;
-    private RequestQueue        requestQueue;
-    private ImageCache          imageCache;
-    private LruCache<String, Bitmap> lruCache;
     private StatusCommentAdapter adapter;
     private List<Comment>       listComments;
-    private Oauth2AccessToken   mAccessToken;
     private long                curPage = 1;
     private long                totalNum;
     private Boolean             scroll2Comment = false;
@@ -134,26 +129,26 @@ public class StatusDetailActivity extends Activity implements OnClickListener,On
         footView = View.inflate(this, R.layout.footer_loading, null);
         listComments = new ArrayList<>();
 
-        mAccessToken = AccessTokenKeeper.readAccessToken(this);
-        requestQueue = Volley.newRequestQueue(this);
+//        mAccessToken = AccessTokenKeeper.readAccessToken(this);
+//        requestQueue = Volley.newRequestQueue(this);
 
 
-        lruCache = new LruCache<>(20);
-        imageCache = new ImageCache() {
-            @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
-            @Override
-            public Bitmap getBitmap(String key) {
-                return lruCache.get(key);
-            }
-
-            @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
-            @Override
-            public void putBitmap(String key, Bitmap value) {
-                lruCache.put(key, value);
-            }
-        };
-
-        imageLoader = new ImageLoader(requestQueue, imageCache);
+//        lruCache = new LruCache<>(20);
+//        imageCache = new ImageCache() {
+//            @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
+//            @Override
+//            public Bitmap getBitmap(String key) {
+//                return lruCache.get(key);
+//            }
+//
+//            @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
+//            @Override
+//            public void putBitmap(String key, Bitmap value) {
+//                lruCache.put(key, value);
+//            }
+//        };
+//
+//        imageLoader = new ImageLoader(requestQueue, imageCache);
 
         /** 获取intent传入的内容 */
         status = (Status) getIntent().getSerializableExtra("status");
