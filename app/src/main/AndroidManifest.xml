@@ -25,7 +25,11 @@
         <!-- 登录的activity -->
         <activity android:name=".activity.PWBAuthActivity" />
 
-        <!-- 首页显示微博的activity -->
+        <!-- app的主activity -->
+        <activity android:name=".activity.MainActivity" />
+
+        <!-- 微博详情页的activity -->
+        <activity android:name=".activity.StatusDetailActivity"/>
 
         <!-- 必须注册在微博授权，分享微博时候用到 -->
         <activity
@@ -39,11 +43,6 @@
             android:name="com.sina.weibo.sdk.net.DownloadService"
             android:exported="false" >
         </service>
-
-        <activity
-            android:name=".activity.MainActivity"
-            android:label="@string/title_activity_main" >
-        </activity>
     </application>
 
 </manifest>

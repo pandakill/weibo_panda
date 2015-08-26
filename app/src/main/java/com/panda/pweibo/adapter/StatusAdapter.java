@@ -2,8 +2,10 @@ package com.panda.pweibo.adapter;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.os.Bundle;
 import android.text.Html;
 import android.util.LruCache;
 import android.view.LayoutInflater;
@@ -23,6 +25,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageLoader.ImageListener;
 import com.android.volley.toolbox.NetworkImageView;
+import com.panda.pweibo.activity.StatusDetailActivity;
 import com.panda.pweibo.listener.ControlbarClickListener;
 import com.panda.pweibo.R;
 import com.panda.pweibo.models.PicUrls;
@@ -34,6 +37,7 @@ import com.panda.pweibo.utils.StringUtils;
 import com.panda.pweibo.utils.ToastUtils;
 import com.panda.pweibo.widget.WrapHeightGridView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,13 +112,13 @@ public class StatusAdapter extends BaseAdapter {
 
         final Status    status  = (Status) getItem(position);
         User            user    = status.getUser();
-        Status retweeted_status = status.getRetweeted_status();
+        final Status retweeted_status = status.getRetweeted_status();
 
         holder.pwb_textview_sender.setText(user.getScreen_name());
         holder.pwb_textview_item_status_from_and_when.setText(
                 new DateUtils().String2Date(status.getCreated_at())
                         + " 来自 " + Html.fromHtml(status.getSource()));
-        holder.pwb_textview_content.setText(new StringUtils().getWeiboContent(context,
+        holder.pwb_textview_content.setText(StringUtils.getWeiboContent(context,
                 holder.pwb_textview_content, status.getText()));
 
         /** 如果微博有图片,且不是转发的微博,则在正文部分显示图片 */
@@ -151,14 +155,50 @@ public class StatusAdapter extends BaseAdapter {
         holder.textview_praise_bottom.setText(
                 status.getAttitudes_count() == 0 ? "点赞" : status.getAttitudes_count() + "");
 
+        /** 设置每条微博的监听器 */
+        holder.pwb_ll_item_status.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, StatusDetailActivity.class);
+                intent.putExtra("status", status);
+
+                context.startActivity(intent);
+            }
+        });
+
+        /** 设置转发微博的监听器 */
+        holder.include_retweeted_status.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ToastUtils.showToast(context, "转发微博" + retweeted_status.getUser().getName(), Toast.LENGTH_SHORT);
+            }
+        });
+
         /** 设置分享按钮监听器 */
-        holder.textview_share_bottom.setOnClickListener(
+        holder.pwb_ll_share_tottom.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ToastUtils.showToast(context,"转发按钮被点击", Toast.LENGTH_LONG);
+                        ToastUtils.showToast(context, "转发按钮被点击", Toast.LENGTH_LONG);
                     }
                 });
+
+        /** 设置评论按钮监听器 */
+        holder.pwb_ll_comment_tottom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ToastUtils.showToast(context, "评论按钮被点击", Toast.LENGTH_SHORT);
+            }
+        });
+
+        /** 设置点赞监听器 */
+        holder.pwb_ll_praise_tottom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ToastUtils.showToast(context, "点赞按钮被点击", Toast.LENGTH_SHORT);
+            }
+        });
+
 
         /** 加载用户头像图片 */
         ImageListener listener;
