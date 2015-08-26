@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,7 +62,7 @@ import java.util.List;
 /**
  * Created by Administrator on 2015/8/26:9:52.
  */
-public class StatusDetailActivity extends Activity implements OnClickListener {
+public class StatusDetailActivity extends Activity implements OnClickListener,OnCheckedChangeListener {
 
     private Status              status;
     private ImageLoader         imageLoader;
@@ -361,7 +362,7 @@ public class StatusDetailActivity extends Activity implements OnClickListener {
         pwb_radiobutton_share        = (RadioButton)  include_status_detail_tab.findViewById(R.id.pwb_radiobutton_share);
         pwb_radiobutton_comment      = (RadioButton)  include_status_detail_tab.findViewById(R.id.pwb_radiobutton_comment);
         pwb_radiobutton_praise       = (RadioButton)  include_status_detail_tab.findViewById(R.id.pwb_radiobutton_praise);
-        pwb_radiogroup_status_detail.setOnClickListener(this);
+        pwb_radiogroup_status_detail.setOnCheckedChangeListener(this);
 
         /** 悬浮的菜单栏 */
         shadow_status_detail_tab    = findViewById(R.id.include_status_detail_tab);
@@ -369,7 +370,7 @@ public class StatusDetailActivity extends Activity implements OnClickListener {
         shadow_radiobutton_share        = (RadioButton)  shadow_status_detail_tab.findViewById(R.id.pwb_radiobutton_share);
         shadow_radiobutton_comment      = (RadioButton)  shadow_status_detail_tab.findViewById(R.id.pwb_radiobutton_comment);
         shadow_radiobutton_praise       = (RadioButton)  shadow_status_detail_tab.findViewById(R.id.pwb_radiobutton_praise);
-        shadow_radiogroup_status_detail.setOnClickListener(this);
+        shadow_radiogroup_status_detail.setOnCheckedChangeListener(this);
     }
 
     /** 初始化listview */
@@ -459,6 +460,30 @@ public class StatusDetailActivity extends Activity implements OnClickListener {
 
             case R.id.pwb_ll_praise_tottom:
                 ToastUtils.showToast(this, "点赞", Toast.LENGTH_SHORT);
+            default:
+                break;
+        }
+    }
+
+    /** tab点击时,要保持悬浮菜单栏和tab一致 */
+    @Override
+    public void onCheckedChanged(RadioGroup group, int checkedId) {
+        switch (checkedId) {
+            case R.id.pwb_radiobutton_comment:
+                shadow_radiobutton_comment.setChecked(true);
+                pwb_radiobutton_comment.setChecked(true);
+                break;
+
+            case R.id.pwb_radiobutton_share:
+                shadow_radiobutton_share.setChecked(true);
+                pwb_radiobutton_share.setChecked(true);
+                break;
+
+            case R.id.pwb_radiobutton_praise:
+                shadow_radiobutton_praise.setChecked(true);
+                pwb_radiobutton_praise.setChecked(true);
+                break;
+
             default:
                 break;
         }
