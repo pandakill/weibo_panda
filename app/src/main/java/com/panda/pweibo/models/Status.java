@@ -14,8 +14,8 @@ import java.util.ArrayList;
  */
 public class Status implements Serializable {
     private     String              created_at;                 // 微博创建时间
-    private     long                 id;                         // 微博ID
-    private     long                 mid;                        // 微博MID
+    private     long                id;                         // 微博ID
+    private     long                mid;                        // 微博MID
     private     String              idstr;                      // 字符串型的微博ID
     private     String              text;                       // 微博信息内容
     private     String              source;                     // 微博来源
@@ -244,13 +244,13 @@ public class Status implements Serializable {
         if (null != jsonObject) {
             Status status = new Status();
             status.setCreated_at(jsonObject.optString("created_at"));
-            status.setId(jsonObject.optInt("id"));
+            status.setId(jsonObject.optLong("id"));
             status.setText(jsonObject.optString("text"));
             status.setSource(jsonObject.optString("source"));
             status.setFavorited(jsonObject.optBoolean("favorited"));
             status.setTruncated(jsonObject.optBoolean("truncated"));
 //            status.setGeo(jsonObject.opt("geo"));
-            status.setMid(jsonObject.optInt("mid"));
+            status.setMid(jsonObject.optLong("mid"));
             status.setReposts_count(jsonObject.optInt("reposts_count"));
             status.setComments_count(jsonObject.optInt("comments_count"));
             status.setUser(new User().parseJson((JSONObject) jsonObject.opt("user")));

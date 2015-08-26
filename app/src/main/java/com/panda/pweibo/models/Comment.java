@@ -1,5 +1,6 @@
 package com.panda.pweibo.models;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
@@ -91,18 +92,18 @@ public class Comment implements Serializable {
         this.reply_comment = reply_comment;
     }
 
-    public Comment parseJson(JSONObject jsonObject) {
+    public Comment parseJson(JSONObject jsonObject) throws JSONException {
         if (jsonObject != null) {
             Comment comment = new Comment();
             comment.setCreated_at(jsonObject.optString("created_at"));
-            comment.setId(jsonObject.optInt("id"));
+            comment.setId(jsonObject.optLong("id"));
             comment.setText(jsonObject.optString("text"));
             comment.setSource(jsonObject.optString("source"));
-            comment.setUser((User) jsonObject.opt("user"));
+            comment.setUser(new User().parseJson(jsonObject.optJSONObject("user")));
             comment.setMid(jsonObject.optString("mid"));
             comment.setIdstr(jsonObject.optString("idstr"));
-            comment.setStatus((Status) jsonObject.opt("status"));
-            comment.setReply_comment((Comment) jsonObject.opt("reply_comment"));
+            comment.setStatus(new Status().parseJson(jsonObject.optJSONObject("status")));
+            comment.setReply_comment(new Comment().parseJson(jsonObject.optJSONObject("reply_comment")));
             return comment;
         }
         return null;
