@@ -102,7 +102,8 @@ public class HomeFragment extends Fragment {
                         activity.requestQueue, this));
 
         /** 初始化listView控件,实例适配器，设置listView的适配器 */
-        adapter = new StatusAdapter(activity, listStatus, activity.requestQueue);
+        adapter = new StatusAdapter(activity, listStatus, activity.requestQueue, activity.lruCache,
+                                        activity.imageCache, activity.imageLoader);
         listView.setAdapter(adapter);
         listView.setOnRefreshListener(new OnRefreshListener<ListView>() {
             @Override

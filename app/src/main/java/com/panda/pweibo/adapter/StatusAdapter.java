@@ -53,10 +53,14 @@ public class StatusAdapter extends BaseAdapter {
     private LruCache<String, Bitmap>    lruCache;
     private ImageLoader                 imageLoader;
 
-    public StatusAdapter(Context context, List<Status> listStatus, RequestQueue requestQueue) {
+    public StatusAdapter(Context context, List<Status> listStatus, RequestQueue requestQueue,
+                            LruCache<String, Bitmap> lruCache, ImageCache imageCache, ImageLoader imageLoader) {
         this.context        = context;
         this.listStatus     = listStatus;
         this.requestQueue   = requestQueue;
+        this.imageCache     = imageCache;
+        this.imageLoader    = imageLoader;
+        this.lruCache       = lruCache;
     }
 
     @Override
@@ -79,23 +83,6 @@ public class StatusAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         final ViewHolder holder;
-
-        lruCache = new LruCache<String, Bitmap>(20);
-        imageCache = new ImageCache() {
-            @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
-            @Override
-            public Bitmap getBitmap(String key) {
-                return lruCache.get(key);
-            }
-
-            @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
-            @Override
-            public void putBitmap(String key, Bitmap value) {
-                lruCache.put(key, value);
-            }
-        };
-
-        imageLoader = new ImageLoader(requestQueue, imageCache);
 
         if (convertView == null) {
             holder = new ViewHolder();
