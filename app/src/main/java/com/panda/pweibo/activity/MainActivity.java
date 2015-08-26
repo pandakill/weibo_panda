@@ -1,6 +1,7 @@
 package com.panda.pweibo.activity;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.os.Build;
@@ -100,7 +101,8 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.pwb_imagebutton_add:
-                ToastUtils.showToast(MainActivity.this,"添加按钮",Toast.LENGTH_LONG);
+                Intent intent = new Intent(this, WriteStatusActivity.class);
+                startActivity(intent);
                 break;
 
             default:

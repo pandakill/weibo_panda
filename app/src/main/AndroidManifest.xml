@@ -34,6 +34,9 @@
         <!-- 写评论的activity -->
         <activity android:name=".activity.WriteCommentActivity" />
 
+        <!-- 写微博的activity -->
+        <activity android:name=".activity.WriteStatusActivity" />
+
         <!-- 必须注册在微博授权，分享微博时候用到 -->
         <activity
             android:name="com.sina.weibo.sdk.component.WeiboSdkBrowser"
