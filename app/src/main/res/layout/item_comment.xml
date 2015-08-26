@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pwb_ll_comments"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_retweet_sel">
+
+    <include layout="@layout/include_status_avatar" />
+
+    <TextView
+        android:id="@+id/pwb_textview_comment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/txt_black"
+        android:textSize="16sp"
+        android:layout_marginLeft="72dp"
+        android:layout_marginRight="16dp"
+        android:text="这是一条评论"/>
+</LinearLayout>
