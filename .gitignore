@@ -8,6 +8,8 @@ target
 local.properties
 .DS_Store
 captures
+weiboSDK/build/*
+weiboSDK/weiboSDK.iml
 weiboSDK/build/intermediates/bundles/debug/classes.jar
 weiboSDK/build/intermediates/bundles/debug/res/drawable/com_sina_weibo_sdk_button_blue.xml
 weiboSDK/build/intermediates/bundles/debug/res/drawable/com_sina_weibo_sdk_button_grey.xml
