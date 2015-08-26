@@ -13,7 +13,7 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <com.handmark.pulltorefresh.library.PullToRefreshListView
+        <com.panda.pweibo.widget.Pull2RefreshListView
             android:id="@+id/pwb_plv_status_detail"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -22,7 +22,7 @@
             android:divider="@color/divider_gray"
             android:dividerHeight="1px"
             android:scrollbars="vertical">
-        </com.handmark.pulltorefresh.library.PullToRefreshListView>
+        </com.panda.pweibo.widget.Pull2RefreshListView>
 
         <include
             android:id="@+id/include_status_detail_tab"

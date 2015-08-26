@@ -12,6 +12,7 @@ import android.util.LruCache;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -32,7 +33,8 @@ import com.android.volley.toolbox.ImageLoader.ImageListener;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.Volley;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.panda.pweibo.widget.Pull2RefreshListView;
 import com.panda.pweibo.R;
 import com.panda.pweibo.adapter.StatusCommentAdapter;
 import com.panda.pweibo.adapter.StatusGridViewAdapter;
@@ -94,8 +96,16 @@ public class StatusDetailActivity extends Activity implements OnClickListener {
     private RadioButton     pwb_radiobutton_comment;
     private RadioButton     pwb_radiobutton_praise;
 
+    /** 顶部悬浮的菜单栏控件 */
+    private View            shadow_status_detail_tab;
+    private RadioGroup      shadow_radiogroup_status_detail;
+    private RadioButton     shadow_radiobutton_share;
+    private RadioButton     shadow_radiobutton_comment;
+    private RadioButton     shadow_radiobutton_praise;
+
+
     /** 下拉刷新控件 */
-    private PullToRefreshListView   pwb_plv_status_detail;
+    private Pull2RefreshListView   pwb_plv_status_detail;
 
     /** 加载更多的view */
     private View footView;
@@ -120,6 +130,7 @@ public class StatusDetailActivity extends Activity implements OnClickListener {
 
         mAccessToken = AccessTokenKeeper.readAccessToken(this);
         requestQueue = Volley.newRequestQueue(this);
+
 
         lruCache = new LruCache<>(20);
         imageCache = new ImageCache() {
@@ -160,7 +171,7 @@ public class StatusDetailActivity extends Activity implements OnClickListener {
     }
 
     /** 传入页码,加载评论 */
-    private void loadData(final int page) {
+    private void loadData(final long page) {
         String uri = Uri.comments_show;
         uri += "?access_token=" + mAccessToken.getToken() + "&id=" + status.getId();
         uri += "&page="+page;
@@ -198,7 +209,7 @@ public class StatusDetailActivity extends Activity implements OnClickListener {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                ToastUtils.showToast(StatusDetailActivity.this, "网络发生异常,加载错误", Toast.LENGTH_SHORT);
+                ToastUtils.showToast(StatusDetailActivity.this, "加载评论失败", Toast.LENGTH_SHORT);
             }
         });
 
@@ -254,6 +265,9 @@ public class StatusDetailActivity extends Activity implements OnClickListener {
         pwb_radiobutton_share.setText("转发 " + status.getReposts_count());
         pwb_radiobutton_comment.setText("评论 " + status.getComments_count());
         pwb_radiobutton_praise.setText("赞 " + status.getAttitudes_count());
+        shadow_radiobutton_share.setText("转发 " + status.getReposts_count());
+        shadow_radiobutton_comment.setText("评论 " + status.getComments_count());
+        shadow_radiobutton_praise.setText("赞 " + status.getAttitudes_count());
 
         /** 设置底部control的内容 */
         textview_share_bottom.setText(
@@ -342,23 +356,62 @@ public class StatusDetailActivity extends Activity implements OnClickListener {
 
     /** 初始化中部radiogroup */
     private void initTab() {
-        include_status_detail_tab    = findViewById(R.id.include_status_detail_tab);
+        include_status_detail_tab    = View.inflate(this,R.layout.include_status_detail_tab, null);
         pwb_radiogroup_status_detail = (RadioGroup)   include_status_detail_tab.findViewById(R.id.pwb_radiogroup_status_detail);
         pwb_radiobutton_share        = (RadioButton)  include_status_detail_tab.findViewById(R.id.pwb_radiobutton_share);
         pwb_radiobutton_comment      = (RadioButton)  include_status_detail_tab.findViewById(R.id.pwb_radiobutton_comment);
         pwb_radiobutton_praise       = (RadioButton)  include_status_detail_tab.findViewById(R.id.pwb_radiobutton_praise);
         pwb_radiogroup_status_detail.setOnClickListener(this);
+
+        /** 悬浮的菜单栏 */
+        shadow_status_detail_tab    = findViewById(R.id.include_status_detail_tab);
+        shadow_radiogroup_status_detail = (RadioGroup)   shadow_status_detail_tab.findViewById(R.id.pwb_radiogroup_status_detail);
+        shadow_radiobutton_share        = (RadioButton)  shadow_status_detail_tab.findViewById(R.id.pwb_radiobutton_share);
+        shadow_radiobutton_comment      = (RadioButton)  shadow_status_detail_tab.findViewById(R.id.pwb_radiobutton_comment);
+        shadow_radiobutton_praise       = (RadioButton)  shadow_status_detail_tab.findViewById(R.id.pwb_radiobutton_praise);
+        shadow_radiogroup_status_detail.setOnClickListener(this);
     }
 
     /** 初始化listview */
     private void initLstView() {
-        pwb_plv_status_detail = (PullToRefreshListView) findViewById(R.id.pwb_plv_status_detail);
+        pwb_plv_status_detail = (Pull2RefreshListView) findViewById(R.id.pwb_plv_status_detail);
         adapter = new StatusCommentAdapter(this, listComments, requestQueue, imageLoader);
 
         pwb_plv_status_detail.setAdapter(adapter);
 
         final ListView lv = pwb_plv_status_detail.getRefreshableView();
         lv.addHeaderView(status_detail_info);
+        lv.addHeaderView(include_status_detail_tab);
+
+        // 下拉刷新监听
+        pwb_plv_status_detail.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
+            @Override
+            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+                loadData(1);
+            }
+        });
+
+        // 滑动到最后一个item的监听
+        pwb_plv_status_detail.setOnLastItemVisibleListener(new PullToRefreshBase.OnLastItemVisibleListener() {
+            @Override
+            public void onLastItemVisible() {
+                loadData(curPage + 1);
+            }
+        });
+
+        // 设置滚动监听器
+        pwb_plv_status_detail.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                // 如果滚动到tab第一个item时,则显示顶部隐藏的shadow_tab,作为悬浮菜单栏
+                shadow_status_detail_tab.setVisibility(firstVisibleItem >= 2 ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 
     /** 初始化底部控件 */
@@ -373,7 +426,7 @@ public class StatusDetailActivity extends Activity implements OnClickListener {
     }
 
     /** 添加底部的刷新view */
-    private void addFootView(PullToRefreshListView plv, View footView) {
+    private void addFootView(Pull2RefreshListView plv, View footView) {
         ListView lv = plv.getRefreshableView();
         if (lv.getFooterViewsCount() == 1) {
             lv.addFooterView(footView);
@@ -381,7 +434,7 @@ public class StatusDetailActivity extends Activity implements OnClickListener {
     }
 
     /** 去除底部的刷新view */
-    private void removeFootView(PullToRefreshListView plv, View footView) {
+    private void removeFootView(Pull2RefreshListView plv, View footView) {
         ListView lv = plv.getRefreshableView();
         if (lv.getFooterViewsCount() > 1) {
             lv.removeFooterView(footView);
