@@ -33,6 +33,7 @@
             android:background="@drawable/layerlist_tab_indicator_sel"
             android:button="@null"
             android:gravity="center"
+            android:checked="true"
             android:text="评论"/>
 
         <RadioButton
