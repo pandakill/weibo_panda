@@ -26,6 +26,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageLoader.ImageListener;
 import com.android.volley.toolbox.NetworkImageView;
 import com.panda.pweibo.activity.StatusDetailActivity;
+import com.panda.pweibo.activity.WriteCommentActivity;
 import com.panda.pweibo.listener.ControlbarClickListener;
 import com.panda.pweibo.R;
 import com.panda.pweibo.models.PicUrls;
@@ -170,11 +171,23 @@ public class StatusAdapter extends BaseAdapter {
                     }
                 });
 
-        /** 设置评论按钮监听器 */
+        /**
+         * 设置评论按钮监听器
+         * 如果有评论,则跳转至详情页
+         * 如果评论为空,则跳转至写评论页
+         */
         holder.pwb_ll_comment_tottom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ToastUtils.showToast(context, "评论按钮被点击", Toast.LENGTH_SHORT);
+                if (status.getComments_count() == 0) {
+                    Intent intent = new Intent(context, WriteCommentActivity.class);
+                    intent.putExtra("status", status);
+                    context.startActivity(intent);
+                } else {
+                    Intent intent = new Intent(context, StatusDetailActivity.class);
+                    intent.putExtra("status", status);
+                    context.startActivity(intent);
+                }
             }
         });
 

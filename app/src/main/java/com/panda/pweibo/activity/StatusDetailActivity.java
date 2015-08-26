@@ -3,6 +3,7 @@ package com.panda.pweibo.activity;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -64,6 +65,9 @@ import java.util.List;
  */
 public class StatusDetailActivity extends Activity implements OnClickListener,OnCheckedChangeListener {
 
+    /** 跳转至写评论页面code */
+    private static final int REQUEST_CODE_WRITE_COMMENT = 2333;
+
     private Status              status;
     private ImageLoader         imageLoader;
     private RequestQueue        requestQueue;
@@ -74,6 +78,7 @@ public class StatusDetailActivity extends Activity implements OnClickListener,On
     private Oauth2AccessToken   mAccessToken;
     private long                curPage = 1;
     private long                totalNum;
+    private Boolean             scroll2Comment = false;
 
     /** 微博信息的控件 */
     private View                status_detail_info;
@@ -202,6 +207,12 @@ public class StatusDetailActivity extends Activity implements OnClickListener,On
                     totalNum = response.getLong("total_number");
                     curPage = page;
                     addData(listComments, totalNum);
+
+                    /** 判断是否需要滚动至评论部分 */
+                    if (scroll2Comment) {
+                        pwb_plv_status_detail.getRefreshableView().setSelection(2);
+                        scroll2Comment = false;
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -454,8 +465,11 @@ public class StatusDetailActivity extends Activity implements OnClickListener,On
                 ToastUtils.showToast(this, "分享", Toast.LENGTH_SHORT);
                 break;
 
+            /** 跳转至评论页面 */
             case R.id.pwb_ll_comment_tottom:
-                ToastUtils.showToast(this, "评论", Toast.LENGTH_SHORT);
+                Intent intent = new Intent(this, WriteCommentActivity.class);
+                intent.putExtra("status", status);
+                startActivityForResult(intent, REQUEST_CODE_WRITE_COMMENT);
                 break;
 
             case R.id.pwb_ll_praise_tottom:
@@ -482,6 +496,30 @@ public class StatusDetailActivity extends Activity implements OnClickListener,On
             case R.id.pwb_radiobutton_praise:
                 shadow_radiobutton_praise.setChecked(true);
                 pwb_radiobutton_praise.setChecked(true);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    /** 评论页面跳转回来的数据处理 */
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // 如果点击返回或者取消发评论等情况,则直接return,不做后续处理
+        if (resultCode == RESULT_CANCELED) {
+            return;
+        }
+
+        // 如果有发生请求动作,则对返回码进行判断处理
+        switch (requestCode) {
+            case REQUEST_CODE_WRITE_COMMENT:
+                boolean sendCommentSuccess = data.getBooleanExtra("sendCommentSuccess", false);
+                if (sendCommentSuccess) {
+                    scroll2Comment = true;
+                    loadData(1);
+                }
                 break;
 
             default:
