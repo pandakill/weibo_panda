@@ -3,10 +3,12 @@ package com.panda.pweibo.models;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
+
 /**
  * Created by Administrator on 2015/8/22:9:57.
  */
-public class User {
+public class User implements Serializable {
     private     int         id;                     // 用户UID
     private     String      idstr;                  // 字符串型的用户UID
     private     String      screen_name;            // 用户昵称

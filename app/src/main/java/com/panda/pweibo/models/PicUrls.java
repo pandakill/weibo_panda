@@ -2,10 +2,12 @@ package com.panda.pweibo.models;
 
 import org.json.JSONObject;
 
+import java.io.Serializable;
+
 /**
  * Created by Administrator on 2015/8/24:16:23.
  */
-public class PicUrls {
+public class PicUrls implements Serializable {
     private String thumbnail_pic;   // 缩略图片地址
     private String bmiddle_pic;     // 中等尺寸图片地址
     private String original_pic;    // 原始图片地址

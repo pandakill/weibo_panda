@@ -6,12 +6,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by Administrator on 2015/8/22:9:35.
  */
-public class Status {
+public class Status implements Serializable {
     private     String              created_at;                 // 微博创建时间
     private     long                 id;                         // 微博ID
     private     long                 mid;                        // 微博MID
@@ -26,18 +27,18 @@ public class Status {
     private     String              thumbnail_pic;              // 缩略图片地址，没有时不返回此字段
     private     String              bmiddle_pic;                // 中等尺寸图片地址，没有时不返回此字段
     private     String              original_pic;               // 原始图片地址，没有时不返回此字段
-    private     Object              geo;                        // 地理信息字段
+//    private     Object              geo;                        // 地理信息字段
     private     User                user;                       // 微博作者的用户信息字段
     private     Status              retweeted_status;           // 被转发的原微博信息字段，当该微博为转发微博时返回
     private     int                 reposts_count;              // 转发数
     private     int                 comments_count;             // 评论数
     private     int                 attitudes_count;            // 表态数
     private     int                 mlevel;                     // 暂未支持
-    private     Object              visible;                    // 微博的可见性及指定可见分组信息。
+//    private     Object              visible;                    // 微博的可见性及指定可见分组信息。
                                                                 // 该object中type取值，0：普通微博，1：私密微博，3：指定分组微博，4：密友微博；list_id为分组的组号
     private     ArrayList<PicUrls>  pic_ids;                    // 微博配图ID。多图时返回多图ID，用来拼接图片url。
                                                                 // 用返回字段thumbnail_pic的地址配上该返回字段的图片ID，即可得到多个图片url。
-    private     ArrayList<Object>   ad;                         // 微博流内的推广微博ID
+//    private     ArrayList<Object>   ad;                         // 微博流内的推广微博ID
 
     public String getCreated_at() {
         return created_at;
@@ -151,13 +152,13 @@ public class Status {
         this.original_pic = original_pic;
     }
 
-    public Object getGeo() {
-        return geo;
-    }
+//    public Object getGeo() {
+//        return geo;
+//    }
 
-    public void setGeo(Object geo) {
-        this.geo = geo;
-    }
+//    public void setGeo(Object geo) {
+//        this.geo = geo;
+//    }
 
     public User getUser() {
         return user;
@@ -207,13 +208,13 @@ public class Status {
         this.mlevel = mlevel;
     }
 
-    public Object getVisible() {
-        return visible;
-    }
+//    public Object getVisible() {
+//        return visible;
+//    }
 
-    public void setVisible(Object visible) {
-        this.visible = visible;
-    }
+//    public void setVisible(Object visible) {
+//        this.visible = visible;
+//    }
 
     public ArrayList<PicUrls> getPic_ids() {
         return pic_ids;
@@ -223,13 +224,13 @@ public class Status {
         this.pic_ids = pic_ids;
     }
 
-    public ArrayList<Object> getAd() {
-        return ad;
-    }
+//    public ArrayList<Object> getAd() {
+//        return ad;
+//    }
 
-    public void setAd(ArrayList<Object> ad) {
-        this.ad = ad;
-    }
+//    public void setAd(ArrayList<Object> ad) {
+//        this.ad = ad;
+//    }
 
     @Override
     public boolean equals(Object o) {
@@ -248,7 +249,7 @@ public class Status {
             status.setSource(jsonObject.optString("source"));
             status.setFavorited(jsonObject.optBoolean("favorited"));
             status.setTruncated(jsonObject.optBoolean("truncated"));
-            status.setGeo(jsonObject.opt("geo"));
+//            status.setGeo(jsonObject.opt("geo"));
             status.setMid(jsonObject.optInt("mid"));
             status.setReposts_count(jsonObject.optInt("reposts_count"));
             status.setComments_count(jsonObject.optInt("comments_count"));
@@ -258,7 +259,7 @@ public class Status {
             status.setComments_count(jsonObject.optInt("comments_count"));
             status.setAttitudes_count(jsonObject.optInt("comments_count"));
             status.setMlevel(jsonObject.optInt("mlevel"));
-            status.setVisible(jsonObject.opt("visible"));
+//            status.setVisible(jsonObject.opt("visible"));
             if (jsonObject.getJSONArray("pic_urls").length() != 0) {
                 JSONArray jsonArray = jsonObject.getJSONArray("pic_urls");
                 ArrayList<PicUrls> list = new ArrayList<PicUrls>();
