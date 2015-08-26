@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/white"
+    android:background="@color/bg_agray"
     android:orientation="vertical" >
     
     <FrameLayout
@@ -29,10 +29,12 @@
             android:id="@+id/pwb_radiobutton_home"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:background="@color/white"
             android:button="@null"
+            android:textSize="@dimen/txtsize_caption"
+            android:textColor="@drawable/txt_color_grav2orange"
             android:drawableTop="@drawable/fragment_home"
             android:checked="true"
             android:text="@string/pwb_bottombar_home"/>
@@ -41,10 +43,12 @@
             android:id="@+id/pwb_radiobutton_message"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:background="@color/white"
             android:button="@null"
+            android:textSize="@dimen/txtsize_caption"
+            android:textColor="@drawable/txt_color_grav2orange"
             android:drawableTop="@drawable/fragment_message"
             android:text="@string/pwb_bottombar_message"/>
 
@@ -52,17 +56,21 @@
             android:id="@+id/pwb_imagebutton_add"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:background="@drawable/pwb_icon_add_black"/>
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/pwb_icon_add_clicked"
+            android:background="@drawable/correct_oran_sel"/>
 
         <RadioButton
             android:id="@+id/pwb_radiobutton_search"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:background="@color/white"
             android:button="@null"
+            android:textSize="@dimen/txtsize_caption"
+            android:textColor="@drawable/txt_color_grav2orange"
             android:drawableTop="@drawable/fragment_search"
             android:text="@string/pwb_bottombar_search"/>
 
@@ -70,10 +78,12 @@
             android:id="@+id/pwb_radiobutton_pesonal"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:background="@color/white"
             android:button="@null"
+            android:textSize="@dimen/txtsize_caption"
+            android:textColor="@drawable/txt_color_grav2orange"
             android:drawableTop="@drawable/fragment_personal"
             android:text="@string/pwb_bottombar_me"/>
     </RadioGroup>
