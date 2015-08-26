@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -34,9 +35,11 @@ import com.android.volley.toolbox.Volley;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.panda.pweibo.R;
 import com.panda.pweibo.adapter.StatusCommentAdapter;
+import com.panda.pweibo.adapter.StatusGridViewAdapter;
 import com.panda.pweibo.constants.AccessTokenKeeper;
 import com.panda.pweibo.constants.Uri;
 import com.panda.pweibo.models.Comment;
+import com.panda.pweibo.models.PicUrls;
 import com.panda.pweibo.models.Status;
 import com.panda.pweibo.models.User;
 import com.panda.pweibo.utils.DateUtils;
@@ -191,8 +194,6 @@ public class StatusDetailActivity extends Activity implements OnClickListener {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-                pd.dismiss();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -200,6 +201,8 @@ public class StatusDetailActivity extends Activity implements OnClickListener {
                 ToastUtils.showToast(StatusDetailActivity.this, "网络发生异常,加载错误", Toast.LENGTH_SHORT);
             }
         });
+
+        pd.dismiss();
 
         requestQueue.add(jsonObjectRequest);
     }
@@ -227,6 +230,25 @@ public class StatusDetailActivity extends Activity implements OnClickListener {
                 StringUtils.getWeiboContent(this, pwb_textview_content, status.getText()));
 
         /** 如果微博非转发且有图片 */
+        if (status.getPic_ids() != null && status.getRetweeted_status() == null) {
+            setImages(include_status_image, pwb_gridview_status_image,
+                    pwb_imageview_status_image, status);
+        }
+
+        /** 如果微博有转发内容,显示转发的内容 */
+        if (status.getRetweeted_status() != null) {
+            Status retweeted_status = status.getRetweeted_status();
+            include_retweeted_status.setVisibility(View.VISIBLE);
+
+            String content = "@" + retweeted_status.getUser().getName() + ":"
+                    + retweeted_status.getText();
+
+            pwb_textview_retweeted_content.setText(StringUtils.getWeiboContent(this,
+                    pwb_textview_retweeted_content, content));
+
+            setImages(include_retweeted_status_image, pwb_gridview_retweeted_status_image,
+                    pwb_imageview_retweeted_status_image, retweeted_status);
+        }
 
         /** 设置tab的内容 */
         pwb_radiobutton_share.setText("转发 " + status.getReposts_count());
@@ -241,11 +263,36 @@ public class StatusDetailActivity extends Activity implements OnClickListener {
         textview_praise_bottom.setText(
                 (status.getAttitudes_count() == 0) ? "赞" : status.getAttitudes_count() + "");
 
+        /** 设置底部control的监听器 */
+        pwb_ll_comment_tottom.setOnClickListener(this);
+        pwb_ll_share_tottom.setOnClickListener(this);
+        pwb_ll_praise_tottom.setOnClickListener(this);
+
     }
 
     /** 加载微博的图片 */
-    public void setImages(final Status status, ViewGroup vgContainer) {
+    public void setImages(ViewGroup vgContainer, GridView gv, NetworkImageView iv, Status status) {
+        ArrayList<PicUrls> list = status.getPic_ids();
 
+        if (list != null && list.size() > 1) {
+            vgContainer.setVisibility(View.VISIBLE);
+            gv.setVisibility(View.VISIBLE);
+            iv.setVisibility(View.GONE);
+
+            StatusGridViewAdapter gridViewAdapter;
+            gridViewAdapter = new StatusGridViewAdapter(this, list, imageLoader, vgContainer);
+            gv.setAdapter(gridViewAdapter);
+
+        } else if (list != null && list.size() == 1) {
+            vgContainer.setVisibility(View.VISIBLE);
+            gv.setVisibility(View.GONE);
+            iv.setVisibility(View.VISIBLE);
+
+            iv.setTag(list.get(0).getThumbnail_pic());
+            iv.setImageUrl(list.get(0).getThumbnail_pic(), imageLoader);
+        } else {
+            vgContainer.setVisibility(View.GONE);
+        }
     }
 
     /** 往listView中加item */
@@ -284,8 +331,8 @@ public class StatusDetailActivity extends Activity implements OnClickListener {
         pwb_textview_item_status_from_and_when = (TextView) status_detail_info.findViewById(R.id.pwb_textview_item_status_from_and_when);
         pwb_textview_content = (TextView) status_detail_info.findViewById(R.id.pwb_textview_content);
         include_status_image = (FrameLayout) status_detail_info.findViewById(R.id.include_status_image);
-        pwb_gridview_status_image = (WrapHeightGridView) status_detail_info.findViewById(R.id.pwb_gridview_status_image);
-        pwb_imageview_status_image = (NetworkImageView) status_detail_info.findViewById(R.id.pwb_imageview_status_image);
+        pwb_gridview_status_image = (WrapHeightGridView) include_status_image.findViewById(R.id.pwb_gridview_status_image);
+        pwb_imageview_status_image = (NetworkImageView) include_status_image.findViewById(R.id.pwb_imageview_status_image);
         include_retweeted_status = status_detail_info.findViewById(R.id.include_retweeted_status);
         pwb_textview_retweeted_content = (TextView) status_detail_info.findViewById(R.id.pwb_textview_retweeted_content);
         include_retweeted_status_image = (FrameLayout) status_detail_info.findViewById(R.id.include_retweeted_status_image);
@@ -351,9 +398,11 @@ public class StatusDetailActivity extends Activity implements OnClickListener {
 
             case R.id.pwb_ll_share_tottom:
                 ToastUtils.showToast(this, "分享", Toast.LENGTH_SHORT);
+                break;
 
             case R.id.pwb_ll_comment_tottom:
                 ToastUtils.showToast(this, "评论", Toast.LENGTH_SHORT);
+                break;
 
             case R.id.pwb_ll_praise_tottom:
                 ToastUtils.showToast(this, "点赞", Toast.LENGTH_SHORT);
