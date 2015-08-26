@@ -20,4 +20,7 @@ public interface Uri {
 
     /** 根据微博ID返回某条微博的评论列表  */
     String comments_show = baseUri + "comments/show.json";
+
+    /** 对一条微博进行评论  */
+    String comments_create = baseUri + "comments/create.json";
 }
