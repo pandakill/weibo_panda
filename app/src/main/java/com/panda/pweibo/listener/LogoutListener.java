@@ -43,7 +43,7 @@ public class LogoutListener implements View.OnClickListener {
     @Override
     public void onClick(View v) {
 
-        String uri = Uri.revokeoauth2 + "?access_token=" + mAccesssToken.getToken();
+        String uri = Uri.OAUTH2_REVOKE_OAUTH2 + "?access_token=" + mAccesssToken.getToken();
         Log.i("tag", "uri=" + uri);
         ToastUtils.showToast(mContext, "退出按钮被点击", Toast.LENGTH_SHORT);
         JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET, uri, null, new Response.Listener<JSONObject>() {

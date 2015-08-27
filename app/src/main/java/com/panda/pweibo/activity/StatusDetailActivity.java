@@ -26,21 +26,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.ImageLoader.ImageCache;
 import com.android.volley.toolbox.ImageLoader.ImageListener;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
-import com.android.volley.toolbox.Volley;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.panda.pweibo.widget.Pull2RefreshListView;
 import com.panda.pweibo.R;
 import com.panda.pweibo.adapter.StatusCommentAdapter;
 import com.panda.pweibo.adapter.StatusGridViewAdapter;
-import com.panda.pweibo.constants.AccessTokenKeeper;
 import com.panda.pweibo.constants.Uri;
 import com.panda.pweibo.models.Comment;
 import com.panda.pweibo.models.PicUrls;
@@ -51,13 +47,11 @@ import com.panda.pweibo.utils.StringUtils;
 import com.panda.pweibo.utils.TitlebarUtils;
 import com.panda.pweibo.utils.ToastUtils;
 import com.panda.pweibo.widget.WrapHeightGridView;
-import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,12 +65,12 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
     /** 跳转至写评论页面code */
     private static final int REQUEST_CODE_WRITE_COMMENT = 2333;
 
-    private Status              status;
-    private StatusCommentAdapter adapter;
-    private List<Comment>       listComments;
-    private long                curPage = 1;
-    private long                totalNum;
-    private Boolean             scroll2Comment = false;
+    private Status              mStatus;
+    private StatusCommentAdapter mAdapter;
+    private List<Comment>       mCommentList;
+    private long                mCurPage = 1;
+    private long                mTotalNum;
+    private Boolean             mScroll2Comment = false;
 
     /** 微博信息的控件 */
     private View                status_detail_info;
@@ -112,7 +106,7 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
     private Pull2RefreshListView   pwb_plv_status_detail;
 
     /** 加载更多的view */
-    private View footView;
+    private View foot_view;
 
     /** 底部控件 */
     private LinearLayout    inlude_status_control;
@@ -129,8 +123,8 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
         super.onCreate(saveInstanceState);
         setContentView(R.layout.activity_status_detail);
 
-        footView = View.inflate(this, R.layout.footer_loading, null);
-        listComments = new ArrayList<>();
+        foot_view = View.inflate(this, R.layout.footer_loading, null);
+        mCommentList = new ArrayList<>();
 
 //        mAccessToken = AccessTokenKeeper.readAccessToken(this);
 //        requestQueue = Volley.newRequestQueue(this);
@@ -154,7 +148,7 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
 //        imageLoader = new ImageLoader(requestQueue, imageCache);
 
         /** 获取intent传入的内容 */
-        status = (Status) getIntent().getSerializableExtra("status");
+        mStatus = (Status) getIntent().getSerializableExtra("status");
 
         /** 读取评论列表 */
         loadData(1);
@@ -176,8 +170,8 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
 
     /** 传入页码,加载评论 */
     private void loadData(final long page) {
-        String uri = Uri.comments_show;
-        uri += "?access_token=" + mAccessToken.getToken() + "&id=" + status.getId();
+        String uri = Uri.COMMENTS_SHOW;
+        uri += "?access_token=" + mAccessToken.getToken() + "&id=" + mStatus.getId();
         uri += "&page="+page;
         Log.i("tag", uri);
 
@@ -192,24 +186,24 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
 
                     /** 如果页码为1,则将评论listComments清空 */
                     if (page == 1) {
-                        listComments.clear();
+                        mCommentList.clear();
                     }
 
                     JSONArray jsonArray = response.getJSONArray("comments");
                     for (int i = 0; i < jsonArray.length(); i++) {
                         Comment comment = new Comment();
                         comment = comment.parseJson(jsonArray.getJSONObject(i));
-                        listComments.add(comment);
+                        mCommentList.add(comment);
                     }
 
-                    totalNum = response.getLong("total_number");
-                    curPage = page;
-                    addData(listComments, totalNum);
+                    mTotalNum = response.getLong("total_number");
+                    mCurPage = page;
+                    addData(mCommentList, mTotalNum);
 
                     /** 判断是否需要滚动至评论部分 */
-                    if (scroll2Comment) {
+                    if (mScroll2Comment) {
                         pwb_plv_status_detail.getRefreshableView().setSelection(2);
-                        scroll2Comment = false;
+                        mScroll2Comment = false;
                     }
 
                 } catch (JSONException e) {
@@ -230,7 +224,7 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
 
     /** 对控件进行数据填充 */
     private void setData() {
-        User user = status.getUser();
+        User user = mStatus.getUser();
 
         /** 设置用户头像 */
         ImageListener listener;
@@ -243,22 +237,22 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
 
         /** 设置发布日期和来源 */
         pwb_textview_item_status_from_and_when.setText(
-                new DateUtils().String2Date(status.getCreated_at())
-                        + " 来自 " + Html.fromHtml(status.getSource()));
+                new DateUtils().String2Date(mStatus.getCreated_at())
+                        + " 来自 " + Html.fromHtml(mStatus.getSource()));
 
         /** 设置微博内容 */
         pwb_textview_content.setText(
-                StringUtils.getWeiboContent(this, pwb_textview_content, status.getText()));
+                StringUtils.getWeiboContent(this, pwb_textview_content, mStatus.getText()));
 
         /** 如果微博非转发且有图片 */
-        if (status.getPic_ids() != null && status.getRetweeted_status() == null) {
+        if (mStatus.getPic_ids() != null && mStatus.getRetweeted_status() == null) {
             setImages(include_status_image, pwb_gridview_status_image,
-                    pwb_imageview_status_image, status);
+                    pwb_imageview_status_image, mStatus);
         }
 
         /** 如果微博有转发内容,显示转发的内容 */
-        if (status.getRetweeted_status() != null) {
-            Status retweeted_status = status.getRetweeted_status();
+        if (mStatus.getRetweeted_status() != null) {
+            Status retweeted_status = mStatus.getRetweeted_status();
             include_retweeted_status.setVisibility(View.VISIBLE);
 
             String content = "@" + retweeted_status.getUser().getName() + ":"
@@ -272,20 +266,20 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
         }
 
         /** 设置tab的内容 */
-        pwb_radiobutton_share.setText("转发 " + status.getReposts_count());
-        pwb_radiobutton_comment.setText("评论 " + status.getComments_count());
-        pwb_radiobutton_praise.setText("赞 " + status.getAttitudes_count());
-        shadow_radiobutton_share.setText("转发 " + status.getReposts_count());
-        shadow_radiobutton_comment.setText("评论 " + status.getComments_count());
-        shadow_radiobutton_praise.setText("赞 " + status.getAttitudes_count());
+        pwb_radiobutton_share.setText("转发 " + mStatus.getReposts_count());
+        pwb_radiobutton_comment.setText("评论 " + mStatus.getComments_count());
+        pwb_radiobutton_praise.setText("赞 " + mStatus.getAttitudes_count());
+        shadow_radiobutton_share.setText("转发 " + mStatus.getReposts_count());
+        shadow_radiobutton_comment.setText("评论 " + mStatus.getComments_count());
+        shadow_radiobutton_praise.setText("赞 " + mStatus.getAttitudes_count());
 
         /** 设置底部control的内容 */
         textview_share_bottom.setText(
-                (status.getReposts_count() == 0) ? "转发" : status.getReposts_count() + "");
+                (mStatus.getReposts_count() == 0) ? "转发" : mStatus.getReposts_count() + "");
         textview_comment_bottom.setText(
-                (status.getComments_count() == 0) ? "评论" : status.getComments_count() + "");
+                (mStatus.getComments_count() == 0) ? "评论" : mStatus.getComments_count() + "");
         textview_praise_bottom.setText(
-                (status.getAttitudes_count() == 0) ? "赞" : status.getAttitudes_count() + "");
+                (mStatus.getAttitudes_count() == 0) ? "赞" : mStatus.getAttitudes_count() + "");
 
         /** 设置底部control的监听器 */
         pwb_ll_comment_tottom.setOnClickListener(this);
@@ -327,12 +321,12 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
             }
         }
 
-        adapter.notifyDataSetChanged();
+        mAdapter.notifyDataSetChanged();
 
         if (listComments.size() < totalNum) {
-            addFootView(pwb_plv_status_detail, footView);
+            addFootView(pwb_plv_status_detail, foot_view);
         } else {
-            removeFootView(pwb_plv_status_detail, footView);
+            removeFootView(pwb_plv_status_detail, foot_view);
         }
     }
 
@@ -389,9 +383,9 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
     /** 初始化listview */
     private void initLstView() {
         pwb_plv_status_detail = (Pull2RefreshListView) findViewById(R.id.pwb_plv_status_detail);
-        adapter = new StatusCommentAdapter(this, listComments, mImageLoader);
+        mAdapter = new StatusCommentAdapter(this, mCommentList, mImageLoader);
 
-        pwb_plv_status_detail.setAdapter(adapter);
+        pwb_plv_status_detail.setAdapter(mAdapter);
 
         final ListView lv = pwb_plv_status_detail.getRefreshableView();
         lv.addHeaderView(status_detail_info);
@@ -409,7 +403,7 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
         pwb_plv_status_detail.setOnLastItemVisibleListener(new PullToRefreshBase.OnLastItemVisibleListener() {
             @Override
             public void onLastItemVisible() {
-                loadData(curPage + 1);
+                loadData(mCurPage + 1);
             }
         });
 
@@ -472,7 +466,7 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
             /** 跳转至评论页面 */
             case R.id.pwb_ll_comment_tottom:
                 intent = new Intent(this, WriteCommentActivity.class);
-                intent.putExtra("status", status);
+                intent.putExtra("status", mStatus);
                 startActivityForResult(intent, REQUEST_CODE_WRITE_COMMENT);
                 break;
 
@@ -482,13 +476,13 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
 
             case R.id.pwb_textview_retweeted_content:
                 intent = new Intent(this, StatusDetailActivity.class);
-                intent.putExtra("status", status.getRetweeted_status());
+                intent.putExtra("status", mStatus.getRetweeted_status());
                 startActivity(intent);
                 break;
 
             case R.id.include_retweeted_status:
                 intent = new Intent(this, StatusDetailActivity.class);
-                intent.putExtra("status", status.getRetweeted_status());
+                intent.putExtra("status", mStatus.getRetweeted_status());
                 startActivity(intent);
                 break;
 
@@ -535,7 +529,7 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
             case REQUEST_CODE_WRITE_COMMENT:
                 boolean sendCommentSuccess = data.getBooleanExtra("sendCommentSuccess", false);
                 if (sendCommentSuccess) {
-                    scroll2Comment = true;
+                    mScroll2Comment = true;
                     loadData(1);
                 }
                 break;

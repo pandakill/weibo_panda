@@ -127,7 +127,7 @@ public class HomeFragment extends Fragment {
         }
 
         // TODO 测试的token有效期为一天，所以必须每天重新授权获取token
-        String uri = Uri.home_timeline;
+        String uri = Uri.STATUS_HOME_TIMELINE;
         uri += "?access_token=" + mAccesssToken.getToken();
         uri += "&since_id=0&max_id=0&count=25&base_app=0&feature=0&trim_user=0&page=" + page;
 
