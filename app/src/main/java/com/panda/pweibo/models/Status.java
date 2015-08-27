@@ -260,7 +260,8 @@ public class Status implements Serializable {
             status.setAttitudes_count(jsonObject.optInt("comments_count"));
             status.setMlevel(jsonObject.optInt("mlevel"));
 //            status.setVisible(jsonObject.opt("visible"));
-            if (jsonObject.getJSONArray("pic_urls").length() != 0) {
+            if (jsonObject.has("pic_urls")
+                    && jsonObject.getJSONArray("pic_urls").length() != 0) {
                 JSONArray jsonArray = jsonObject.getJSONArray("pic_urls");
                 ArrayList<PicUrls> list = new ArrayList<PicUrls>();
                 for (int i = 0; i < jsonArray.length(); i++) {
