@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:background="@drawable/bg_gray2gray_press"
+    android:gravity="center_vertical"
+    android:layout_margin="16dp">
+
+    <com.android.volley.toolbox.NetworkImageView
+        android:id="@+id/pwb_iv_small_status_image"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:background="@drawable/pwb_test_image"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp">
+
+        <TextView
+            android:id="@+id/pwb_tv_small_status_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/txt_black"
+            android:textSize="16sp"
+            android:text="\@Panda潘达潘达"/>
+
+        <TextView
+            android:id="@+id/pwb_tv_small_status_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/pwb_tv_small_status_name"
+            android:layout_marginTop="8dp"
+            android:maxHeight="32dp" />
+    </RelativeLayout>
+
+</LinearLayout>

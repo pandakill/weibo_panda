@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_retweet_sel" >
+
+    <include layout="@layout/include_status_avatar" />
+
+    <TextView
+        android:id="@+id/pwb_tv_message_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:textSize="16sp"
+        android:textColor="@color/txt_black"
+        android:text="转行了吗"/>
+
+    <include
+        android:id="@+id/include_small_status"
+        layout="@layout/include_small_status"
+        android:visibility="visible"/>
+
+    <LinearLayout
+        android:id="@+id/pwb_ll_retweet_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_gray2gray_press"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/pwb_tv_retweeted_message_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
+            android:textSize="16sp"
+            android:textColor="@color/txt_black"
+            android:text="\@Panda潘达潘达"/>
+
+        <include
+            android:id="@+id/include_retweeted_small_status"
+            layout="@layout/include_small_status2" />
+
+    </LinearLayout>
+
+</LinearLayout>
