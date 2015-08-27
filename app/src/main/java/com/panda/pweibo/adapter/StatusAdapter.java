@@ -142,12 +142,33 @@ public class StatusAdapter extends BaseAdapter {
             }
         });
 
+        //设置textview的监听器
+        holder.pwb_textview_content.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, StatusDetailActivity.class);
+                intent.putExtra("status", status);
+                mContext.startActivity(intent);
+            }
+        });
+
         // 设置转发微博的监听器
         holder.include_retweeted_status.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                assert retweeted_status != null;
-                ToastUtils.showToast(mContext, "转发微博" + retweeted_status.getUser().getName(), Toast.LENGTH_SHORT);
+                Intent intent = new Intent(mContext, StatusDetailActivity.class);
+                intent.putExtra("status", retweeted_status);
+                mContext.startActivity(intent);
+            }
+        });
+
+        //设置retweet_textview的监听器
+        holder.pwb_textview_retweeted_content.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, StatusDetailActivity.class);
+                intent.putExtra("status", retweeted_status);
+                mContext.startActivity(intent);
             }
         });
 

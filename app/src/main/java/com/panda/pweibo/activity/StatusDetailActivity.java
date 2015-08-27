@@ -57,10 +57,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 微博详情页的activity
+ *
  * Created by Administrator on 2015/8/26:9:52.
  */
 public class StatusDetailActivity extends BaseActivity implements OnClickListener,OnCheckedChangeListener {
@@ -301,7 +304,7 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
             iv.setVisibility(View.GONE);
 
             StatusGridViewAdapter gridViewAdapter;
-            gridViewAdapter = new StatusGridViewAdapter(this, list, mImageLoader, vgContainer);
+            gridViewAdapter = new StatusGridViewAdapter(this, list, mImageLoader);
             gv.setAdapter(gridViewAdapter);
 
         } else if (list != null && list.size() == 1) {
@@ -359,6 +362,10 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
         include_retweeted_status_image = (FrameLayout) status_detail_info.findViewById(R.id.include_retweeted_status_image);
         pwb_gridview_retweeted_status_image = (WrapHeightGridView) include_retweeted_status_image.findViewById(R.id.pwb_gridview_status_image);
         pwb_imageview_retweeted_status_image = (NetworkImageView) include_retweeted_status_image.findViewById(R.id.pwb_imageview_status_image);
+
+        // 设置转发微博部分的监听器
+        include_retweeted_status.setOnClickListener(this);
+        pwb_textview_retweeted_content.setOnClickListener(this);
     }
 
     /** 初始化中部radiogroup */
@@ -451,6 +458,8 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
     /** 本activity的监听事件 */
     @Override
     public void onClick(View v) {
+        Intent intent;
+
         switch (v.getId()) {
             case R.id.titlebar_textview_left:
                 StatusDetailActivity.this.finish();
@@ -462,13 +471,27 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
 
             /** 跳转至评论页面 */
             case R.id.pwb_ll_comment_tottom:
-                Intent intent = new Intent(this, WriteCommentActivity.class);
+                intent = new Intent(this, WriteCommentActivity.class);
                 intent.putExtra("status", status);
                 startActivityForResult(intent, REQUEST_CODE_WRITE_COMMENT);
                 break;
 
             case R.id.pwb_ll_praise_tottom:
                 ToastUtils.showToast(this, "点赞", Toast.LENGTH_SHORT);
+                break;
+
+            case R.id.pwb_textview_retweeted_content:
+                intent = new Intent(this, StatusDetailActivity.class);
+                intent.putExtra("status", status.getRetweeted_status());
+                startActivity(intent);
+                break;
+
+            case R.id.include_retweeted_status:
+                intent = new Intent(this, StatusDetailActivity.class);
+                intent.putExtra("status", status.getRetweeted_status());
+                startActivity(intent);
+                break;
+
             default:
                 break;
         }

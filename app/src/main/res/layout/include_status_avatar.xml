@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="72dp"
     android:orientation="horizontal"
-    android:background="@color/white">
+    android:background="@drawable/bg_retweet_sel">
 
     <!-- 左侧头像显示 BEGIN -->
     <ImageView
