@@ -27,9 +27,6 @@ public class MessageFragment extends Fragment {
     private     View                    mView;
     private     MainActivity            mActivity;
 
-    public MessageFragment() {
-    }
-
     @Override
     public void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);

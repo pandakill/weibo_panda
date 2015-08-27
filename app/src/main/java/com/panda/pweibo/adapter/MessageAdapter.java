@@ -2,6 +2,7 @@ package com.panda.pweibo.adapter;
 
 import android.content.Context;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -91,7 +92,7 @@ public class MessageAdapter extends BaseAdapter {
 
             initImage(status, holder.pwb_iv_small_status_image);
 
-            holder.pwb_tv_retweeted_small_status_name.setText(status.getUser().getName());
+            holder.pwb_tv_small_status_name.setText(status.getUser().getName());
             holder.pwb_tv_small_status_content.setText(status.getText());
         }
 
@@ -99,11 +100,19 @@ public class MessageAdapter extends BaseAdapter {
         if (comment.getReply_comment() != null) {
             holder.include_small_status.setVisibility(View.GONE);
             holder.pwb_ll_retweet_message.setVisibility(View.VISIBLE);
+            Comment replyComment = comment.getReply_comment();
 
             initImage(status, holder.pwb_iv_retweeted_small_status_image);
 
+            String replyString = "@" + replyComment.getUser().getName() + ":";
+            replyString += replyComment.getText();
+
+            holder.pwb_tv_retweeted_message_content.setText(
+                    StringUtils.getWeiboContent(mContext, holder.pwb_tv_retweeted_message_content,
+                            replyString));
+
             holder.pwb_tv_retweeted_small_status_name.setText(status.getUser().getName());
-            holder.pwb_tv_small_status_content.setText(status.getText());
+            holder.pwb_tv_retweeted_small_status_content.setText(status.getText());
         }
 
         return convertView;
@@ -154,11 +163,11 @@ public class MessageAdapter extends BaseAdapter {
         holder.include_retweeted_small_status =
                 (LinearLayout) convertView.findViewById(R.id.include_retweeted_small_status);
         holder.pwb_iv_retweeted_small_status_image =
-                (NetworkImageView) holder.pwb_tv_retweeted_message_content.findViewById(R.id.pwb_iv_small_status_image);
+                (NetworkImageView) holder.include_retweeted_small_status.findViewById(R.id.pwb_iv_small_status_image);
         holder.pwb_tv_retweeted_small_status_name =
-                (TextView) holder.pwb_tv_retweeted_message_content.findViewById(R.id.pwb_tv_small_status_name);
+                (TextView) holder.include_retweeted_small_status.findViewById(R.id.pwb_tv_small_status_name);
         holder.pwb_tv_retweeted_small_status_content =
-                (TextView) holder.pwb_tv_retweeted_message_content.findViewById(R.id.pwb_tv_small_status_content);
+                (TextView) holder.include_retweeted_small_status.findViewById(R.id.pwb_tv_small_status_content);
     }
 
     /** 重置两个布局的可见性 */
