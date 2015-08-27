@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:background="@color/white"
+    android:gravity="center_vertical">
+
+    <ImageView
+        android:id="@+id/pwb_iv_messagecenter_left"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="8dp"
+        android:src="@drawable/pwb_messagescenter_at"/>
+
+    <TextView
+        android:id="@+id/pwb_tv_messagecenter_content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingLeft="8dp"
+        android:textSize="20sp"
+        android:text="\@我的"
+        android:textColor="@color/txt_black"/>
+    
+    <ImageView
+        android:id="@+id/pwb_iv_messagecenter_right"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginRight="8dp"
+        android:src="@drawable/pwb_toolbar_rightarrow"
+        />
+
+</LinearLayout>
