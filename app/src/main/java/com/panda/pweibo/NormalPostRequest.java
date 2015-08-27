@@ -1,7 +1,5 @@
 package com.panda.pweibo;
 
-import android.util.Log;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -11,16 +9,14 @@ import com.android.volley.Response.Listener;
 import com.android.volley.Response.ErrorListener;
 import com.android.volley.toolbox.HttpHeaderParser;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 /**
+ * 普通的post请求方法,并返回jsonObject请求结果
+ *
  * Created by Administrator on 2015/08/26.
  */
 public class NormalPostRequest extends Request<JSONObject> {

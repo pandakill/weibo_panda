@@ -22,10 +22,10 @@ import com.sina.weibo.sdk.auth.Oauth2AccessToken;
  */
 public class BaseActivity extends Activity {
 
-    protected RequestQueue              requestQueue;
-    protected ImageCache                imageCache;
-    protected ImageLoader               imageLoader;
-    protected LruCache<String, Bitmap>  lruCache;
+    protected RequestQueue              mRequestQueue;
+    protected ImageCache                mImageCache;
+    protected ImageLoader               mImageLoader;
+    protected LruCache<String, Bitmap>  mLruCache;
     protected Oauth2AccessToken         mAccessToken;
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
@@ -34,20 +34,20 @@ public class BaseActivity extends Activity {
         super.onCreate(saveInstanceState);
 
         mAccessToken = AccessTokenKeeper.readAccessToken(this);
-        requestQueue = Volley.newRequestQueue(this);
-        lruCache = new LruCache<>(40);
-        imageCache = new ImageCache() {
+        mRequestQueue = Volley.newRequestQueue(this);
+        mLruCache = new LruCache<>(40);
+        mImageCache = new ImageCache() {
             @Override
             public Bitmap getBitmap(String key) {
-                return lruCache.get(key);
+                return mLruCache.get(key);
             }
 
             @Override
             public void putBitmap(String key, Bitmap value) {
-                lruCache.put(key, value);
+                mLruCache.put(key, value);
             }
         };
 
-        imageLoader = new ImageLoader(requestQueue, imageCache);
+        mImageLoader = new ImageLoader(mRequestQueue, mImageCache);
     }
 }

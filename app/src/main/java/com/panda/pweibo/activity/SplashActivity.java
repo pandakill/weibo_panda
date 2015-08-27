@@ -1,6 +1,5 @@
 package com.panda.pweibo.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,10 +8,11 @@ import android.view.Window;
 
 import com.panda.pweibo.R;
 import com.panda.pweibo.constants.AccessTokenKeeper;
-import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 
 
 /**
+ * 项目的欢迎页activity
+ *
  * Created by Administrator on 2015/8/21:13:45.
  */
 public class SplashActivity extends BaseActivity {
@@ -21,8 +21,6 @@ public class SplashActivity extends BaseActivity {
     private static final int    WHAT_INTENT2MAIN    =   2;      //已经登录标记
     private static final long   SPLASH_DUE_TIME     =   1000;   //欢迎页面停留时间
 
-    private Intent              intent;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -30,7 +28,7 @@ public class SplashActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        /** 读取token信息,判断授权是否过期,如token有效,则在进程发送延时消息WHAT_INTENT2MAIN */
+        // 读取token信息,判断授权是否过期,如token有效,则在进程发送延时消息WHAT_INTENT2MAIN
         mAccessToken = AccessTokenKeeper.readAccessToken(SplashActivity.this);
         if (mAccessToken.isSessionValid()) {
             handler.sendEmptyMessageDelayed(WHAT_INTENT2MAIN, SPLASH_DUE_TIME);
@@ -52,7 +50,7 @@ public class SplashActivity extends BaseActivity {
 
             switch (msg.what) {
                 case WHAT_INTENT2LOGIN:
-                    intent = new Intent(SplashActivity.this, PWBAuthActivity.class);
+                    Intent intent = new Intent(SplashActivity.this, PWBAuthActivity.class);
                     startActivity(intent);
                     finish();
                     break;

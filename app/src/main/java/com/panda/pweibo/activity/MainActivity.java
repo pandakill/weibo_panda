@@ -11,7 +11,6 @@ import android.util.LruCache;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
@@ -19,19 +18,19 @@ import com.android.volley.toolbox.ImageLoader.ImageCache;
 import com.android.volley.toolbox.Volley;
 import com.panda.pweibo.R;
 import com.panda.pweibo.fragment.FragmentController;
-import com.panda.pweibo.utils.ToastUtils;
 
-
+/**
+ * 项目的主activity
+ */
 public class MainActivity extends FragmentActivity implements RadioGroup.OnCheckedChangeListener, View.OnClickListener {
 
-    private     RadioGroup          radioGroup;
-    private     ImageButton         imageButton;
-    private     FragmentController  controller;
+    private     ImageButton         mImageButton;
+    private     FragmentController  mController;
 
-    public      RequestQueue        requestQueue;
-    public      ImageCache          imageCache;
-    public      ImageLoader         imageLoader;
-    public LruCache<String,Bitmap>  lruCache;
+    public      RequestQueue        mRequestQueue;
+    public      ImageCache          mImageCache;
+    public      ImageLoader         mImageLoader;
+    public LruCache<String,Bitmap>  mLruCache;
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     @Override
@@ -41,55 +40,56 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        controller = FragmentController.getInstance(MainActivity.this, R.id.fl_content);
+        mController = FragmentController.getInstance(MainActivity.this, R.id.fl_content);
         //默认展示第一个
-        controller.showFragment(0);
-        requestQueue = Volley.newRequestQueue(this);
+        mController.showFragment(0);
+        mRequestQueue = Volley.newRequestQueue(this);
 
-        lruCache = new LruCache<>(40);
-        imageCache = new ImageCache() {
+        mLruCache = new LruCache<>(40);
+        mImageCache = new ImageCache() {
             @Override
             public Bitmap getBitmap(String key) {
-                return lruCache.get(key);
+                return mLruCache.get(key);
             }
 
             @Override
             public void putBitmap(String key, Bitmap value) {
-                lruCache.put(key, value);
+                mLruCache.put(key, value);
             }
         };
 
-        imageLoader = new ImageLoader(requestQueue, imageCache);
+        mImageLoader = new ImageLoader(mRequestQueue, mImageCache);
 
         initView();
     }
 
     private void initView() {
 
+        RadioGroup radioGroup;
         radioGroup = (RadioGroup) findViewById(R.id.pwb_radiogroup_fragment_tab);
-        imageButton = (ImageButton) findViewById(R.id.pwb_imagebutton_add);
+        mImageButton = (ImageButton) findViewById(R.id.pwb_imagebutton_add);
 
         radioGroup.setOnCheckedChangeListener(MainActivity.this);
-        imageButton.setOnClickListener(MainActivity.this);
+        mImageButton.setOnClickListener(MainActivity.this);
     }
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         switch (checkedId) {
             case  R.id.pwb_radiobutton_home:
-                controller.showFragment(0);
+                mController.showFragment(0);
                 break;
 
             case R.id.pwb_radiobutton_message:
-                controller.showFragment(1);
+                mController.showFragment(1);
                 break;
 
             case R.id.pwb_radiobutton_search:
-                controller.showFragment(2);
+                mController.showFragment(2);
                 break;
 
             case R.id.pwb_radiobutton_pesonal:
-                controller.showFragment(3);
+                mController.showFragment(3);
                 break;
 
             default:

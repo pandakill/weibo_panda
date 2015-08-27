@@ -13,26 +13,28 @@ import com.panda.pweibo.models.Message;
 import java.util.List;
 
 /**
+ * 消息中心的适配器
+ *
  * Created by Administrator on 2015/8/27:10:06.
  */
 public class MessageCenterAdapter extends BaseAdapter {
 
-    private List<Message>   listMessage;
-    private Context         context;
+    private List<Message>   mMessageList;
+    private Context         mContext;
 
     public MessageCenterAdapter(Context context, List<Message> listMessage) {
-        this.context        =   context;
-        this.listMessage    =   listMessage;
+        mContext        =   context;
+        mMessageList    =   listMessage;
     }
 
     @Override
     public int getCount() {
-        return listMessage.size();
+        return mMessageList.size();
     }
 
     @Override
     public Message getItem(int position) {
-        return listMessage.get(position);
+        return mMessageList.get(position);
     }
 
     @Override
@@ -46,7 +48,7 @@ public class MessageCenterAdapter extends BaseAdapter {
         ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
-            convertView = View.inflate(context, R.layout.item_message_center, null);
+            convertView = View.inflate(mContext, R.layout.item_message_center, null);
             initView(holder, convertView);
             convertView.setTag(holder);
         } else {
@@ -69,7 +71,7 @@ public class MessageCenterAdapter extends BaseAdapter {
                 (TextView) convertView.findViewById(R.id.pwb_tv_messagecenter_content);
     }
 
-    private class ViewHolder {
+    protected class ViewHolder {
         public ImageView pwb_iv_messagecenter_left;
         public TextView  pwb_tv_messagecenter_content;
     }

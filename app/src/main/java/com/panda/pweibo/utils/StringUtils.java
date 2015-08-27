@@ -1,6 +1,7 @@
 package com.panda.pweibo.utils;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextPaint;
@@ -17,6 +18,7 @@ import java.util.regex.Pattern;
 
 /**
  * 字符串工具类
+ *
  * Created by Administrator on 2015/8/25:12:32.
  */
 public class StringUtils {
@@ -24,13 +26,12 @@ public class StringUtils {
     /** 传入微博内容,将话题和作者字体改变样式 */
     public static SpannableString getWeiboContent(final Context context, final TextView tv,
                                                   String source) {
-        String              regexAx         = "@[\u4e00-\u9fa5\\w]+";       // 微博作者的正则表达式
-                                                                            // (例如:@panda潘达潘达)
-        String              regexTopic      = "#[\u4e00-\u9fa5\\w]+#";      // 微博话题的正则表达式
-        String              regexEmoji      = "\\[[\u4e00-\u9fa5\\w]+\\]";  // 表情的正则表达式
+        String regexAx    = "@[\u4e00-\u9fa5\\w]+";       // 微博作者的正则表达式 (例如:@panda潘达潘达)
+        String regexTopic = "#[\u4e00-\u9fa5\\w]+#";      // 微博话题的正则表达式
+        String regexEmoji = "\\[[\u4e00-\u9fa5\\w]+\\]";  // 表情的正则表达式
 
-        String              regex           = "(" + regexAx + ")|(" + regexTopic
-                                                + ")|(" + regexEmoji + ")";
+        String regex = "(" + regexAx + ")|(" + regexTopic
+                + ")|(" + regexEmoji + ")";
 
         SpannableString     spannableString = new SpannableString(source);  // 微博内容String
 
@@ -81,7 +82,7 @@ public class StringUtils {
         return spannableString;
     }
 
-    static class PandaClickableSpan extends ClickableSpan {
+    protected static class PandaClickableSpan extends ClickableSpan {
 
         private Context context;
 
@@ -95,7 +96,7 @@ public class StringUtils {
         }
 
         @Override
-        public void updateDrawState(TextPaint ds) {
+        public void updateDrawState(@NonNull TextPaint ds) {
             ds.setColor(context.getResources().getColor(R.color.txt_at_blue));
             ds.setUnderlineText(false);
         }

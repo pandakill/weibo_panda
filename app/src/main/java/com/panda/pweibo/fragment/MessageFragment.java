@@ -11,11 +11,9 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.panda.pweibo.R;
 import com.panda.pweibo.activity.MainActivity;
 import com.panda.pweibo.adapter.MessageCenterAdapter;
-import com.panda.pweibo.constants.AccessTokenKeeper;
 import com.panda.pweibo.models.Message;
 import com.panda.pweibo.utils.TitlebarUtils;
 import com.panda.pweibo.utils.ToastUtils;
-import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,12 +24,8 @@ import java.util.List;
  */
 public class MessageFragment extends Fragment {
 
-    private     View                    view;
-    private     MainActivity            activity;
-    private     Oauth2AccessToken       mAccessToken;
-    private     MessageCenterAdapter    adapter;
-    private     List<Message>           listMessage;
-    private     PullToRefreshListView   pwb_plv_message_cneter;
+    private     View                    mView;
+    private     MainActivity            mActivity;
 
     public MessageFragment() {
     }
@@ -40,42 +34,43 @@ public class MessageFragment extends Fragment {
     public void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
 
-        activity        = (MainActivity) getActivity();
-        mAccessToken    = AccessTokenKeeper.readAccessToken(activity);
+        mActivity        = (MainActivity) getActivity();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         initView();
-        return view;
+        return mView;
     }
 
     /** 初始化view */
     public void initView(){
 
-        view = View.inflate(activity, R.layout.fragment_message, null);
+        mView = View.inflate(mActivity, R.layout.fragment_message, null);
 
-        pwb_plv_message_cneter =
-                (PullToRefreshListView) view.findViewById(R.id.pwb_plv_message_cneter);
+        // 视图控件
+        PullToRefreshListView pwb_plv_message_cneter;
+        pwb_plv_message_cneter = (PullToRefreshListView) mView.findViewById(R.id.pwb_plv_message_cneter);
 
-        new TitlebarUtils(view)
+        new TitlebarUtils(mView)
                 .setTitleContent("消息")
                 .setTitlebarTvRight("发起聊天")
                 .setRightOnClickListner(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ToastUtils.showToast(activity, "发起聊天", Toast.LENGTH_LONG);
+                        ToastUtils.showToast(mActivity, "发起聊天", Toast.LENGTH_LONG);
                     }
                 });
 
-        listMessage = messageData();
-        adapter = new MessageCenterAdapter(activity, listMessage);
+        // 设置适配器
+        List<Message> messageList = messageData();
+        MessageCenterAdapter adapter = new MessageCenterAdapter(mActivity, messageList);
         pwb_plv_message_cneter.setAdapter(adapter);
     }
 
     /** 初始化消息盒子 */
-    private List<Message> messageData() {
+    protected List<Message> messageData() {
         List<Message> listMessage = new ArrayList<>();
 
         Message at = new Message();

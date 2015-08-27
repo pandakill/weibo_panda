@@ -222,7 +222,7 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
 
         pd.dismiss();
 
-        requestQueue.add(jsonObjectRequest);
+        mRequestQueue.add(jsonObjectRequest);
     }
 
     /** 对控件进行数据填充 */
@@ -233,7 +233,7 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
         ImageListener listener;
         listener = ImageLoader.getImageListener(pwb_imageview_item_status_avatar,
                 R.drawable.ic_com_sina_weibo_sdk_logo, R.drawable.pwb_avatar);
-        imageLoader.get(user.getProfile_image_url(), listener);
+        mImageLoader.get(user.getProfile_image_url(), listener);
 
         /** 设置发布者昵称 */
         pwb_textview_sender.setText(user.getName());
@@ -301,7 +301,7 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
             iv.setVisibility(View.GONE);
 
             StatusGridViewAdapter gridViewAdapter;
-            gridViewAdapter = new StatusGridViewAdapter(this, list, imageLoader, vgContainer);
+            gridViewAdapter = new StatusGridViewAdapter(this, list, mImageLoader, vgContainer);
             gv.setAdapter(gridViewAdapter);
 
         } else if (list != null && list.size() == 1) {
@@ -310,7 +310,7 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
             iv.setVisibility(View.VISIBLE);
 
             iv.setTag(list.get(0).getThumbnail_pic());
-            iv.setImageUrl(list.get(0).getThumbnail_pic(), imageLoader);
+            iv.setImageUrl(list.get(0).getThumbnail_pic(), mImageLoader);
         } else {
             vgContainer.setVisibility(View.GONE);
         }
@@ -382,7 +382,7 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
     /** 初始化listview */
     private void initLstView() {
         pwb_plv_status_detail = (Pull2RefreshListView) findViewById(R.id.pwb_plv_status_detail);
-        adapter = new StatusCommentAdapter(this, listComments, requestQueue, imageLoader);
+        adapter = new StatusCommentAdapter(this, listComments, mImageLoader);
 
         pwb_plv_status_detail.setAdapter(adapter);
 

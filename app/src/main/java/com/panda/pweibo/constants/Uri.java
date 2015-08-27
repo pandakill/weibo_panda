@@ -1,7 +1,5 @@
 package com.panda.pweibo.constants;
 
-import com.sina.weibo.sdk.auth.Oauth2AccessToken;
-
 /**
  * URI地址
  *

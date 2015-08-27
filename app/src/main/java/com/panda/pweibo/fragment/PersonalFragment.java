@@ -9,10 +9,8 @@ import android.widget.Toast;
 
 import com.panda.pweibo.R;
 import com.panda.pweibo.activity.MainActivity;
-import com.panda.pweibo.constants.AccessTokenKeeper;
 import com.panda.pweibo.utils.TitlebarUtils;
 import com.panda.pweibo.utils.ToastUtils;
-import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 
 
 /**
@@ -20,16 +18,14 @@ import com.sina.weibo.sdk.auth.Oauth2AccessToken;
  */
 public class PersonalFragment extends Fragment {
 
-    private     MainActivity            activity;
-    private     Oauth2AccessToken       mAccessToken;
-    private     View                    view;
+    private     MainActivity            mActivity;
+    private     View                    mView;
 
     @Override
     public void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
 
-        activity = (MainActivity) getActivity();
-        mAccessToken = AccessTokenKeeper.readAccessToken(activity);
+        mActivity = (MainActivity) getActivity();
     }
 
     public PersonalFragment() {
@@ -39,20 +35,20 @@ public class PersonalFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         initView();
-        return view;
+        return mView;
     }
 
     /** 初始化view */
     public void initView() {
-        view = View.inflate(activity, R.layout.fragment_personal, null);
+        mView = View.inflate(mActivity, R.layout.fragment_personal, null);
 
-        new TitlebarUtils(view)
+        new TitlebarUtils(mView)
                 .setTitleContent("我")
                 .setTitlebarTvRight("设置")
                 .setRightOnClickListner(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ToastUtils.showToast(activity, "设置", Toast.LENGTH_SHORT);
+                        ToastUtils.showToast(mActivity, "设置", Toast.LENGTH_SHORT);
                     }
                 });
     }

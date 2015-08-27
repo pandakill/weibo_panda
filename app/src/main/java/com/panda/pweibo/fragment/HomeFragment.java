@@ -2,11 +2,9 @@ package com.panda.pweibo.fragment;
 
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
-import android.graphics.Bitmap;
 import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -46,19 +44,21 @@ import java.util.List;
  */
 public class HomeFragment extends Fragment {
 
-    private     View                        view;
-    private     PullToRefreshListView       listView;
-    private     ProgressDialog              pd;
-    private     int                         curPage;
-    private     StatusAdapter               adapter;
-    private     List<Status>                listStatus;
-    private     View                        footer_loading;
-    private     int                         totalNum;
+    private     View                        mView;
+    private     PullToRefreshListView       mPlv;
+    private     ProgressDialog              mPd;
+    private     int                         mCurPage;
+    private     StatusAdapter               mAdapter;
+    private     List<Status>                mStatusList;
+    private     int                         mTotalNum;
     private     Oauth2AccessToken           mAccesssToken;
 
-    protected   MainActivity                activity;
+    protected   MainActivity                mActivity;
 
-    private     int flag = 1;
+    /** 视图控件 */
+    private     View                        footer_loading;
+
+    private int FLAG = 1;
 
     public HomeFragment() {
     }
@@ -67,8 +67,8 @@ public class HomeFragment extends Fragment {
     public void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
 
-        activity = (MainActivity) getActivity();
-        mAccesssToken = AccessTokenKeeper.readAccessToken(activity);
+        mActivity = (MainActivity) getActivity();
+        mAccesssToken = AccessTokenKeeper.readAccessToken(mActivity);
     }
 
     @Override
@@ -77,45 +77,44 @@ public class HomeFragment extends Fragment {
 
         initView();
         loadData(1);
-        return view;
+        return mView;
     }
 
     private void initView() {
 
-        view = View.inflate(activity, R.layout.fragment_home, null);
-        footer_loading = View.inflate(activity, R.layout.footer_loading, null);
-        listView = (PullToRefreshListView) view.findViewById(R.id.listview_home);
+        mView = View.inflate(mActivity, R.layout.fragment_home, null);
+        footer_loading = View.inflate(mActivity, R.layout.footer_loading, null);
+        mPlv = (PullToRefreshListView) mView.findViewById(R.id.listview_home);
 
-        listStatus = new ArrayList<>();
+        mStatusList = new ArrayList<>();
 
-        new TitlebarUtils(view)
+        new TitlebarUtils(mView)
                 .setTitlebarTvLeft("LEFT")
                 .setTitleContent("首页")
                 .setTitlebarIvRight(R.drawable.pwb_icon_share_black)
                 .setLeftOnClickListner(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ToastUtils.showToast(activity, "LEFT被点击", Toast.LENGTH_LONG);
+                        ToastUtils.showToast(mActivity, "LEFT被点击", Toast.LENGTH_LONG);
                     }
                 })
-                .setRightOnClickListner(new LogoutListener(activity, mAccesssToken,
-                        activity.requestQueue, this));
+                .setRightOnClickListner(new LogoutListener(mActivity, mAccesssToken,
+                        mActivity.mRequestQueue, this));
 
-        /** 初始化listView控件,实例适配器，设置listView的适配器 */
-        adapter = new StatusAdapter(activity, listStatus, activity.requestQueue, activity.lruCache,
-                                        activity.imageCache, activity.imageLoader);
-        listView.setAdapter(adapter);
-        listView.setOnRefreshListener(new OnRefreshListener<ListView>() {
+        // 初始化listView控件,实例适配器，设置listView的适配器
+        mAdapter = new StatusAdapter(mActivity, mStatusList, mActivity.mImageLoader);
+        mPlv.setAdapter(mAdapter);
+        mPlv.setOnRefreshListener(new OnRefreshListener<ListView>() {
             @Override
             public void onRefresh(PullToRefreshBase<ListView> refreshView) {
                 loadData(1);
-                listView.onRefreshComplete();
+                mPlv.onRefreshComplete();
             }
         });
-        listView.setOnLastItemVisibleListener(new PullToRefreshBase.OnLastItemVisibleListener() {
+        mPlv.setOnLastItemVisibleListener(new PullToRefreshBase.OnLastItemVisibleListener() {
             @Override
             public void onLastItemVisible() {
-                loadData(curPage + 1);
+                loadData(mCurPage + 1);
             }
         });
     }
@@ -123,58 +122,58 @@ public class HomeFragment extends Fragment {
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     public void loadData(final int page) {
 
-        if (flag == 1) {
-            pd = ProgressDialog.show(activity, "获取微博", "正在加载中");
+        if (FLAG == 1) {
+            mPd = ProgressDialog.show(mActivity, "获取微博", "正在加载中");
         }
 
-        /**
-         * TODO 测试的token有效期为一天，所以必须每天重新授权获取token
-         */
+        // TODO 测试的token有效期为一天，所以必须每天重新授权获取token
         String uri = Uri.home_timeline;
         uri += "?access_token=" + mAccesssToken.getToken();
         uri += "&since_id=0&max_id=0&count=25&base_app=0&feature=0&trim_user=0&page=" + page;
 
-        /** volley发送JsonObjectRequest请求,请求成功后将json数据处理并设置listview的适配器 */
+        // volley发送JsonObjectRequest请求,请求成功后将json数据处理并设置listview的适配器
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, uri,
                 null, new Response.Listener<JSONObject>() {
 
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    /** 如果页码为1,则清空listStatus的数据, */
+                    // 如果页码为1,则清空listStatus的数据
                     if (page == 1) {
-                        listStatus.clear();
+                        mStatusList.clear();
                     }
 
                     JSONArray statuses = response.getJSONArray("statuses");
                     for (int i = 0; i < statuses.length(); i ++) {
                         // 将jsonObjec转换为status对象,并添加至listStatus当中
                         Status status = new Status().parseJson(statuses.getJSONObject(i));
-                        listStatus.add(status);
+                        mStatusList.add(status);
                     }
 
                     // json返回的微博总数
-                    totalNum = response.getInt("total_number");
-                    curPage = page;
-                    addData(listStatus, totalNum);
+                    mTotalNum = response.getInt("total_number");
+                    mCurPage = page;
+                    addData(mStatusList, mTotalNum);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-                pd.dismiss();
-                flag ++;
+                mPd.dismiss();
+                FLAG ++;
 
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                ToastUtils.showToast(activity, "加载失败", Toast.LENGTH_SHORT);
+                ToastUtils.showToast(mActivity, "网络发生异常,加载失败", Toast.LENGTH_SHORT);
+                mPd.dismiss();
+                FLAG ++;
             }
         });
-        /** 将请求加入请求队列当中 */
-        activity.requestQueue.add(jsonObjectRequest);
+        // 将请求加入请求队列当中
+        mActivity.mRequestQueue.add(jsonObjectRequest);
     }
 
     /** 往listStatus中加数据,将其加入缓存,在listview中输出 */
@@ -185,12 +184,12 @@ public class HomeFragment extends Fragment {
             }
         }
 
-        adapter.notifyDataSetChanged();
+        mAdapter.notifyDataSetChanged();
 
-        if (curPage < totalNumber) {
-            addFootView(listView, footer_loading);
+        if (mCurPage < totalNumber) {
+            addFootView(mPlv, footer_loading);
         } else {
-            removeFootView(listView, footer_loading);
+            removeFootView(mPlv, footer_loading);
         }
     }
 

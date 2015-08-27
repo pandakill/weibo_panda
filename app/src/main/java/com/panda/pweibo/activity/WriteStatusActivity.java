@@ -16,6 +16,7 @@ import com.sina.weibo.sdk.net.RequestListener;
 import com.sina.weibo.sdk.openapi.StatusesAPI;
 
 /**
+ *
  * Created by Administrator on 2015/8/26:19:45.
  */
 public class WriteStatusActivity extends BaseActivity {

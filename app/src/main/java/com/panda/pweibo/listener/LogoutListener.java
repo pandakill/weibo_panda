@@ -21,21 +21,23 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
+ * 退出按钮的监听器
+ *
  * Created by Administrator on 2015/8/25:10:58.
  */
 public class LogoutListener implements View.OnClickListener {
 
-    private Context             context;
+    private Context             mContext;
     private Oauth2AccessToken   mAccesssToken;
-    private RequestQueue        requestQueue;
-    private Fragment            fragment;
+    private RequestQueue        mRequestQueue;
+    private Fragment            mFragment;
 
     public LogoutListener (Context context, Oauth2AccessToken mAccessToken,
                            RequestQueue requestQueue, Fragment fragment) {
-        this.context        = context;
-        this.mAccesssToken  = mAccessToken;
-        this.requestQueue   = requestQueue;
-        this.fragment       = fragment;
+        mContext        = context;
+        mAccesssToken   = mAccessToken;
+        mRequestQueue   = requestQueue;
+        mFragment       = fragment;
     }
 
     @Override
@@ -43,7 +45,7 @@ public class LogoutListener implements View.OnClickListener {
 
         String uri = Uri.revokeoauth2 + "?access_token=" + mAccesssToken.getToken();
         Log.i("tag", "uri=" + uri);
-        ToastUtils.showToast(context, "退出按钮被点击", Toast.LENGTH_SHORT);
+        ToastUtils.showToast(mContext, "退出按钮被点击", Toast.LENGTH_SHORT);
         JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET, uri, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -52,11 +54,11 @@ public class LogoutListener implements View.OnClickListener {
                         String value = response.getString("result");
 
                         if (value.equals("true")) {
-                            ToastUtils.showToast(context, "退出成功", Toast.LENGTH_SHORT);
-                            Intent intent = new Intent(context, PWBAuthActivity.class);
-                            fragment.startActivity(intent);
+                            ToastUtils.showToast(mContext, "退出成功", Toast.LENGTH_SHORT);
+                            Intent intent = new Intent(mContext, PWBAuthActivity.class);
+                            mFragment.startActivity(intent);
                         } else {
-                            ToastUtils.showToast(context, "退出发生异常", Toast.LENGTH_SHORT);
+                            ToastUtils.showToast(mContext, "退出发生异常", Toast.LENGTH_SHORT);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -66,9 +68,9 @@ public class LogoutListener implements View.OnClickListener {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                ToastUtils.showToast(context, "退出发生异常", Toast.LENGTH_SHORT);
+                ToastUtils.showToast(mContext, "退出发生异常", Toast.LENGTH_SHORT);
             }
         });
-        requestQueue.add(stringRequest);
+        mRequestQueue.add(stringRequest);
     }
 }

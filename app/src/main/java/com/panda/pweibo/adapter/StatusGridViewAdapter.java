@@ -6,9 +6,6 @@ import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
 import com.android.volley.toolbox.ImageLoader;
@@ -20,31 +17,31 @@ import com.panda.pweibo.widget.WrapHeightGridView;
 import java.util.ArrayList;
 
 /**
+ * 微博九宫图图片加载适配器
+ *
  * Created by Administrator on 2015/8/24:16:43.
  */
 public class StatusGridViewAdapter extends BaseAdapter{
 
-    private Context             context;
-    private ArrayList<PicUrls>  listPicUrls;
-    private ImageLoader         imageLoader;
-    private View                inflate;
+    private Context             mContext;
+    private ArrayList<PicUrls>  mPicUrlList;
+    private ImageLoader         mImageLoader;
 
     public StatusGridViewAdapter(Context context, ArrayList<PicUrls> listPicUrls,
-                                 ImageLoader imageLoader, View inflate) {
-        this.context     = context;
-        this.listPicUrls = listPicUrls;
-        this.imageLoader = imageLoader;
-        this.inflate = inflate;
+                                 ImageLoader imageLoader) {
+        mContext     = context;
+        mPicUrlList = listPicUrls;
+        mImageLoader = imageLoader;
     }
 
     @Override
     public int getCount() {
-        return listPicUrls.size();
+        return mPicUrlList.size();
     }
 
     @Override
     public PicUrls getItem(int position) {
-        return listPicUrls.get(position);
+        return mPicUrlList.get(position);
     }
 
     @Override
@@ -60,14 +57,14 @@ public class StatusGridViewAdapter extends BaseAdapter{
 
         if (convertView == null) {
             holder = new ViewHolder();
-            convertView = View.inflate(context, R.layout.include_grid_image, null);
+            convertView = View.inflate(mContext, R.layout.include_grid_image, null);
             init(holder, convertView);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        /** 设置gridveiw当中每个item的高度和宽度 */
+        // 设置gridveiw当中每个item的高度和宽度
         int horizontalSpacing = gv.getHorizontalSpacing();
         int numColumns = gv.getNumColumns();
         int itemWidth = (gv.getWidth() - (numColumns-1) * horizontalSpacing
@@ -76,10 +73,10 @@ public class StatusGridViewAdapter extends BaseAdapter{
         LayoutParams params = new LayoutParams(itemWidth, itemWidth);
         holder.imageView.setLayoutParams(params);
 
-        /** 加载图片 */
+        // 加载图片
         PicUrls urls = getItem(position);
         holder.imageView.setTag(urls.getThumbnail_pic());
-        holder.imageView.setImageUrl(urls.getThumbnail_pic(), imageLoader);
+        holder.imageView.setImageUrl(urls.getThumbnail_pic(), mImageLoader);
 
         return convertView;
     }
@@ -91,7 +88,7 @@ public class StatusGridViewAdapter extends BaseAdapter{
     }
 
     /** 设置gridview控件内容 */
-    public static class ViewHolder {
+    protected static class ViewHolder {
         public NetworkImageView imageView;
     }
 }

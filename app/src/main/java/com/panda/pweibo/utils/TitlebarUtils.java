@@ -16,6 +16,7 @@ import com.panda.pweibo.R;
  */
 public class TitlebarUtils {
 
+    /** 视图控件 */
     private     View            titlebar;
     private     ImageView       titlebar_imageview_left;
     private     TextView        titlebar_textview_left;
@@ -23,10 +24,7 @@ public class TitlebarUtils {
     private     TextView        titlebar_textview_right;
     private     ImageView       titlebar_imageview_right;
 
-    /**
-     * 初始化控件
-     * @param context
-     */
+    /** 初始化控件 */
     public TitlebarUtils(Activity context) {
         titlebar                    =               context.findViewById(R.id.titlebar);
         titlebar_imageview_left     = (ImageView)   titlebar.findViewById(R.id.titlebar_imageview_left);
@@ -96,6 +94,7 @@ public class TitlebarUtils {
      * 设置标题栏左侧的监听器
      *
      * @param listner
+     *          点击事件监听器
      */
     public TitlebarUtils setLeftOnClickListner(OnClickListener listner) {
         if (titlebar_imageview_left.getVisibility() == View.VISIBLE) {
@@ -132,6 +131,7 @@ public class TitlebarUtils {
      * 设置标题栏右侧的监听器
      *
      * @param listner
+     *          点击事件监听器
      */
     public TitlebarUtils setRightOnClickListner(OnClickListener listner) {
         if (titlebar_imageview_right.getVisibility() == View.VISIBLE) {

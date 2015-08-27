@@ -9,6 +9,8 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
+ * 日期工具类
+ *
  * Created by Administrator on 2015/8/24:11:37.
  */
 public class DateUtils {
@@ -17,16 +19,14 @@ public class DateUtils {
     public static final long ONE_HOUR_MILLIONS = 60 * ONE_MINUTE_MILLIONS;
     public static final long ONE_DAY_MILLIONS = 24 * ONE_HOUR_MILLIONS;
 
-    private String dateStr;
-
-    public void setDateStr(String dateStr) {
-        this.dateStr = dateStr;
-    }
-
-    public String getDateStr() {
-        return dateStr;
-    }
-
+    /**
+     * 将string的日期转换为一定格式的日期
+     * 如果传入的时间在当前时间十分钟以内,则返回“刚刚”
+     * 如果传入的时间在当前时间一小时以内,返回“几分钟前”
+     * 如果传入的时间在当前时间一天以内,返回“几个小时前”
+     * 如果传入的时间在当前时间同一年,返回“MM-dd”格式
+     * 如果传入的时间在当前时间的不同年份,返回“yyyy-MM”格式
+     */
     public String String2Date(String dateStr) {
         String str = "";
 
@@ -58,6 +58,16 @@ public class DateUtils {
         return str;
     }
 
+    /**
+     * 判断targetTime是否与compareTime在同一年
+     *
+     * @param targetTime
+     *          要比较的时间
+     * @param compareTime
+     *          被比较的时间
+     * @return true
+     *           在同一年
+     */
     public static boolean isSameYear(Date targetTime, Date compareTime) {
         Calendar tarCalendar = Calendar.getInstance();
         tarCalendar.setTime(targetTime);
@@ -70,6 +80,17 @@ public class DateUtils {
         return tarYear == comYear;
     }
 
+    /**
+     * 判断targetTime在compareTime的哪一天
+     * @param targetTime
+     *          要比较的日期
+     * @param compareTime
+     *          被比较的日期
+     * @return
+     *          >0  在compareTime的未来
+     *          <0  在compareTime的之前
+     *          ==0 和compareTime同一天
+     */
     public static int calculateDayStatus(Date targetTime, Date compareTime) {
         Calendar tarCalendar = Calendar.getInstance();
         tarCalendar.setTime(targetTime);

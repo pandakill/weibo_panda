@@ -8,8 +8,6 @@ import android.view.ViewGroup;
 
 import com.panda.pweibo.R;
 import com.panda.pweibo.activity.MainActivity;
-import com.panda.pweibo.constants.AccessTokenKeeper;
-import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 
 
 /**
@@ -17,16 +15,14 @@ import com.sina.weibo.sdk.auth.Oauth2AccessToken;
  */
 public class SearchFragment extends Fragment {
 
-    private MainActivity activity;
-    private Oauth2AccessToken mAccessToken;
-    private View view;
+    private MainActivity    mActivity;
+    private View            mView;
 
     @Override
     public void onCreate(Bundle savaInstanceState) {
         super.onCreate(savaInstanceState);
 
-        activity = (MainActivity) getActivity();
-        mAccessToken = AccessTokenKeeper.readAccessToken(activity);
+        mActivity = (MainActivity) getActivity();
     }
 
     public SearchFragment() {
@@ -36,12 +32,12 @@ public class SearchFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         initView();
-        return view;
+        return mView;
     }
 
     /** 初始化view */
     public void initView() {
-        view = View.inflate(activity, R.layout.fragment_search, null);
+        mView = View.inflate(mActivity, R.layout.fragment_search, null);
 
     }
 }

@@ -25,26 +25,26 @@ import java.text.SimpleDateFormat;
 
 public class PWBAuthActivity extends BaseActivity {
 
-    private     ImageButton     getTokenBtn;    //获取授权按钮
+    private     ImageButton     mLoginBtn;    //获取授权按钮
 
     private     AuthInfo        mAuthInfo;      //授权信息
 
     /** 注意：SsoHandler 仅当 SDK 支持 SSO 时有效 */
-    private     SsoHandler              mSsoHandler;
+    private     SsoHandler      mSsoHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
 
-        getTokenBtn     =   (ImageButton)    findViewById(R.id.pwb_btn_get_token_all_in_one);
+        mLoginBtn     =   (ImageButton)    findViewById(R.id.pwb_btn_get_token_all_in_one);
 
-        /** 快速授权时，请不要传入 SCOPE，否则可能会授权不成功 */
+        // 快速授权时，请不要传入 SCOPE，否则可能会授权不成功
         mAuthInfo       =   new         AuthInfo(this, Constants.APP_KEY, Constants.REDIRECT_URL, Constants.SCOPE);
         mSsoHandler     =   new         SsoHandler(PWBAuthActivity.this, mAuthInfo);
 
-        /** SSO 授权, ALL IN ONE   如果手机安装了微博客户端则使用客户端授权,没有则进行网页授权 */
-        getTokenBtn.setOnClickListener(new View.OnClickListener() {
+        // SSO 授权, ALL IN ONE   如果手机安装了微博客户端则使用客户端授权,没有则进行网页授权
+        mLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mSsoHandler.authorize(new AuthListener());
