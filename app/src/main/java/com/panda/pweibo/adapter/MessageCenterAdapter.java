@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.panda.pweibo.R;
 import com.panda.pweibo.activity.MessageActivity;
+import com.panda.pweibo.constants.Code;
 import com.panda.pweibo.models.Message;
 import com.panda.pweibo.utils.ToastUtils;
 
@@ -28,11 +29,6 @@ public class MessageCenterAdapter extends BaseAdapter {
     private Context         mContext;
     private Intent          mIntent;
     private int             mMessageType;
-
-    final private int MESSAGE_AT        = 1;
-    final private int MESSAGE_COMMENT   = 2;
-    final private int MESSAGE_GOOD      = 3;
-    final private int MESSAGE_BOX       = 4;
 
     public MessageCenterAdapter(Context context, List<Message> listMessage) {
         mContext        =   context;
@@ -94,7 +90,7 @@ public class MessageCenterAdapter extends BaseAdapter {
                     @Override
                     public void onClick(View v) {
                         mIntent = new Intent(mContext, MessageActivity.class);
-                        mMessageType = MESSAGE_COMMENT;
+                        mMessageType = Code.MESSAGE_COMMENT;
                         mIntent.putExtra("messageType", mMessageType);
                         mContext.startActivity(mIntent);
                     }
@@ -106,7 +102,7 @@ public class MessageCenterAdapter extends BaseAdapter {
                     @Override
                     public void onClick(View v) {
                         mIntent = new Intent(mContext, MessageActivity.class);
-                        mMessageType = MESSAGE_AT;
+                        mMessageType = Code.MESSAGE_AT;
                         mIntent.putExtra("messageType", mMessageType);
                         mContext.startActivity(mIntent);
                     }
@@ -117,7 +113,7 @@ public class MessageCenterAdapter extends BaseAdapter {
                 holder.pwb_ll_message.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mMessageType = MESSAGE_GOOD;
+                        mMessageType = Code.MESSAGE_GOOD;
                         ToastUtils.showToast(mContext, "赞", Toast.LENGTH_SHORT);
                     }
                 });
@@ -127,7 +123,7 @@ public class MessageCenterAdapter extends BaseAdapter {
                 holder.pwb_ll_message.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mMessageType = MESSAGE_BOX;
+                        mMessageType = Code.MESSAGE_BOX;
                         ToastUtils.showToast(mContext, "订阅消息", Toast.LENGTH_SHORT);
                     }
                 });

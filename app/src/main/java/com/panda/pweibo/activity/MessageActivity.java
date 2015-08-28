@@ -17,6 +17,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.panda.pweibo.R;
 import com.panda.pweibo.adapter.MessageAdapter;
+import com.panda.pweibo.constants.Code;
 import com.panda.pweibo.constants.Uri;
 import com.panda.pweibo.models.Comment;
 import com.panda.pweibo.utils.TitlebarUtils;
@@ -39,10 +40,8 @@ public class MessageActivity extends BaseActivity implements OnClickListener {
     private MessageAdapter          mAdapter;
     private List<Comment>           mCommentList;
     private long                    mTotalNum;
-    private ProgressDialog          mPd;
     private Intent                  mIntent;
     private int                     mMessageType;
-    private String                  mUri;
 
     private PullToRefreshListView    pwb_plv_messages;
     private LinearLayout             foot_view;
@@ -88,11 +87,9 @@ public class MessageActivity extends BaseActivity implements OnClickListener {
 
         switch (mMessageType) {
             case MESSAGE_AT:
-                mUri = Uri.COMMENTS_MESSION;
                 titleBarContent = "@我的的评论";
                 break;
             case MESSAGE_COMMENT:
-                mUri = Uri.COMMENTS_TO_ME;
                 titleBarContent = "所有评论";
                 break;
             case MESSAGE_GOOD:
@@ -136,22 +133,37 @@ public class MessageActivity extends BaseActivity implements OnClickListener {
     /** 读取我的评论列表 */
     private void loadData(final long page) {
 
-        if (page == 1) {
-            mCommentList.clear();
+        String uri = "";
+        switch (mMessageType) {
+            case MESSAGE_AT:
+                uri = Uri.COMMENTS_MESSION;
+                break;
+            case MESSAGE_COMMENT:
+                uri = Uri.COMMENTS_TO_ME;
+                break;
+            case MESSAGE_GOOD:
+                break;
+            case MESSAGE_BOX:
+                break;
+            default:
+                break;
         }
+        // 设置uri
+        uri += "?access_token=" + mAccessToken.getToken();
+        uri += "&page=" + page;
 
-        mUri += "?access_token=" + mAccessToken.getToken();
-        mUri += "&page=" + page;
+        final ProgressDialog mPd = ProgressDialog.show(this, "获取数据", "加载ing");
 
-        if (FLAG == 1) {
-            mPd = ProgressDialog.show(this, "获取数据", "加载ing");
-        }
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, mUri, null,
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, uri, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
+
+                            if (page == 1) {
+                                mCommentList.clear();
+                            }
+
                             JSONArray jsonArray = response.getJSONArray("comments");
                             for (int i = 0; i < jsonArray.length(); i ++) {
                                 JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -163,8 +175,8 @@ public class MessageActivity extends BaseActivity implements OnClickListener {
                             mCurPage = page;
                             addData(mCommentList, mTotalNum);
 
-                            mPd.dismiss();
-                            FLAG ++;
+                            // mPd.dismiss();
+                            // FLAG ++;
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -173,18 +185,14 @@ public class MessageActivity extends BaseActivity implements OnClickListener {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
                         ToastUtils.showToast(MessageActivity.this, "网络发生错误,加载失败", Toast.LENGTH_SHORT);
-                        mPd.dismiss();
-                        FLAG ++;
                         MessageActivity.this.finish();
                     }
                 });
 
         // 将请求加入volley队列中
         mRequestQueue.add(jsonObjectRequest);
-    }
 
-    private void requesetData() {
-
+        mPd.dismiss();
     }
 
     private void addData(List<Comment> listComments, long totalNum) {
@@ -218,6 +226,30 @@ public class MessageActivity extends BaseActivity implements OnClickListener {
         ListView lv = plv.getRefreshableView();
         if (lv.getFooterViewsCount() > 1) {
             lv.removeFooterView(footView);
+        }
+    }
+
+    /** 评论页面跳转回来的数据处理 */
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // 如果点击返回或者取消发评论等情况,则直接return,不做后续处理
+        if (resultCode == RESULT_CANCELED) {
+            return;
+        }
+
+        // 如果有发生请求动作,则对返回码进行判断处理
+        switch (requestCode) {
+            case Code.REQUEST_CODE_WRITE_COMMENT_BACK_TO_COMMENT:
+                boolean sendCommentSuccess = data.getBooleanExtra("sendCommentSuccess", false);
+                if (sendCommentSuccess) {
+                    ToastUtils.showToast(MessageActivity.this, "发送成功", Toast.LENGTH_SHORT);
+                    loadData(1);
+                }
+                break;
+
+            default:
+                break;
         }
     }
 }

@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.panda.pweibo.R;
 import com.panda.pweibo.constants.Constants;
+import com.panda.pweibo.models.Comment;
 import com.panda.pweibo.models.Status;
 import com.panda.pweibo.utils.TitlebarUtils;
 import com.panda.pweibo.utils.ToastUtils;
@@ -25,8 +26,17 @@ import com.sina.weibo.sdk.openapi.CommentsAPI;
 public class WriteCommentActivity extends BaseActivity {
 
     private Status          mStatus;
+    private Comment         mComment;
+    private int             mType;
+    private String          mUri;
+    private Intent          mIntent;
+    private CommentsAPI     mCommentsAPI;
+    private WeiboParameters mParameters;
 
     private TextView        pwb_et_write_status;
+
+    final private int REPLY_COMMENT     = 1;
+    final private int CREATE_COMMENT    = 2;
 
     @Override
     public void onCreate(Bundle saveInstanceState) {
@@ -56,6 +66,11 @@ public class WriteCommentActivity extends BaseActivity {
         pwb_et_write_status = (TextView) findViewById(R.id.pwb_et_write_status);
 
         mStatus = (Status) getIntent().getSerializableExtra("status");
+        mComment = (Comment) getIntent().getSerializableExtra("comment");
+        mType = getIntent().getIntExtra("type", 0);
+
+        mCommentsAPI = new CommentsAPI(this, Constants.APP_KEY, mAccessToken);
+        mParameters = new WeiboParameters(Constants.APP_KEY);
     }
 
     /** 发送评论的实现 */
@@ -67,84 +82,61 @@ public class WriteCommentActivity extends BaseActivity {
             return;
         }
 
-        // 填写参数和uri地址
-//        String uri = Uri.comments_create;
-//        JSONObject requestParams = new JSONObject();
-//        try {
-//            requestParams.put("access_token", mAccessToken.getToken());
-//            requestParams.put("comment", comment);
-//            requestParams.put("id", status.getId());
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        Map map = new HashMap();
-//        map.put("access_token", mAccessToken.getToken());
-//        map.put("comment", comment);
-//        map.put("id", mStatus.getId());
-//
-//        JSONObject requestParams = new JSONObject(map);
+        request(mType, comment);
 
-        // 请求头不能为json，如果为json，微博接口会403拒绝访问
-        // TODO 这里的请求头有必要对其重写
-//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
-//                uri, requestParams, new Response.Listener<JSONObject>() {
-//            @Override
-//            public void onResponse(JSONObject jsonObject) {
-//                ToastUtils.showToast(WriteCommentActivity.this, "评论发送成功", Toast.LENGTH_SHORT);
-//
-//                // 评论发送成功后,设置result结果数据，并关闭本页面
-//                Intent data = new Intent();
-//                data.putExtra("sendCommentSuccess", true);
-//                setResult(RESULT_OK, data);
-//
-//                WriteCommentActivity.this.finish();
-//            }
-//        }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError volleyError) {
-//                ToastUtils.showToast(WriteCommentActivity.this, "网络发生错误,发送评论失败", Toast.LENGTH_SHORT);
-//            }
-//        });
+    }
 
-//        Request request = new NormalPostRequest(uri, new Response.Listener<JSONObject>() {
-//            @Override
-//            public void onResponse(JSONObject jsonObject) {
-//                ToastUtils.showToast(WriteCommentActivity.this, "评论发送成功", Toast.LENGTH_SHORT);
-//
-//                // 评论发送成功后,设置result结果数据，并关闭本页面
-//                Intent data = new Intent();
-//                data.putExtra("sendCommentSuccess", true);
-//                setResult(RESULT_OK, data);
-//
-//                WriteCommentActivity.this.finish();
-//            }
-//        }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError volleyError) {
-//                ToastUtils.showToast(WriteCommentActivity.this, "网络发生错误,发送评论失败", Toast.LENGTH_SHORT);
-//            }
-//        }, map);
+    /** 发送网络请求,添加评论 */
+    private void request(int type, String comment) {
+        switch (type) {
+            case CREATE_COMMENT:
+                mParameters.put("comment", comment);
+                mParameters.put("access_token", mAccessToken.getToken());
+                mParameters.put("id", mStatus.getId());
+                mCommentsAPI.create(comment, mStatus.getId(), false, new RequestListener() {
+                    @Override
+                    public void onComplete(String s) {
+                        mIntent = new Intent();
+                        mIntent.putExtra("sendCommentSuccess", true);
+                        setResult(RESULT_OK, mIntent);
+                        WriteCommentActivity.this.finish();
+                    }
 
-//        requestQueue.add(jsonObjectRequest);
+                    @Override
+                    public void onWeiboException(WeiboException e) {
+                        ToastUtils.showToast(WriteCommentActivity.this, "网络异常,请再次提交", Toast.LENGTH_SHORT);
+                    }
+                });
+                break;
 
-        // 使用新浪微博官方的api
-        CommentsAPI commentsAPI = new CommentsAPI(this, Constants.APP_KEY, mAccessToken);
-        WeiboParameters parameters = new WeiboParameters(Constants.APP_KEY);
-        parameters.put("comment", comment);
-        parameters.put("access_token", mAccessToken.getToken());
-        parameters.put("id", mStatus.getId());
-        commentsAPI.create(comment, mStatus.getId(), false, new RequestListener() {
-            @Override
-            public void onComplete(String s) {
-                Intent data = new Intent();
-                data.putExtra("sendCommentSuccess", true);
-                setResult(RESULT_OK, data);
+            case REPLY_COMMENT:
+                mParameters.put("comment", comment);
+                mParameters.put("access_token", mAccessToken.getToken());
+                mParameters.put("id", mStatus.getId());
+                mCommentsAPI.reply(mComment.getId(), mComment.getStatus().getId(),comment, true, false, new RequestListener() {
+                    @Override
+                    public void onComplete(String s) {
+                        mIntent = new Intent();
+                        mIntent.putExtra("sendCommentSuccess", true);
+                        setResult(RESULT_OK, mIntent);
+                        WriteCommentActivity.this.finish();
+                    }
+                    @Override
+                    public void onWeiboException(WeiboException e) {
+                        ToastUtils.showToast(WriteCommentActivity.this, "网络异常,请再次提交", Toast.LENGTH_SHORT);
+                    }
+                });
+                break;
+
+            case 0:
+                mIntent = new Intent();
+                mIntent.putExtra("sendCommentSuccess", false);
+                setResult(RESULT_CANCELED, mIntent);
                 WriteCommentActivity.this.finish();
-            }
-            @Override
-            public void onWeiboException(WeiboException e) {
-                ToastUtils.showToast(WriteCommentActivity.this, "网络异常,请再次提交", Toast.LENGTH_SHORT);
-            }
-        });
+                break;
+
+            default:
+                break;
+        }
     }
 }

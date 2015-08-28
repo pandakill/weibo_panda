@@ -1,8 +1,8 @@
 package com.panda.pweibo.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.Html;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -14,6 +14,11 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageLoader.ImageListener;
 import com.android.volley.toolbox.NetworkImageView;
 import com.panda.pweibo.R;
+import com.panda.pweibo.activity.MainActivity;
+import com.panda.pweibo.activity.MessageActivity;
+import com.panda.pweibo.activity.StatusDetailActivity;
+import com.panda.pweibo.activity.WriteCommentActivity;
+import com.panda.pweibo.constants.Code;
 import com.panda.pweibo.models.Comment;
 import com.panda.pweibo.models.Status;
 import com.panda.pweibo.utils.DateUtils;
@@ -27,10 +32,10 @@ import java.util.List;
  * Created by Administrator on 2015/8/27:14:28.
  */
 public class MessageAdapter extends BaseAdapter {
-
     private List<Comment>               mCommentList;
     private Context                     mContext;
     private ImageLoader                 mImageLoader;
+    private Intent                      mIntent;
 
     public MessageAdapter(Context context, List<Comment> commentList, ImageLoader imageLoader) {
         mCommentList = commentList;
@@ -94,6 +99,16 @@ public class MessageAdapter extends BaseAdapter {
 
             holder.pwb_tv_small_status_name.setText(status.getUser().getName());
             holder.pwb_tv_small_status_content.setText(status.getText());
+
+            // 设置微博的监听器
+            holder.include_small_status.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mIntent = new Intent(mContext, StatusDetailActivity.class);
+                    mIntent.putExtra("status", comment.getStatus());
+                    mContext.startActivity(mIntent);
+                }
+            });
         }
 
         // 如果消息是回复评论的,填充回复部分的参数
@@ -113,7 +128,30 @@ public class MessageAdapter extends BaseAdapter {
 
             holder.pwb_tv_retweeted_small_status_name.setText(status.getUser().getName());
             holder.pwb_tv_retweeted_small_status_content.setText(status.getText());
+
+            // 设置微博的监听器
+            holder.include_retweeted_small_status.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mIntent = new Intent(mContext, StatusDetailActivity.class);
+                    mIntent.putExtra("status", comment.getStatus());
+                    mContext.startActivity(mIntent);
+                }
+            });
         }
+
+        // 设置每个item的点击事件监听器、打开发表评论的activity
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mIntent = new Intent(mContext, WriteCommentActivity.class);
+                mIntent.putExtra("status", comment.getStatus());
+                mIntent.putExtra("comment", comment);
+                mIntent.putExtra("type", Code.REPLY_COMMENT);
+                ((MessageActivity)mContext).startActivityForResult(
+                        mIntent, Code.REQUEST_CODE_WRITE_COMMENT_BACK_TO_COMMENT);
+            }
+        });
 
         return convertView;
     }

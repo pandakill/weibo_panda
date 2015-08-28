@@ -1,15 +1,11 @@
 package com.panda.pweibo.activity;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
-import android.util.Log;
-import android.util.LruCache;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -33,6 +29,7 @@ import com.android.volley.toolbox.ImageLoader.ImageListener;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.panda.pweibo.constants.Code;
 import com.panda.pweibo.widget.Pull2RefreshListView;
 import com.panda.pweibo.R;
 import com.panda.pweibo.adapter.StatusCommentAdapter;
@@ -62,8 +59,7 @@ import java.util.List;
  */
 public class StatusDetailActivity extends BaseActivity implements OnClickListener,OnCheckedChangeListener {
 
-    /** 跳转至写评论页面code */
-    private static final int REQUEST_CODE_WRITE_COMMENT = 2333;
+
 
     private Status              mStatus;
     private StatusCommentAdapter mAdapter;
@@ -173,7 +169,6 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
         String uri = Uri.COMMENTS_SHOW;
         uri += "?access_token=" + mAccessToken.getToken() + "&id=" + mStatus.getId();
         uri += "&page="+page;
-        Log.i("tag", uri);
 
         final ProgressDialog pd = ProgressDialog.show(this, "加载评论", "正在加载ing...");
 
@@ -467,7 +462,8 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
             case R.id.pwb_ll_comment_tottom:
                 intent = new Intent(this, WriteCommentActivity.class);
                 intent.putExtra("status", mStatus);
-                startActivityForResult(intent, REQUEST_CODE_WRITE_COMMENT);
+                intent.putExtra("type", Code.CREATE_COMMENT);
+                startActivityForResult(intent, Code.REQUEST_CODE_WRITE_COMMENT_BACK_TO_DETAIL);
                 break;
 
             case R.id.pwb_ll_praise_tottom:
@@ -526,9 +522,10 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
 
         // 如果有发生请求动作,则对返回码进行判断处理
         switch (requestCode) {
-            case REQUEST_CODE_WRITE_COMMENT:
+            case Code.REQUEST_CODE_WRITE_COMMENT_BACK_TO_DETAIL:
                 boolean sendCommentSuccess = data.getBooleanExtra("sendCommentSuccess", false);
                 if (sendCommentSuccess) {
+                    ToastUtils.showToast(StatusDetailActivity.this, "发送成功", Toast.LENGTH_SHORT);
                     mScroll2Comment = true;
                     loadData(1);
                 }
