@@ -24,4 +24,7 @@ public interface Uri {
 
     /** 获取当前登录用户的最新评论包括接收到的与发出的 */
     String COMMENTS_TO_ME = BASE_URI + "comments/to_me.json";
+
+    /** 获取最新的提到当前登录用户的评论，即@我的评论  */
+    String COMMENTS_MESSION = BASE_URI + "comments/mentions.json";
 }

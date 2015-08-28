@@ -26,6 +26,12 @@ public class MessageFragment extends Fragment {
 
     private     View                    mView;
     private     MainActivity            mActivity;
+    private     int                     mMessageType;
+
+    final private int MESSAGE_AT        = 1;
+    final private int MESSAGE_COMMENT   = 2;
+    final private int MESSAGE_GOOD      = 3;
+    final private int MESSAGE_BOX       = 4;
 
     @Override
     public void onCreate(Bundle saveInstanceState) {
@@ -72,7 +78,7 @@ public class MessageFragment extends Fragment {
 
         Message at = new Message();
         at.setImage(R.drawable.pwb_messagescenter_at);
-        at.setMessage("@我的");
+        at.setMessage("@我的评论");
         listMessage.add(at);
 
         Message comment = new Message();

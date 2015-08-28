@@ -21,7 +21,6 @@ import com.panda.pweibo.constants.Uri;
 import com.panda.pweibo.models.Comment;
 import com.panda.pweibo.utils.TitlebarUtils;
 import com.panda.pweibo.utils.ToastUtils;
-import com.panda.pweibo.widget.Pull2RefreshListView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,6 +40,9 @@ public class MessageActivity extends BaseActivity implements OnClickListener {
     private List<Comment>           mCommentList;
     private long                    mTotalNum;
     private ProgressDialog          mPd;
+    private Intent                  mIntent;
+    private int                     mMessageType;
+    private String                  mUri;
 
     private PullToRefreshListView    pwb_plv_messages;
     private LinearLayout             foot_view;
@@ -48,10 +50,17 @@ public class MessageActivity extends BaseActivity implements OnClickListener {
     private long                     mCurPage = 1;
     private int                      FLAG = 1;
 
+    final private int MESSAGE_AT        = 1;
+    final private int MESSAGE_COMMENT   = 2;
+    final private int MESSAGE_GOOD      = 3;
+    final private int MESSAGE_BOX       = 4;
+
     @Override
     public void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
         setContentView(R.layout.activity_message);
+
+        mMessageType = getIntent().getIntExtra("messageType", 0);
 
         initView();
         loadData(1);
@@ -59,7 +68,6 @@ public class MessageActivity extends BaseActivity implements OnClickListener {
 
     @Override
     public void onClick(View v) {
-        Intent intent;
         switch (v.getId()) {
             case R.id.titlebar_textview_left:
                 MessageActivity.this.finish();
@@ -76,8 +84,27 @@ public class MessageActivity extends BaseActivity implements OnClickListener {
 
     private void initView() {
 
+        String titleBarContent = "";
+
+        switch (mMessageType) {
+            case MESSAGE_AT:
+                mUri = Uri.COMMENTS_MESSION;
+                titleBarContent = "@我的的评论";
+                break;
+            case MESSAGE_COMMENT:
+                mUri = Uri.COMMENTS_TO_ME;
+                titleBarContent = "所有评论";
+                break;
+            case MESSAGE_GOOD:
+                break;
+            case MESSAGE_BOX:
+                break;
+            default:
+                break;
+        }
+
         new TitlebarUtils(this)
-                .setTitleContent("所有评论")
+                .setTitleContent(titleBarContent)
                 .setTitlebarTvLeft("返回")
                 .setTitlebarTvRight("设置")
                 .setLeftOnClickListner(this)
@@ -113,15 +140,14 @@ public class MessageActivity extends BaseActivity implements OnClickListener {
             mCommentList.clear();
         }
 
-        String uri = Uri.COMMENTS_TO_ME;
-        uri += "?access_token=" + mAccessToken.getToken();
-        uri += "&page=" + page;
+        mUri += "?access_token=" + mAccessToken.getToken();
+        mUri += "&page=" + page;
 
         if (FLAG == 1) {
-            mPd = ProgressDialog.show(this, "获取评论", "加载ing");
+            mPd = ProgressDialog.show(this, "获取数据", "加载ing");
         }
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, uri, null,
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, mUri, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -149,6 +175,7 @@ public class MessageActivity extends BaseActivity implements OnClickListener {
                         ToastUtils.showToast(MessageActivity.this, "网络发生错误,加载失败", Toast.LENGTH_SHORT);
                         mPd.dismiss();
                         FLAG ++;
+                        MessageActivity.this.finish();
                     }
                 });
 
@@ -156,7 +183,11 @@ public class MessageActivity extends BaseActivity implements OnClickListener {
         mRequestQueue.add(jsonObjectRequest);
     }
 
-    public void addData(List<Comment> listComments, long totalNum) {
+    private void requesetData() {
+
+    }
+
+    private void addData(List<Comment> listComments, long totalNum) {
         for (Comment comment : listComments) {
             if (!listComments.contains(comment)) {
                 listComments.add(comment);

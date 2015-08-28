@@ -26,6 +26,13 @@ public class MessageCenterAdapter extends BaseAdapter {
 
     private List<Message>   mMessageList;
     private Context         mContext;
+    private Intent          mIntent;
+    private int             mMessageType;
+
+    final private int MESSAGE_AT        = 1;
+    final private int MESSAGE_COMMENT   = 2;
+    final private int MESSAGE_GOOD      = 3;
+    final private int MESSAGE_BOX       = 4;
 
     public MessageCenterAdapter(Context context, List<Message> listMessage) {
         mContext        =   context;
@@ -81,14 +88,15 @@ public class MessageCenterAdapter extends BaseAdapter {
     }
 
     private void initListener(ViewHolder holder, Message message) {
-        final Intent[] intent = new Intent[1];
         switch (message.getImage()) {
             case R.drawable.pwb_messagescenter_comments:
                 holder.pwb_ll_message.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        intent[0] = new Intent(mContext, MessageActivity.class);
-                        mContext.startActivity(intent[0]);
+                        mIntent = new Intent(mContext, MessageActivity.class);
+                        mMessageType = MESSAGE_COMMENT;
+                        mIntent.putExtra("messageType", mMessageType);
+                        mContext.startActivity(mIntent);
                     }
                 });
                 break;
@@ -97,7 +105,10 @@ public class MessageCenterAdapter extends BaseAdapter {
                 holder.pwb_ll_message.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ToastUtils.showToast(mContext, "@我的", Toast.LENGTH_SHORT);
+                        mIntent = new Intent(mContext, MessageActivity.class);
+                        mMessageType = MESSAGE_AT;
+                        mIntent.putExtra("messageType", mMessageType);
+                        mContext.startActivity(mIntent);
                     }
                 });
                 break;
@@ -106,6 +117,7 @@ public class MessageCenterAdapter extends BaseAdapter {
                 holder.pwb_ll_message.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        mMessageType = MESSAGE_GOOD;
                         ToastUtils.showToast(mContext, "赞", Toast.LENGTH_SHORT);
                     }
                 });
@@ -115,6 +127,7 @@ public class MessageCenterAdapter extends BaseAdapter {
                 holder.pwb_ll_message.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        mMessageType = MESSAGE_BOX;
                         ToastUtils.showToast(mContext, "订阅消息", Toast.LENGTH_SHORT);
                     }
                 });
