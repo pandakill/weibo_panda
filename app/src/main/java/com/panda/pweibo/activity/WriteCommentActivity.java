@@ -90,9 +90,6 @@ public class WriteCommentActivity extends BaseActivity {
     private void request(int type, String comment) {
         switch (type) {
             case CREATE_COMMENT:
-                mParameters.put("comment", comment);
-                mParameters.put("access_token", mAccessToken.getToken());
-                mParameters.put("id", mStatus.getId());
                 mCommentsAPI.create(comment, mStatus.getId(), false, new RequestListener() {
                     @Override
                     public void onComplete(String s) {
@@ -110,10 +107,7 @@ public class WriteCommentActivity extends BaseActivity {
                 break;
 
             case REPLY_COMMENT:
-                mParameters.put("comment", comment);
-                mParameters.put("access_token", mAccessToken.getToken());
-                mParameters.put("id", mStatus.getId());
-                mCommentsAPI.reply(mComment.getId(), mComment.getStatus().getId(),comment, true, false, new RequestListener() {
+                mCommentsAPI.reply(mComment.getId(), mComment.getStatus().getId(),comment, false, false, new RequestListener() {
                     @Override
                     public void onComplete(String s) {
                         mIntent = new Intent();

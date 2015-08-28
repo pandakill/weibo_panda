@@ -7,14 +7,13 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.panda.pweibo.R;
 import com.panda.pweibo.constants.AccessTokenKeeper;
 import com.panda.pweibo.constants.Constants;
+import com.panda.pweibo.utils.ToastUtils;
 import com.sina.weibo.sdk.auth.AuthInfo;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.auth.WeiboAuthListener;
@@ -25,10 +24,6 @@ import java.text.SimpleDateFormat;
 
 public class PWBAuthActivity extends BaseActivity {
 
-    private     ImageButton     mLoginBtn;    //获取授权按钮
-
-    private     AuthInfo        mAuthInfo;      //授权信息
-
     /** 注意：SsoHandler 仅当 SDK 支持 SSO 时有效 */
     private     SsoHandler      mSsoHandler;
 
@@ -37,10 +32,10 @@ public class PWBAuthActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
 
-        mLoginBtn     =   (ImageButton)    findViewById(R.id.pwb_btn_get_token_all_in_one);
+        ImageButton mLoginBtn = (ImageButton) findViewById(R.id.pwb_btn_get_token_all_in_one);
 
         // 快速授权时，请不要传入 SCOPE，否则可能会授权不成功
-        mAuthInfo       =   new         AuthInfo(this, Constants.APP_KEY, Constants.REDIRECT_URL, Constants.SCOPE);
+        AuthInfo mAuthInfo = new AuthInfo(this, Constants.APP_KEY, Constants.REDIRECT_URL, Constants.SCOPE);
         mSsoHandler     =   new         SsoHandler(PWBAuthActivity.this, mAuthInfo);
 
         // SSO 授权, ALL IN ONE   如果手机安装了微博客户端则使用客户端授权,没有则进行网页授权
@@ -159,9 +154,11 @@ public class PWBAuthActivity extends BaseActivity {
         String message = String.format(format, mAccessToken.getToken(), date);
         if (hasExisted) {
             message = getString(R.string.pwb_token_has_existed) + "\n" + message;
+            ToastUtils.showToast(PWBAuthActivity.this, "授权已过期,请重新授权", Toast.LENGTH_SHORT);
+        } else {
+            Intent intent = new Intent(PWBAuthActivity.this, MainActivity.class);
+            startActivity(intent);
+            PWBAuthActivity.this.finish();
         }
-
-        Intent intent = new Intent(PWBAuthActivity.this, MainActivity.class);
-        startActivity(intent);
     }
 }

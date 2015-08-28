@@ -1,9 +1,10 @@
 package com.panda.pweibo.fragment;
 
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentActivity;
+
+import com.panda.pweibo.MyFragment;
 
 import java.util.ArrayList;
 
@@ -16,7 +17,7 @@ public class FragmentController {
 
     private     int                     mContainerId;        //存放fragment的id
     private     FragmentManager         mFragmentManager;
-    private     ArrayList<Fragment>     mFragmentList;
+    private     ArrayList<MyFragment>     mFragmentList;
 
     private static FragmentController   controller;
 
@@ -36,7 +37,7 @@ public class FragmentController {
 
         // 开启事务
         FragmentTransaction ft = mFragmentManager.beginTransaction();
-        for (Fragment fragment : mFragmentList) {
+        for (MyFragment fragment : mFragmentList) {
             ft.add(mContainerId, fragment);
         }
         ft.commitAllowingStateLoss();
@@ -45,7 +46,7 @@ public class FragmentController {
     /** 打开fragment并展示 */
     public void showFragment(int position) {
         hideFragments();
-        Fragment fragment = mFragmentList.get(position);
+        MyFragment fragment = mFragmentList.get(position);
         FragmentTransaction ft = mFragmentManager.beginTransaction();
         ft.show(fragment);
         ft.commitAllowingStateLoss();
@@ -54,7 +55,7 @@ public class FragmentController {
     /** 隐藏不显示的fragment */
     public void hideFragments() {
         FragmentTransaction ft = mFragmentManager.beginTransaction();
-        for (Fragment fragment : mFragmentList) {
+        for (MyFragment fragment : mFragmentList) {
             if (fragment != null) {
                 ft.hide(fragment);
             }

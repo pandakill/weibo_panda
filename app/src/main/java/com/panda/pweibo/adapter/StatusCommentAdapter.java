@@ -1,6 +1,7 @@
 package com.panda.pweibo.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -12,6 +13,9 @@ import android.widget.Toast;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageLoader.ImageListener;
 import com.panda.pweibo.R;
+import com.panda.pweibo.activity.StatusDetailActivity;
+import com.panda.pweibo.activity.WriteCommentActivity;
+import com.panda.pweibo.constants.Code;
 import com.panda.pweibo.models.Comment;
 import com.panda.pweibo.models.User;
 import com.panda.pweibo.utils.DateUtils;
@@ -81,6 +85,19 @@ public class StatusCommentAdapter extends BaseAdapter {
         holder.pwb_textview_comment.setText(StringUtils.getWeiboContent(
                 mContext, holder.pwb_textview_comment, comment.getText()));
 
+        // 评论的点击事件监听器
+        holder.pwb_ll_comments.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ToastUtils.showToast(mContext, "回复评论", Toast.LENGTH_SHORT);
+                Intent intent = new Intent(mContext, WriteCommentActivity.class);
+                intent.putExtra("comment", comment);
+                intent.putExtra("type", Code.REPLY_COMMENT);
+                ((StatusDetailActivity) mContext).startActivityForResult(
+                        intent, Code.REQUEST_CODE_WRITE_COMMENT_BACK_TO_DETAIL);
+            }
+        });
+
         return convertView;
     }
 
@@ -95,14 +112,6 @@ public class StatusCommentAdapter extends BaseAdapter {
                 (TextView) converView.findViewById(R.id.pwb_textview_item_status_from_and_when);
         holder.pwb_textview_comment =
                 (TextView) converView.findViewById(R.id.pwb_textview_comment);
-
-        // 评论的点击事件监听器
-        holder.pwb_ll_comments.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ToastUtils.showToast(mContext, "回复评论", Toast.LENGTH_SHORT);
-            }
-        });
     }
 
     /** 控件 */

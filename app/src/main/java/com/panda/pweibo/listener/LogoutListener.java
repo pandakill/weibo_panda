@@ -12,6 +12,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.panda.pweibo.activity.MainActivity;
 import com.panda.pweibo.activity.PWBAuthActivity;
 import com.panda.pweibo.constants.Uri;
 import com.panda.pweibo.utils.ToastUtils;
@@ -56,7 +57,8 @@ public class LogoutListener implements View.OnClickListener {
                         if (value.equals("true")) {
                             ToastUtils.showToast(mContext, "退出成功", Toast.LENGTH_SHORT);
                             Intent intent = new Intent(mContext, PWBAuthActivity.class);
-                            mFragment.startActivity(intent);
+                            mContext.startActivity(intent);
+                            ((MainActivity) mContext).finish();
                         } else {
                             ToastUtils.showToast(mContext, "退出发生异常", Toast.LENGTH_SHORT);
                         }

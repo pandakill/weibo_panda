@@ -37,12 +37,12 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
     protected void onCreate(Bundle saveInstanceState) {
 
         super.onCreate(saveInstanceState);
-        setContentView(R.layout.activity_main);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         mController = FragmentController.getInstance(MainActivity.this, R.id.fl_content);
         //默认展示第一个
         mController.showFragment(0);
+        setContentView(R.layout.activity_main);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         mRequestQueue = Volley.newRequestQueue(this);
 
         mLruCache = new LruCache<>(40);

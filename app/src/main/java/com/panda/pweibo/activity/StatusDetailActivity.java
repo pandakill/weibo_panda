@@ -122,29 +122,9 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
         foot_view = View.inflate(this, R.layout.footer_loading, null);
         mCommentList = new ArrayList<>();
 
-//        mAccessToken = AccessTokenKeeper.readAccessToken(this);
-//        requestQueue = Volley.newRequestQueue(this);
-
-
-//        lruCache = new LruCache<>(20);
-//        imageCache = new ImageCache() {
-//            @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
-//            @Override
-//            public Bitmap getBitmap(String key) {
-//                return lruCache.get(key);
-//            }
-//
-//            @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
-//            @Override
-//            public void putBitmap(String key, Bitmap value) {
-//                lruCache.put(key, value);
-//            }
-//        };
-//
-//        imageLoader = new ImageLoader(requestQueue, imageCache);
-
         /** 获取intent传入的内容 */
         mStatus = (Status) getIntent().getSerializableExtra("status");
+        mTotalNum = mStatus.getComments_count();
 
         /** 读取评论列表 */
         loadData(1);
@@ -166,6 +146,7 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
 
     /** 传入页码,加载评论 */
     private void loadData(final long page) {
+        Log.i("Tag/shunxu", "loadData begin");
         String uri = Uri.COMMENTS_SHOW;
         uri += "?access_token=" + mAccessToken.getToken() + "&id=" + mStatus.getId();
         uri += "&page="+page;
@@ -178,7 +159,6 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
             @Override
             public void onResponse(JSONObject response) {
                 try {
-
                     /** 如果页码为1,则将评论listComments清空 */
                     if (page == 1) {
                         mCommentList.clear();
@@ -191,9 +171,10 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
                         mCommentList.add(comment);
                     }
 
-                    mTotalNum = response.getLong("total_number");
+                    long totalNum = response.getLong("total_number");
+
                     mCurPage = page;
-                    addData(mCommentList, mTotalNum);
+                    addData(mCommentList, totalNum);
 
                     /** 判断是否需要滚动至评论部分 */
                     if (mScroll2Comment) {
@@ -314,6 +295,15 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
             if (!listComments.contains(comment)) {
                 listComments.add(comment);
             }
+        }
+        if (totalNum != mStatus.getComments_count()) {
+            /** 设置tab的内容 */
+            pwb_radiobutton_comment.setText("评论 " + totalNum);
+            shadow_radiobutton_comment.setText("评论 " + totalNum);
+
+            /** 设置底部control的内容 */
+            textview_comment_bottom.setText(
+                    (mStatus.getComments_count() == 0) ? "评论" : totalNum + "");
         }
 
         mAdapter.notifyDataSetChanged();

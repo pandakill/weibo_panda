@@ -1,12 +1,12 @@
 package com.panda.pweibo.fragment;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.panda.pweibo.MyFragment;
 import com.panda.pweibo.R;
 import com.panda.pweibo.activity.MainActivity;
 import com.panda.pweibo.utils.TitlebarUtils;
@@ -16,7 +16,7 @@ import com.panda.pweibo.utils.ToastUtils;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class PersonalFragment extends Fragment {
+public class PersonalFragment extends MyFragment {
 
     private     MainActivity            mActivity;
     private     View                    mView;

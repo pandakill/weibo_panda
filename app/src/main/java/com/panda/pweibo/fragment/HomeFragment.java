@@ -20,6 +20,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
+import com.panda.pweibo.MyFragment;
 import com.panda.pweibo.R;
 import com.panda.pweibo.activity.MainActivity;
 import com.panda.pweibo.adapter.StatusAdapter;
@@ -42,7 +43,7 @@ import java.util.List;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment extends MyFragment {
 
     private     View                        mView;
     private     PullToRefreshListView       mPlv;

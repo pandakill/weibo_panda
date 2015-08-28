@@ -14,7 +14,6 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageLoader.ImageListener;
 import com.android.volley.toolbox.NetworkImageView;
 import com.panda.pweibo.R;
-import com.panda.pweibo.activity.MainActivity;
 import com.panda.pweibo.activity.MessageActivity;
 import com.panda.pweibo.activity.StatusDetailActivity;
 import com.panda.pweibo.activity.WriteCommentActivity;
