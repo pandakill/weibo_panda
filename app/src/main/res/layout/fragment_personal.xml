@@ -1,9 +1,28 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:scrollbars="vertical"
-              android:orientation="vertical" >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbars="vertical"
+    android:orientation="vertical"
+    android:background="@color/bg_gray_pressed">
 
     <include layout="@layout/include_title_bar"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp" />
+
+
+    <include layout="@layout/include_status_avatar" />
+
+    <View
+        android:layout_height="1px"
+        android:layout_width="match_parent" />
+
+    <include layout="@layout/include_personal_info" />
+
+    <ListView
+        android:id="@+id/pwb_lv_user"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
