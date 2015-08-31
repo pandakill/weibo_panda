@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -264,7 +265,7 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
     }
 
     /** 加载微博的图片 */
-    public void setImages(ViewGroup vgContainer, GridView gv, NetworkImageView iv, Status status) {
+    public void setImages(ViewGroup vgContainer, GridView gv, NetworkImageView iv, final Status status) {
         ArrayList<PicUrls> list = status.getPic_ids();
 
         if (list != null && list.size() > 1) {
@@ -276,6 +277,17 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
             gridViewAdapter = new StatusGridViewAdapter(this, list, mImageLoader);
             gv.setAdapter(gridViewAdapter);
 
+            /** 增加图片点击的监听器 */
+            gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(StatusDetailActivity.this, ImageBrowserActivity.class);
+                    intent.putExtra("status", status);
+                    intent.putExtra("position", position);
+                    startActivity(intent);
+                }
+            });
+
         } else if (list != null && list.size() == 1) {
             vgContainer.setVisibility(View.VISIBLE);
             gv.setVisibility(View.GONE);
@@ -283,6 +295,16 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
 
             iv.setTag(list.get(0).getThumbnail_pic());
             iv.setImageUrl(list.get(0).getThumbnail_pic(), mImageLoader);
+
+            /** 增加图片点击的监听器 */
+            iv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(StatusDetailActivity.this, ImageBrowserActivity.class);
+                    intent.putExtra("status", status);
+                    startActivity(intent);
+                }
+            });
         } else {
             vgContainer.setVisibility(View.GONE);
         }

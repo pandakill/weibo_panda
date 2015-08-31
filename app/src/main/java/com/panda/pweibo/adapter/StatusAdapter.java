@@ -8,6 +8,7 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.GridView;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageLoader.ImageListener;
 import com.android.volley.toolbox.NetworkImageView;
+import com.panda.pweibo.activity.ImageBrowserActivity;
 import com.panda.pweibo.activity.StatusDetailActivity;
 import com.panda.pweibo.activity.WriteCommentActivity;
 import com.panda.pweibo.R;
@@ -219,7 +221,7 @@ public class StatusAdapter extends BaseAdapter {
 
     // 加载微博图片,如果为多图的话,显示九宫格形式,否则显示单图形式
     public void setImages(FrameLayout imgContainer, GridView gv,
-                          NetworkImageView iv, Status status) {
+                          NetworkImageView iv, final Status status) {
         ArrayList<PicUrls> list = status.getPic_ids();
 
         if (list != null && list.size() > 1) {
@@ -231,6 +233,17 @@ public class StatusAdapter extends BaseAdapter {
             gridViewAdapter = new StatusGridViewAdapter(mContext, list, mImageLoader);
             gv.setAdapter(gridViewAdapter);
 
+            /** 增加图片点击的监听器 */
+            gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(mContext, ImageBrowserActivity.class);
+                    intent.putExtra("status", status);
+                    intent.putExtra("position", position);
+                    mContext.startActivity(intent);
+                }
+            });
+
         } else if (list != null && list.size() == 1) {
             imgContainer.setVisibility(View.VISIBLE);
             gv.setVisibility(View.GONE);
@@ -238,6 +251,16 @@ public class StatusAdapter extends BaseAdapter {
 
             iv.setTag(list.get(0).getThumbnail_pic());
             iv.setImageUrl(list.get(0).getThumbnail_pic(), mImageLoader);
+
+            /** 增加图片点击的监听器 */
+            iv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mContext, ImageBrowserActivity.class);
+                    intent.putExtra("status", status);
+                    mContext.startActivity(intent);
+                }
+            });
         } else {
             imgContainer.setVisibility(View.GONE);
         }

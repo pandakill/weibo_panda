@@ -80,13 +80,6 @@ public class StatusGridViewAdapter extends BaseAdapter{
         holder.imageView.setTag(urls.getThumbnail_pic());
         holder.imageView.setImageUrl(urls.getThumbnail_pic(), mImageLoader);
 
-        holder.imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ToastUtils.showToast(mContext, urls.getOriginal_pic(), Toast.LENGTH_SHORT);
-            }
-        });
-
         return convertView;
     }
 

@@ -25,14 +25,14 @@ import java.util.ArrayList;
  */
 public class ImageBrowserAdapter extends PagerAdapter {
 
-    private MainActivity        mContext;
-//    private Activity            mContext;
+//    private MainActivity        mContext;
+    private Activity            mContext;
     private ArrayList<PicUrls>  mPicUrlsList;
     private ArrayList<View>     mPicViewList;
     private ImageLoader         mImageLoader;
 
     public ImageBrowserAdapter(Activity context, ArrayList<PicUrls> picUrlsList, ImageLoader imageLoader) {
-        mContext = (MainActivity) context;
+        mContext = context;
         mPicUrlsList = picUrlsList;
         mImageLoader = imageLoader;
         initImage();
