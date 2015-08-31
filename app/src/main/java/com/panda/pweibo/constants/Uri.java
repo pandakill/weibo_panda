@@ -10,6 +10,12 @@ public interface Uri {
     /** uri服务器 */
     String BASE_URI = "https://api.weibo.com/2/";
 
+    /** 中等质量图片的url前缀 */
+    String BMIDDLE_URL = "http://ww3.sinaimg.cn/bmiddle/";
+
+    /** 原质量图片url的前缀 */
+    String ORIGINAL_URL = "http://ww3.sinaimg.cn/large/";
+
     /** 授权回收接口，帮助开发者主动取消用户的授权 */
     String OAUTH2_REVOKE_OAUTH2 = "https://api.weibo.com/oauth2/revokeoauth2";
 

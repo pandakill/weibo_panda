@@ -19,6 +19,9 @@
     <string name="pwb_user_info_picture">相册</string>
     <string name="pwb_user_info_manage">管理</string>
 
+    <string name="pwb_save">保存</string>
+    <string name="pwb_orgin">原图</string>
+
     <!-- 授权动作的提示信息 -->
     <string name="pwb_toast_auth_success">授权成功</string>
     <string name="pwb_toast_auth_failed">授权失败</string>

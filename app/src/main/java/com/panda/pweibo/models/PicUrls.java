@@ -1,5 +1,9 @@
 package com.panda.pweibo.models;
 
+import android.text.TextUtils;
+
+import com.panda.pweibo.constants.Uri;
+
 import org.json.JSONObject;
 
 import java.io.Serializable;
@@ -12,12 +16,20 @@ public class PicUrls implements Serializable {
     private String bmiddle_pic;     // 中等尺寸图片地址
     private String original_pic;    // 原始图片地址
 
+    private boolean showOriImg;     //是否有原图
+
+    /** 从缩略图url中截取末尾的图片id，用于拼接成其他质量图片url */
+    public String getImageId() {
+        int indexOf = thumbnail_pic.lastIndexOf("/") + 1;
+        return thumbnail_pic.substring(indexOf);
+    }
+
     public void setBmiddle_pic(String bmiddle_pic) {
         this.bmiddle_pic = bmiddle_pic;
     }
 
     public String getBmiddle_pic() {
-        return bmiddle_pic;
+        return TextUtils.isEmpty(bmiddle_pic) ? Uri.BMIDDLE_URL + getImageId() : bmiddle_pic;
     }
 
     public void setOriginal_pic(String original_pic) {
@@ -25,7 +37,7 @@ public class PicUrls implements Serializable {
     }
 
     public String getOriginal_pic() {
-        return original_pic;
+        return TextUtils.isEmpty(original_pic) ? Uri.ORIGINAL_URL + getImageId() : original_pic;
     }
 
     public void setThumbnail_pic(String thumbnail_pic) {
