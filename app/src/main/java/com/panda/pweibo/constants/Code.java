@@ -1,25 +1,25 @@
 package com.panda.pweibo.constants;
 
 /**
- * ´æ·ÅÒ»Ð©¾²Ì¬³£Á¿Âë
+ * å­˜æ”¾ä¸€äº›é™æ€å¸¸é‡ç 
  *
  * Created by Administrator on 2015/8/28:11:58.
  */
 public interface Code {
 
-    /** ÏûÏ¢µÄÀàÐÍ */
-    int MESSAGE_AT        = 1;      /* @ÎÒµÄÆÀÂÛ */
-    int MESSAGE_COMMENT   = 2;      /* ÎÒµÄËùÓÐÆÀÂÛ */
-    int MESSAGE_GOOD      = 3;      /* ÔÞ */
-    int MESSAGE_BOX       = 4;      /* ÏûÏ¢ºÐ×Ó */
+    /** æ¶ˆæ¯çš„ç±»åž‹ */
+    int MESSAGE_AT        = 1;      /* @æˆ‘çš„è¯„è®º */
+    int MESSAGE_COMMENT   = 2;      /* æˆ‘çš„æ‰€æœ‰è¯„è®º */
+    int MESSAGE_GOOD      = 3;      /* èµž */
+    int MESSAGE_BOX       = 4;      /* æ¶ˆæ¯ç›’å­ */
 
-    /** ´ò¿ªÐ´ÆÀÂÛactivityÊ±,Ð´ÆÀÂÛµÄÀàÐÍ */
-    int REPLY_COMMENT     = 1;     /* ÀàÐÍÎª»Ø¸´ÆÀÂÛ */
-    int CREATE_COMMENT    = 2;     /* ´´½¨ÆÀÂÛ */
+    /** æ‰“å¼€å†™è¯„è®ºactivityæ—¶,å†™è¯„è®ºçš„ç±»åž‹ */
+    int REPLY_COMMENT     = 1;     /* ç±»åž‹ä¸ºå›žå¤è¯„è®º */
+    int CREATE_COMMENT    = 2;     /* åˆ›å»ºè¯„è®º */
 
-    /** Ð´ÆÀÂÛactivityµÄ·µ»ØÂë */
-    int REQUEST_CODE_WRITE_COMMENT_BACK_TO_COMMENT = 22;  /* Ìø×ªÖÁËùÓÐÆÀÂÛµÄactivity */
+    /** å†™è¯„è®ºactivityçš„è¿”å›žç  */
+    int REQUEST_CODE_WRITE_COMMENT_BACK_TO_COMMENT = 22;  /* è·³è½¬è‡³æ‰€æœ‰è¯„è®ºçš„activity */
 
-    /** Ìø×ªÖÁÐ´ÆÀÂÛÒ³Ãæcode */
+    /** è·³è½¬è‡³å†™è¯„è®ºé¡µé¢code */
     int REQUEST_CODE_WRITE_COMMENT_BACK_TO_DETAIL = 2333;
 }

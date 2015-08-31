@@ -5,7 +5,7 @@ import android.support.v4.app.Fragment;
 import java.lang.reflect.Field;
 
 /**
- * 重写fragment的onDetach方法
+ * 閲嶅啓fragment鐨刼nDetach鏂规硶
  *
  * Created by Administrator on 2015/8/28:17:36.
  */
