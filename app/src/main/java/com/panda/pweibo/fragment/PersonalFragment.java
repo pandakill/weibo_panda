@@ -1,8 +1,10 @@
 package com.panda.pweibo.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -18,7 +20,9 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.panda.pweibo.MyFragment;
 import com.panda.pweibo.R;
 import com.panda.pweibo.activity.MainActivity;
+import com.panda.pweibo.activity.UserInfoActivity;
 import com.panda.pweibo.adapter.UserAdapter;
+import com.panda.pweibo.adapter.UserItemAdapter;
 import com.panda.pweibo.constants.AccessTokenKeeper;
 import com.panda.pweibo.constants.Uri;
 import com.panda.pweibo.models.User;
@@ -38,12 +42,11 @@ import java.util.List;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class PersonalFragment extends MyFragment {
+public class PersonalFragment extends MyFragment implements OnClickListener {
 
     private     MainActivity            mActivity;
     private     View                    mView;
-    private     UserAdapter             mAdapter;
-    private     List<UserItem>          mUserItemList;
+    private     UserItemAdapter         mAdapter;
     private     Oauth2AccessToken       mAccessToken;
     private     User                    mUser;
 
@@ -52,11 +55,11 @@ public class PersonalFragment extends MyFragment {
     private     TextView                pwb_textview_item_status_from_and_when;
 
     private     LinearLayout            include_personal_info;
-//    private     LinearLayout            pwb_ll_status_count;
+    private     LinearLayout            pwb_ll_status_count;
     private     TextView                pwb_status_count;
-//    private     LinearLayout            pwb_ll_follows_count;
+    private     LinearLayout            pwb_ll_follows_count;
     private     TextView                pwb_follows_count;
-//    private     LinearLayout            pwb_ll_followed_count;
+    private     LinearLayout            pwb_ll_followed_count;
     private     TextView                pwb_followed_count;
 
     private     WrapHeightListView      pwb_lv_user;
@@ -69,9 +72,9 @@ public class PersonalFragment extends MyFragment {
 
         mAccessToken = AccessTokenKeeper.readAccessToken(mActivity);
 
-        mUserItemList = personalItem();
+        List<UserItem> mUserItemList = personalItem();
 
-        mAdapter = new UserAdapter(mActivity, mUserItemList);
+        mAdapter = new UserItemAdapter(mActivity, mUserItemList);
     }
 
     public PersonalFragment() {
@@ -99,12 +102,18 @@ public class PersonalFragment extends MyFragment {
                 R.id.pwb_textview_item_status_from_and_when);
 
         include_personal_info = (LinearLayout) mView.findViewById(R.id.include_personal_info);
+        pwb_ll_status_count = (LinearLayout) mView.findViewById(R.id.pwb_ll_status_count);
         pwb_status_count = (TextView) include_personal_info.findViewById(
                 R.id.pwb_status_count);
+        pwb_ll_status_count.setOnClickListener(this);
+        pwb_ll_follows_count = (LinearLayout) mView.findViewById(R.id.pwb_ll_follows_count);
         pwb_follows_count = (TextView) include_personal_info.findViewById(
                 R.id.pwb_follows_count);
+        pwb_ll_follows_count.setOnClickListener(this);
+        pwb_ll_followed_count = (LinearLayout) mView.findViewById(R.id.pwb_ll_followed_count);
         pwb_followed_count = (TextView) include_personal_info.findViewById(
                 R.id.pwb_followed_count);
+        pwb_ll_followed_count.setOnClickListener(this);
 
         new TitlebarUtils(mView)
                 .setTitleContent("我")
@@ -164,7 +173,29 @@ public class PersonalFragment extends MyFragment {
         pwb_textview_item_status_from_and_when.setText("简介:" + mUser.getDescription());
         pwb_status_count.setText(mUser.getStatuses_count()+"");
         pwb_follows_count.setText(mUser.getFriends_count()+"");
-        pwb_followed_count.setText(mUser.getFollowers_count()+"");
+        pwb_followed_count.setText(mUser.getFollowers_count() + "");
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.pwb_ll_status_count:
+                Intent intent = new Intent(mActivity, UserInfoActivity.class);
+                intent.putExtra("userName", mUser.getName());
+                startActivity(intent);
+                break;
+
+            case R.id.pwb_ll_follows_count:
+                ToastUtils.showToast(mActivity, "关注:" + mUser.getFriends_count() + "", Toast.LENGTH_SHORT);
+                break;
+
+            case R.id.pwb_ll_followed_count:
+                ToastUtils.showToast(mActivity, "粉丝:" + mUser.getFollowers_count() + "", Toast.LENGTH_SHORT);
+                break;
+
+            default:
+                break;
+        }
     }
 
     protected List<UserItem> personalItem (){
@@ -178,4 +209,5 @@ public class PersonalFragment extends MyFragment {
 
         return data;
     }
+
 }
