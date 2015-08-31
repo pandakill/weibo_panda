@@ -18,7 +18,9 @@
         android:layout_height="1px"
         android:layout_width="match_parent" />
 
-    <include layout="@layout/include_personal_info" />
+    <include
+        android:id="@+id/include_personal_info"
+        layout="@layout/include_personal_info" />
 
     <com.panda.pweibo.widget.WrapHeightListView
         android:id="@+id/pwb_lv_user"

@@ -5,18 +5,31 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.ImageLoader.ImageListener;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.panda.pweibo.MyFragment;
 import com.panda.pweibo.R;
 import com.panda.pweibo.activity.MainActivity;
 import com.panda.pweibo.adapter.UserAdapter;
+import com.panda.pweibo.constants.AccessTokenKeeper;
+import com.panda.pweibo.constants.Uri;
+import com.panda.pweibo.models.User;
 import com.panda.pweibo.models.UserItem;
 import com.panda.pweibo.utils.TitlebarUtils;
 import com.panda.pweibo.utils.ToastUtils;
 import com.panda.pweibo.widget.WrapHeightListView;
+import com.sina.weibo.sdk.auth.Oauth2AccessToken;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,13 +44,19 @@ public class PersonalFragment extends MyFragment {
     private     View                    mView;
     private     UserAdapter             mAdapter;
     private     List<UserItem>          mUserItemList;
+    private     Oauth2AccessToken       mAccessToken;
+    private     User                    mUser;
 
     private     ImageView               pwb_imageview_item_status_avatar;
     private     TextView                pwb_textview_sender;
     private     TextView                pwb_textview_item_status_from_and_when;
 
+    private     LinearLayout            include_personal_info;
+//    private     LinearLayout            pwb_ll_status_count;
     private     TextView                pwb_status_count;
+//    private     LinearLayout            pwb_ll_follows_count;
     private     TextView                pwb_follows_count;
+//    private     LinearLayout            pwb_ll_followed_count;
     private     TextView                pwb_followed_count;
 
     private     WrapHeightListView      pwb_lv_user;
@@ -47,6 +66,8 @@ public class PersonalFragment extends MyFragment {
         super.onCreate(saveInstanceState);
 
         mActivity = (MainActivity) getActivity();
+
+        mAccessToken = AccessTokenKeeper.readAccessToken(mActivity);
 
         mUserItemList = personalItem();
 
@@ -61,7 +82,6 @@ public class PersonalFragment extends MyFragment {
                              Bundle savedInstanceState) {
         initView();
         loadData();
-        setData();
 
         return mView;
     }
@@ -78,11 +98,12 @@ public class PersonalFragment extends MyFragment {
         pwb_textview_item_status_from_and_when = (TextView) mView.findViewById(
                 R.id.pwb_textview_item_status_from_and_when);
 
-        pwb_status_count = (TextView) mView.findViewById(
+        include_personal_info = (LinearLayout) mView.findViewById(R.id.include_personal_info);
+        pwb_status_count = (TextView) include_personal_info.findViewById(
                 R.id.pwb_status_count);
-        pwb_follows_count = (TextView) mView.findViewById(
+        pwb_follows_count = (TextView) include_personal_info.findViewById(
                 R.id.pwb_follows_count);
-        pwb_followed_count = (TextView) mView.findViewById(
+        pwb_followed_count = (TextView) include_personal_info.findViewById(
                 R.id.pwb_followed_count);
 
         new TitlebarUtils(mView)
@@ -99,10 +120,51 @@ public class PersonalFragment extends MyFragment {
     }
 
     private void loadData() {
+        String uri = Uri.USER_SHOW;
+        uri += "?access_token=" + mAccessToken.getToken();
+        uri += "&uid=" + mAccessToken.getUid();
+
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, uri, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            if (response.has("error")) {
+                                int errorCode = response.getInt("error_code");
+                                String error = response.getString("error");
+                                ToastUtils.showToast(mActivity,
+                                        "错误码：" + errorCode + "-" + error,
+                                        Toast.LENGTH_SHORT);
+                            } else {
+                                mUser = new User().parseJson(response);
+                                setData();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                ToastUtils.showToast(mActivity, "网络发生异常", Toast.LENGTH_SHORT);
+            }
+        });
+
+        mActivity.mRequestQueue.add(jsonObjectRequest);
     }
 
     private void setData() {
+        ImageListener listener = ImageLoader.getImageListener(pwb_imageview_item_status_avatar,
+                R.drawable.ic_com_sina_weibo_sdk_logo,
+                R.drawable.ic_com_sina_weibo_sdk_logo);
+        mActivity.mImageLoader.get(mUser.getProfile_image_url(), listener);
 
+        pwb_textview_sender.setText(mUser.getName());
+        pwb_textview_item_status_from_and_when.setText("简介:" + mUser.getDescription());
+        pwb_status_count.setText(mUser.getStatuses_count()+"");
+        pwb_follows_count.setText(mUser.getFriends_count()+"");
+        pwb_followed_count.setText(mUser.getFollowers_count()+"");
     }
 
     protected List<UserItem> personalItem (){
