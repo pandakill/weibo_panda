@@ -146,7 +146,6 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
 
     /** 传入页码,加载评论 */
     private void loadData(final long page) {
-        Log.i("Tag/shunxu", "loadData begin");
         String uri = Uri.COMMENTS_SHOW;
         uri += "?access_token=" + mAccessToken.getToken() + "&id=" + mStatus.getId();
         uri += "&page="+page;

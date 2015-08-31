@@ -19,6 +19,9 @@ public interface Uri {
     /** 根据微博ID获取单条微博内容   */
     String STATUS_SHOW = BASE_URI + "statuses/show.json";
 
+    /** 获取某个用户最新发表的微博列表  */
+    String STATUS_USER_TIMELINE = BASE_URI + "statuses/user_timeline.json";
+
     /** 根据微博ID返回某条微博的评论列表  */
     String COMMENTS_SHOW = BASE_URI + "comments/show.json";
 
@@ -30,4 +33,7 @@ public interface Uri {
 
     /** 获取最新的提到当前登录用户的评论，即@我的评论  */
     String COMMENTS_MESSION = BASE_URI + "comments/mentions.json";
+
+    /** 根据用户ID获取用户信息  */
+    String USER_SHOW = BASE_URI + "users/show.json";
 }

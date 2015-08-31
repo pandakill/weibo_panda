@@ -40,6 +40,9 @@
         <!-- 消息列表的activity -->
         <activity android:name=".activity.MessageActivity" />
 
+        <!-- 用户个人中心的activity -->
+        <activity android:name=".activity.UserInfoActivity" />
+
         <!-- 必须注册在微博授权，分享微博时候用到 -->
         <activity
             android:name="com.sina.weibo.sdk.component.WeiboSdkBrowser"

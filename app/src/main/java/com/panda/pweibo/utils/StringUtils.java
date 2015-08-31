@@ -1,6 +1,7 @@
 package com.panda.pweibo.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.panda.pweibo.R;
+import com.panda.pweibo.activity.UserInfoActivity;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,7 +57,10 @@ public class StringUtils {
 
                     @Override
                     public void onClick(View v) {
-                        ToastUtils.showToast(context, "用户:" + atStr, Toast.LENGTH_SHORT);
+                        Intent intent = new Intent(context, UserInfoActivity.class);
+                        String userName = atStr.replace("@", "");
+                        intent.putExtra("userName", userName);
+                        context.startActivity(intent);
                     }
                 };
 
