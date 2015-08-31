@@ -3,7 +3,6 @@ package com.panda.pweibo.fragment;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.os.Build;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;

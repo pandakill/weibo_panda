@@ -20,7 +20,7 @@
 
     <include layout="@layout/include_personal_info" />
 
-    <ListView
+    <com.panda.pweibo.widget.WrapHeightListView
         android:id="@+id/pwb_lv_user"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
