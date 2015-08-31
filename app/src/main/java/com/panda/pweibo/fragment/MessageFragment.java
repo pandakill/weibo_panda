@@ -26,12 +26,6 @@ public class MessageFragment extends MyFragment {
 
     private     View                    mView;
     private     MainActivity            mActivity;
-    private     int                     mMessageType;
-
-    final private int MESSAGE_AT        = 1;
-    final private int MESSAGE_COMMENT   = 2;
-    final private int MESSAGE_GOOD      = 3;
-    final private int MESSAGE_BOX       = 4;
 
     @Override
     public void onCreate(Bundle saveInstanceState) {

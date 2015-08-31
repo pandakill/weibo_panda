@@ -17,7 +17,6 @@ import com.panda.pweibo.constants.Uri;
 import com.panda.pweibo.utils.ToastUtils;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 /**

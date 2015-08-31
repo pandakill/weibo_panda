@@ -16,6 +16,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageLoader.ImageCache;
 import com.android.volley.toolbox.Volley;
+import com.panda.pweibo.BaseApplication;
 import com.panda.pweibo.R;
 import com.panda.pweibo.fragment.FragmentController;
 
@@ -43,7 +44,7 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
         mController.showFragment(0);
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        mRequestQueue = Volley.newRequestQueue(this);
+        mRequestQueue = BaseApplication.getsRequestQueue();
 
         mLruCache = new LruCache<>(40);
         mImageCache = new ImageCache() {

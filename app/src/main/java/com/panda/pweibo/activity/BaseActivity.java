@@ -2,6 +2,7 @@ package com.panda.pweibo.activity;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.Application;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageLoader.ImageCache;
 import com.android.volley.toolbox.ImageLoader.ImageListener;
 import com.android.volley.toolbox.Volley;
+import com.panda.pweibo.BaseApplication;
 import com.panda.pweibo.constants.AccessTokenKeeper;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 
@@ -34,7 +36,7 @@ public class BaseActivity extends Activity {
         super.onCreate(saveInstanceState);
 
         mAccessToken = AccessTokenKeeper.readAccessToken(this);
-        mRequestQueue = Volley.newRequestQueue(this);
+        mRequestQueue = BaseApplication.getsRequestQueue();
         mLruCache = new LruCache<>(40);
         mImageCache = new ImageCache() {
             @Override
