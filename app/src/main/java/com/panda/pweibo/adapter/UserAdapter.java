@@ -47,11 +47,12 @@ public class UserAdapter extends BaseAdapter {
 
         ViewHolder holder;
 
-        if (convertView != null) {
+        if (convertView == null) {
             convertView = View.inflate(mContext, R.layout.item_user, null);
             holder = new ViewHolder();
 
             initViewHolder(holder, convertView);
+            convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
             resetViewHolder(holder);
