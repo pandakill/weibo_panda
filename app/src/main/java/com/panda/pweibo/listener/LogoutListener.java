@@ -3,7 +3,6 @@ package com.panda.pweibo.listener;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -44,17 +43,16 @@ public class LogoutListener implements View.OnClickListener {
     @Override
     public void onClick(View v) {
 
-        String uri = Uri.OAUTH2_REVOKE_OAUTH2 + "?access_token=" + mAccesssToken.getToken();
-        Log.i("tag", "uri=" + uri);
+        String uri = Uri.ACCOUNT_END_SESSION + "?access_token=" + mAccesssToken.getToken();
         ToastUtils.showToast(mContext, "退出按钮被点击", Toast.LENGTH_SHORT);
         JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET, uri, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 if (null != response) {
-                    try {
-                        String value = response.getString("result");
+//                    try {
+//                        String value = response.getString("result");
 
-                        if (value.equals("true")) {
+                        if (!response.has("error")) {
                             ToastUtils.showToast(mContext, "退出成功", Toast.LENGTH_SHORT);
                             Intent intent = new Intent(mContext, PWBAuthActivity.class);
                             mContext.startActivity(intent);
@@ -62,9 +60,9 @@ public class LogoutListener implements View.OnClickListener {
                         } else {
                             ToastUtils.showToast(mContext, "退出发生异常", Toast.LENGTH_SHORT);
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
                 }
             }
         }, new Response.ErrorListener() {

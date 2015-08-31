@@ -13,6 +13,9 @@ public interface Uri {
     /** 授权回收接口，帮助开发者主动取消用户的授权 */
     String OAUTH2_REVOKE_OAUTH2 = "https://api.weibo.com/oauth2/revokeoauth2";
 
+    /** 退出登录 */
+    String ACCOUNT_END_SESSION = BASE_URI + "account/end_session.json";
+
     /** 获取当前登录用户及其所关注用户的最新微博  */
     String STATUS_HOME_TIMELINE = BASE_URI + "statuses/home_timeline.json";
 

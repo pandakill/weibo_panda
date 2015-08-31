@@ -153,7 +153,6 @@ public class PWBAuthActivity extends BaseActivity {
 
         String message = String.format(format, mAccessToken.getToken(), date);
         if (hasExisted) {
-            message = getString(R.string.pwb_token_has_existed) + "\n" + message;
             ToastUtils.showToast(PWBAuthActivity.this, "授权已过期,请重新授权", Toast.LENGTH_SHORT);
         } else {
             Intent intent = new Intent(PWBAuthActivity.this, MainActivity.class);

@@ -52,13 +52,11 @@ public class SplashActivity extends BaseActivity {
                 case WHAT_INTENT2LOGIN:
                     Intent intent = new Intent(SplashActivity.this, PWBAuthActivity.class);
                     startActivity(intent);
-                    finish();
                     break;
 
                 case WHAT_INTENT2MAIN:
-                    intent = new Intent(SplashActivity.this, PWBAuthActivity.class);
+                    intent = new Intent(SplashActivity.this, MainActivity.class);
                     startActivity(intent);
-                    finish();
                     break;
 
                 default:
