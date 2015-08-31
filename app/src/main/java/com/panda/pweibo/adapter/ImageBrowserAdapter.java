@@ -1,12 +1,17 @@
 package com.panda.pweibo.adapter;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.ImageLoader.ImageListener;
+import com.android.volley.toolbox.NetworkImageView;
 import com.panda.pweibo.R;
 import com.panda.pweibo.activity.MainActivity;
 import com.panda.pweibo.models.PicUrls;
@@ -62,11 +67,43 @@ public class ImageBrowserAdapter extends PagerAdapter {
         int index = position % mPicUrlsList.size();
         View view = mPicViewList.get(index);
 
-        final ImageView pwb_iv_image_browser = (ImageView) view.findViewById(R.id.pwb_iv_image_browser);
+        final ImageView pwb_iv_image_browser
+                = (NetworkImageView) view.findViewById(R.id.pwb_iv_image_browser);
         PicUrls picUrl = mPicUrlsList.get(index);
 
-//        String url = picUrl.
+        String url = picUrl.IsShowOriImg() ? picUrl.getOriginal_pic() : picUrl.getBmiddle_pic();
+
+        ImageListener listener = ImageLoader.getImageListener(pwb_iv_image_browser,
+                R.drawable.pwb_test_image, R.drawable.ic_com_sina_weibo_sdk_logo);
+        mImageLoader.get(url, listener);
 
         return view;
+    }
+
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+        container.removeView((View) object);
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
+        return POSITION_NONE;
+    }
+
+    public PicUrls getPic(int position) {
+        return mPicUrlsList.get(position % mPicUrlsList.size());
+    }
+
+    public Bitmap getBitmap(int position) {
+        Bitmap bitmap = null;
+        View view = mPicViewList.get(position % mPicViewList.size());
+        ImageView iv_image_browser = (ImageView) view.findViewById(R.id.pwb_iv_image_browser);
+        Drawable drawable = iv_image_browser.getDrawable();
+        if(drawable != null && drawable instanceof BitmapDrawable) {
+            BitmapDrawable bd = (BitmapDrawable) drawable;
+            bitmap = bd.getBitmap();
+        }
+
+        return bitmap;
     }
 }

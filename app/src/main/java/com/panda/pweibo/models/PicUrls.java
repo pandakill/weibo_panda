@@ -48,6 +48,14 @@ public class PicUrls implements Serializable {
         return thumbnail_pic;
     }
 
+    public void setShowOriImg(boolean showOriImg) {
+        this.showOriImg = showOriImg;
+    }
+
+    public boolean IsShowOriImg() {
+        return showOriImg;
+    }
+
     public PicUrls parseJson(JSONObject jsonObject) {
         if (jsonObject != null) {
             PicUrls picUrls = new PicUrls();

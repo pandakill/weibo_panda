@@ -44,6 +44,9 @@
         <!-- 用户个人中心的activity -->
         <activity android:name=".activity.UserInfoActivity" />
 
+        <!-- 图片浏览的activity -->
+        <activity android:name=".activity.ImageBrowserActivity" />
+
         <!-- 必须注册在微博授权，分享微博时候用到 -->
         <activity
             android:name="com.sina.weibo.sdk.component.WeiboSdkBrowser"
