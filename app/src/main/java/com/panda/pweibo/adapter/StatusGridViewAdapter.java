@@ -7,11 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.RelativeLayout.LayoutParams;
+import android.widget.Toast;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.panda.pweibo.R;
 import com.panda.pweibo.models.PicUrls;
+import com.panda.pweibo.utils.ToastUtils;
 import com.panda.pweibo.widget.WrapHeightGridView;
 
 import java.util.ArrayList;
@@ -74,9 +76,16 @@ public class StatusGridViewAdapter extends BaseAdapter{
         holder.imageView.setLayoutParams(params);
 
         // 加载图片
-        PicUrls urls = getItem(position);
+        final PicUrls urls = getItem(position);
         holder.imageView.setTag(urls.getThumbnail_pic());
         holder.imageView.setImageUrl(urls.getThumbnail_pic(), mImageLoader);
+
+        holder.imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ToastUtils.showToast(mContext, urls.getOriginal_pic(), Toast.LENGTH_SHORT);
+            }
+        });
 
         return convertView;
     }
