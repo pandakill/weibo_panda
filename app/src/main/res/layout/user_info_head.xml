@@ -12,15 +12,17 @@
         android:layout_height="56dp"
         />
 
-    <ImageView
+    <com.android.volley.toolbox.NetworkImageView
         android:id="@+id/iv_avatar"
+        android:scaleType="centerCrop"
         android:layout_width="72dp"
-        android:layout_height="72dp" />
+        android:layout_height="72dp"
+        android:src="@drawable/pwb_avatar"/>
 
     <TextView
         android:id="@+id/tv_name"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"

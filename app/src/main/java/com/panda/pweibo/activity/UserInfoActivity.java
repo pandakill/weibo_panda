@@ -25,7 +25,10 @@ import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.ImageLoader.ImageListener;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.NetworkImageView;
 import com.handmark.pulltorefresh.library.ILoadingLayout;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnLastItemVisibleListener;
@@ -54,25 +57,24 @@ public class UserInfoActivity extends BaseActivity implements
 
 
 
-    private boolean isCurrentUser;
-    private User user;
-    private String userName;
+    private boolean         mIsCurrentUser;
+    private User            mUser;
+    private String          mUserName;
 
-    private List<Status> statuses = new ArrayList<>();
-    private StatusAdapter statusAdapter;
-    private long curPage = 1;
-    private boolean isLoadingMore;
-    private int curScrollY;
+    private List<Status>    mListStatus;
+    private StatusAdapter   mStatusAdapter;
+    private long            mCurPage = 1;
+    private boolean         mIsLoadingMore;
+    private int             mCurScrollY;
 
     private int minImageHeight = -1;
     private int maxImageHeight = -1;
 
-    private View title;
-//    private ImageView titlebar_iv_left;
+    private View title_bar;
     private TextView titlebar_tv;
 
     private View user_info_head;
-    private ImageView iv_avatar;
+    private NetworkImageView iv_avatar;
     private TextView tv_name;
     private TextView tv_follows;
     private TextView tv_fans;
@@ -96,11 +98,12 @@ public class UserInfoActivity extends BaseActivity implements
         setContentView(R.layout.activity_user_info);
         Intent intent = getIntent();
 
-        userName = intent.getStringExtra("userName");
+        mUserName = intent.getStringExtra("userName");
+        mListStatus = new ArrayList<>();
 
-        if(TextUtils.isEmpty(userName)) {
-            isCurrentUser = true;
-            user = new User();
+        if(TextUtils.isEmpty(mUserName)) {
+            mIsCurrentUser = true;
+            mUser = new User();
         }
 
         initView();
@@ -109,12 +112,11 @@ public class UserInfoActivity extends BaseActivity implements
     }
 
     private void initView() {
-        title = new TitlebarUtils(this)
+        title_bar = new TitlebarUtils(this)
                 .setTitlebarTvLeft("返回")
                 .setLeftOnClickListner(this)
                 .build();
-//        titlebar_iv_left = (ImageView) title.findViewById(R.id.titlebar_imageview_left);
-        titlebar_tv = (TextView) title.findViewById(R.id.titlebar_textview_left);
+        titlebar_tv = (TextView) title_bar.findViewById(R.id.titlebar_textview_left);
         initInfoHead();
         initTab();
         initListView();
@@ -123,7 +125,7 @@ public class UserInfoActivity extends BaseActivity implements
     private void initInfoHead() {
         iv_user_info_head = (ImageView) findViewById(R.id.iv_user_info_head);
         user_info_head = View.inflate(this, R.layout.user_info_head, null);
-        iv_avatar = (ImageView) user_info_head.findViewById(R.id.iv_avatar);
+        iv_avatar = (NetworkImageView) user_info_head.findViewById(R.id.iv_avatar);
         tv_name = (TextView) user_info_head.findViewById(R.id.tv_name);
         tv_follows = (TextView) user_info_head.findViewById(R.id.tv_follows);
         tv_fans = (TextView) user_info_head.findViewById(R.id.tv_fans);
@@ -153,8 +155,8 @@ public class UserInfoActivity extends BaseActivity implements
         initLoadingLayout(plv_user_info.getLoadingLayoutProxy());
         footView = View.inflate(this, R.layout.footer_loading, null);
         final ListView lv = plv_user_info.getRefreshableView();
-        statusAdapter = new StatusAdapter(this, statuses, mImageLoader);
-        plv_user_info.setAdapter(statusAdapter);
+        mStatusAdapter = new StatusAdapter(this, mListStatus, mImageLoader);
+        plv_user_info.setAdapter(mStatusAdapter);
         lv.addHeaderView(user_info_head);
         lv.addHeaderView(user_info_tab);
         plv_user_info.setOnRefreshListener(new OnRefreshListener<ListView>() {
@@ -169,7 +171,7 @@ public class UserInfoActivity extends BaseActivity implements
 
                     @Override
                     public void onLastItemVisible() {
-                        loadStatuses(curPage + 1);
+                        loadStatuses(mCurPage + 1);
                     }
                 });
 
@@ -177,7 +179,7 @@ public class UserInfoActivity extends BaseActivity implements
 
             @Override
             public void onScrollChanged(int l, int t, int oldl, int oldt) {
-                int scrollY = curScrollY = t;
+                int scrollY = mCurScrollY = t;
 
                 if (minImageHeight == -1) {
                     minImageHeight = iv_user_info_head.getHeight();
@@ -206,7 +208,7 @@ public class UserInfoActivity extends BaseActivity implements
         iv_user_info_head.addOnLayoutChangeListener(new OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                if (curScrollY == bottom - oldBottom) {
+                if (mCurScrollY == bottom - oldBottom) {
                     iv_user_info_head.layout(0, 0,
                             iv_user_info_head.getWidth(),
                             oldBottom);
@@ -227,14 +229,14 @@ public class UserInfoActivity extends BaseActivity implements
                         iv_user_info_head.getWidth(),
                         user_info_head.getTop() + iv_user_info_head.getHeight());
 
-                if (user_info_head.getBottom() < title.getBottom()) {
+                if (user_info_head.getBottom() < title_bar.getBottom()) {
                     shadow_user_info_tab.setVisibility(View.VISIBLE);
-                    title.setBackgroundResource(R.drawable.navigationbar_background);
+                    title_bar.setBackgroundResource(R.drawable.navigationbar_background);
 //                    titlebar_iv_left.setImageResource(R.drawable.navigationbar_back_sel);
                     titlebar_tv.setVisibility(View.VISIBLE);
                 } else {
                     shadow_user_info_tab.setVisibility(View.GONE);
-                    title.setBackgroundResource(R.drawable.userinfo_navigationbar_background);
+                    title_bar.setBackgroundResource(R.drawable.userinfo_navigationbar_background);
 //                    titlebar_iv_left.setImageResource(R.drawable.userinfo_navigationbar_back_sel);
                     titlebar_tv.setVisibility(View.GONE);
                 }
@@ -250,7 +252,7 @@ public class UserInfoActivity extends BaseActivity implements
     }
 
     private void loadData() {
-        if(isCurrentUser) {
+        if(mIsCurrentUser) {
             setUserInfo();
         } else {
             loadUserInfo();
@@ -258,35 +260,45 @@ public class UserInfoActivity extends BaseActivity implements
         loadStatuses(1);
     }
 
+    /** 填充数据 */
     private void setUserInfo() {
-        if(user == null) {
+        if(mUser == null) {
             return;
         }
-        // set data
-        tv_name.setText(user.getName());
+        // 填充数据
+        tv_name.setText(mUser.getName());
         titlebar_tv.setText("返回");
-//        imageLoader.displayImage(user.getAvatar_large(), new ImageViewAware(iv_avatar),
-//                ImageOptHelper.getAvatarOptions());
-        tv_follows.setText("关注 " + user.getFriends_count());
-        tv_fans.setText("粉丝 " + user.getFollowers_count());
-        tv_sign.setText("简介:" + user.getDescription());
+        tv_follows.setText("关注 " + mUser.getFriends_count());
+        tv_fans.setText("粉丝 " + mUser.getFollowers_count());
+        tv_sign.setText("简介:" + mUser.getDescription());
+        ImageListener imageListener = ImageLoader.getImageListener(iv_avatar,
+                R.drawable.ic_com_sina_weibo_sdk_logo,
+                R.drawable.ic_com_sina_weibo_sdk_logo);
+        mImageLoader.get(mUser.getProfile_image_url(), imageListener);
     }
 
     /** 读取用户信息 */
     private void loadUserInfo() {
         String uri = Uri.USER_SHOW;
         uri += "?access_token=" + mAccessToken.getToken();
-        userName = URLEncoder.encode(userName);
-        uri += "&screen_name=" + userName;
+        mUserName = URLEncoder.encode(mUserName);
+        uri += "&screen_name=" + mUserName;
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, uri, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            user = new User().parseJson(response);
-
-                            setUserInfo();
+                            if (response.has("error")) {
+                                int errorCode = response.getInt("error_code");
+                                String error = response.getString("error");
+                                ToastUtils.showToast(UserInfoActivity.this,
+                                        "错误码：" + errorCode + "-" + error,
+                                        Toast.LENGTH_SHORT);
+                            } else {
+                                mUser = new User().parseJson(response);
+                                setUserInfo();
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -294,23 +306,24 @@ public class UserInfoActivity extends BaseActivity implements
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
+                ToastUtils.showToast(UserInfoActivity.this, "网络发生异常", Toast.LENGTH_SHORT);
             }
         });
 
         mRequestQueue.add(jsonObjectRequest);
     }
 
+    /** 加载用户最近的微博 */
     private void loadStatuses(final long requestPage) {
 
-        if(isLoadingMore) {
+        if(mIsLoadingMore) {
             return;
         }
 
-        isLoadingMore = true;
+        mIsLoadingMore = true;
         String uri = Uri.STATUS_USER_TIMELINE;
         uri += "?access_token=" + mAccessToken.getToken();
-        uri += "&screen_name=" + userName;
+        uri += "&screen_name=" + mUserName;
         uri += "&since_id=0&max_id=0&count=25&base_app=0&feature=0&trim_user=0&page=" + requestPage;
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, uri, null,
@@ -318,22 +331,35 @@ public class UserInfoActivity extends BaseActivity implements
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            JSONArray jsonArray = response.getJSONArray("statuses");
+                            if (response.has("error")) {
+                                int errorCode = response.getInt("error_code");
+                                String error = response.getString("error");
+                                if ( errorCode == 21335) {
+                                    ToastUtils.showToast(UserInfoActivity.this,
+                                            "应用未添加该测试用户",
+                                            Toast.LENGTH_SHORT);
+                                } else {
+                                    ToastUtils.showToast(UserInfoActivity.this,
+                                            "错误码：" + errorCode + "-" + error,
+                                            Toast.LENGTH_SHORT);
+                                }
+                            } else {
+                                JSONArray jsonArray = response.getJSONArray("statuses");
 
-                            if (requestPage == 1) {
-                                statuses.clear();
+                                if (requestPage == 1) {
+                                    mListStatus.clear();
+                                }
+
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    Status status = new Status().parseJson(jsonArray.getJSONObject(i));
+                                    mListStatus.add(status);
+                                }
+                                long totalNum = response.getLong("total_number");
+
+                                addStatus(mListStatus, totalNum);
+
+                                mIsLoadingMore = false;
                             }
-
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                Status status = new Status().parseJson(jsonArray.getJSONObject(i));
-                                statuses.add(status);
-                            }
-                            long totalNum = response.getLong("total_number");
-
-                            addStatus(statuses, totalNum);
-
-                            isLoadingMore = false;
-                            plv_user_info.onRefreshComplete();
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -342,7 +368,7 @@ public class UserInfoActivity extends BaseActivity implements
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
+                ToastUtils.showToast(UserInfoActivity.this, "网络发生异常", Toast.LENGTH_SHORT);
             }
         });
 
@@ -351,13 +377,13 @@ public class UserInfoActivity extends BaseActivity implements
 
     private void addStatus(List<Status> listStatus, long totalNumber) {
         for(Status status : listStatus) {
-            if(!statuses.contains(status)) {
-                statuses.add(status);
+            if(!mListStatus.contains(status)) {
+                mListStatus.add(status);
             }
         }
-        statusAdapter.notifyDataSetChanged();
+        mStatusAdapter.notifyDataSetChanged();
 
-        if(curPage < totalNumber) {
+        if(mCurPage < totalNumber) {
             addFootView(plv_user_info, footView);
         } else {
             removeFootView(plv_user_info, footView);
@@ -381,20 +407,8 @@ public class UserInfoActivity extends BaseActivity implements
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.titlebar_imageview_left:
+            case R.id.titlebar_textview_left:
                 UserInfoActivity.this.finish();
-                break;
-
-            case R.id.iv_avatar:
-                break;
-
-            case R.id.pwb_ll_share_tottom:
-                break;
-
-            case R.id.pwb_ll_comment_tottom:
-                break;
-
-            case R.id.pwb_ll_praise_tottom:
                 break;
 
             default:
@@ -411,6 +425,7 @@ public class UserInfoActivity extends BaseActivity implements
 //        startActivity(intent);
     }
 
+    /** tab和shadow_tab保持一致性 */
     private void syncRadioButton(RadioGroup group, int checkedId) {
         int index = group.indexOfChild(group.findViewById(checkedId));
 
