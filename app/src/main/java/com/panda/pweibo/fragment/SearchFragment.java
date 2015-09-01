@@ -57,7 +57,7 @@ public class SearchFragment extends MyFragment {
 
         pwb_lv_item.setAdapter(mAdapter);
 
-        new TitlebarUtils(mActivity).setTitleContent("发现");
+        new TitlebarUtils(mView).setTitleContent("发现");
 
     }
 
