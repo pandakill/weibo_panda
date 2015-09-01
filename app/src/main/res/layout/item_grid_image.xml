@@ -18,6 +18,15 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/ic_com_sina_weibo_sdk_logo"/>
+        
+        <ImageView
+            android:id="@+id/pwb_iv_delete"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:visibility="gone"
+            android:src="@drawable/pwb_icon_delete_black"
+            android:layout_alignParentRight="true"
+            android:padding="2dp"/>
 
     </LinearLayout>
 
