@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.android.volley.toolbox.NetworkImageView;
@@ -68,10 +69,10 @@ public class WriteStatusGridImgsAdapter extends BaseAdapter {
         int width = (mGridView.getWidth() - horizontalSpacing * 2
                 - mGridView.getPaddingLeft() - mGridView.getPaddingRight()) / 3;
 
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(width, width);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, width);
         holder.pwb_iv_image_browser.setLayoutParams(params);
 
-        if(position < getCount() - 1) {
+//        if(position < getCount() - 1) {
             // set data
             Uri item = getItem(position);
             holder.pwb_iv_image_browser.setImageURI(item);
@@ -85,10 +86,10 @@ public class WriteStatusGridImgsAdapter extends BaseAdapter {
                     notifyDataSetChanged();
                 }
             });
-        } else {
-            holder.pwb_iv_image_browser.setImageResource(R.drawable.pwb_compose_pic_add);
-            holder.pwb_iv_delete.setVisibility(View.GONE);
-        }
+//        } else {
+//            holder.pwb_iv_image_browser.setImageResource(R.drawable.pwb_compose_pic_add);
+//            holder.pwb_iv_delete.setVisibility(View.GONE);
+//        }
 
         return convertView;
     }

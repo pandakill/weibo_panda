@@ -28,6 +28,9 @@ public interface Uri {
     /** 上传图片并发布一条新微博  */
     String STATUS_UPLOAD = BASE_URI + "statuses/upload.json";
 
+    /** 发布一条纯文字新微博  */
+    String STATUS_UPDATE = BASE_URI + "statuses/update.json";
+
     /** 根据微博ID获取单条微博内容   */
     String STATUS_SHOW = BASE_URI + "statuses/show.json";
 
