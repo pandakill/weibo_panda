@@ -186,11 +186,11 @@ public class PersonalFragment extends MyFragment implements OnClickListener {
                 break;
 
             case R.id.pwb_ll_follows_count:
-                ToastUtils.showToast(mActivity, "关注:" + mUser.getFriends_count() + "", Toast.LENGTH_SHORT);
+                ToastUtils.showToast(mActivity, "关注:" + ((mUser != null) ? mUser.getFriends_count() : 0) + "", Toast.LENGTH_SHORT);
                 break;
 
             case R.id.pwb_ll_followed_count:
-                ToastUtils.showToast(mActivity, "粉丝:" + mUser.getFollowers_count() + "", Toast.LENGTH_SHORT);
+                ToastUtils.showToast(mActivity, "粉丝:" + ((mUser != null) ? mUser.getFollowers_count() : 0) + "", Toast.LENGTH_SHORT);
                 break;
 
             default:

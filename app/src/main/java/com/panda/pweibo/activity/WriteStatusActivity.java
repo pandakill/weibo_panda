@@ -1,39 +1,82 @@
 package com.panda.pweibo.activity;
 
+import android.app.AlertDialog;
+import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.NetworkImageView;
 import com.panda.pweibo.R;
+import com.panda.pweibo.adapter.WriteStatusGridImgsAdapter;
 import com.panda.pweibo.constants.Constants;
+import com.panda.pweibo.utils.ImageUtils;
 import com.panda.pweibo.utils.TitlebarUtils;
 import com.panda.pweibo.utils.ToastUtils;
+import com.panda.pweibo.widget.WrapHeightGridView;
 import com.sina.weibo.sdk.exception.WeiboException;
 import com.sina.weibo.sdk.net.RequestListener;
 import com.sina.weibo.sdk.openapi.StatusesAPI;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  *
  * Created by Administrator on 2015/8/26:19:45.
  */
-public class WriteStatusActivity extends BaseActivity implements OnClickListener {
+public class WriteStatusActivity extends BaseActivity implements OnClickListener, OnItemClickListener {
 
-    private TextView        pwb_et_write_status;
-    private ImageView       pwb_iv_image;
-    private ImageView       pwb_iv_at;
-    private ImageView       pwb_iv_topic;
-    private ImageView       pwb_iv_emoji;
-    private ImageView       pwb_iv_add;
+    private WriteStatusGridImgsAdapter mStatusImgsAdapter;
+    private ArrayList<Uri>      mImgUris;
+    private Uri                 mUri;
+
+    /** 内容编辑框 */
+    private TextView            pwb_et_write_status;
+
+    /** 添加的九宫格图片 */
+    private WrapHeightGridView  pwb_gv_status_image;
+
+    /** 转发的微博部分 */
+    private LinearLayout        include_retweeted_card;
+    private NetworkImageView    pwb_iv_small_status_image;
+    private TextView            pwb_tv_small_status_name;
+    private TextView            pwb_tv_small_status_content;
+
+    /** 底部图片按钮栏 */
+    private ImageView           pwb_iv_image;
+    private ImageView           pwb_iv_at;
+    private ImageView           pwb_iv_topic;
+    private ImageView           pwb_iv_emoji;
+    private ImageView           pwb_iv_add;
 
     @Override
     public void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
         setContentView(R.layout.activity_write_status);
+
+        mImgUris = new ArrayList<>();
 
         initView();
     }
@@ -55,19 +98,42 @@ public class WriteStatusActivity extends BaseActivity implements OnClickListener
                     }
                 });
 
+        /** 初始化编辑框 */
         pwb_et_write_status = (TextView) findViewById(R.id.pwb_et_write_status);
+        pwb_et_write_status.setHint("分享新鲜事...");
+
+        /** 初始化底部添加栏 */
         pwb_iv_image        = (ImageView) findViewById(R.id.pwb_iv_image);
         pwb_iv_at           = (ImageView) findViewById(R.id.pwb_iv_at);
         pwb_iv_topic        = (ImageView) findViewById(R.id.pwb_iv_topic);
         pwb_iv_emoji        = (ImageView) findViewById(R.id.pwb_iv_emoji);
         pwb_iv_add          = (ImageView) findViewById(R.id.pwb_iv_add);
 
-        pwb_et_write_status.setHint("分享新鲜事...");
         pwb_iv_image.setOnClickListener(this);
         pwb_iv_at.setOnClickListener(this);
         pwb_iv_topic.setOnClickListener(this);
         pwb_iv_emoji.setOnClickListener(this);
         pwb_iv_add.setOnClickListener(this);
+
+        initRetweet();
+        initGridViewImage();
+    }
+
+    /** 初始化转发微博部分的控件 */
+    private void initRetweet() {
+        include_retweeted_card      =   (LinearLayout) findViewById(R.id.include_retweeted_card);
+        pwb_iv_small_status_image   =   (NetworkImageView) findViewById(R.id.pwb_iv_small_status_image);
+        pwb_tv_small_status_name    =   (TextView) findViewById(R.id.pwb_tv_small_status_name);
+        pwb_tv_small_status_content =   (TextView) findViewById(R.id.pwb_tv_small_status_content);
+    }
+
+    /** 初始化gridview */
+    private void initGridViewImage() {
+        pwb_gv_status_image         =   (WrapHeightGridView) findViewById(R.id.pwb_gv_status_image);
+
+        mStatusImgsAdapter = new WriteStatusGridImgsAdapter(this, mImgUris, pwb_gv_status_image);
+        pwb_gv_status_image.setAdapter(mStatusImgsAdapter);
+        pwb_gv_status_image.setOnItemClickListener(this);
     }
 
     /** 发送纯文字微博的实现 */
@@ -78,6 +144,54 @@ public class WriteStatusActivity extends BaseActivity implements OnClickListener
             ToastUtils.showToast(this, "微博内容不能为空", Toast.LENGTH_LONG);
             return;
         }
+
+        /** 新浪微博官方的api */
+        StatusesAPI statusesAPI = new StatusesAPI(this, Constants.APP_KEY, mAccessToken);
+
+        String imgFilePath = null;
+        if (mImgUris.size() > 0) {
+
+            // 微博API中只支持上传一张图片
+            Uri uri = mImgUris.get(0);
+
+            imgFilePath = ImageUtils.getImageAbsolutePath(this, uri);
+
+            Bitmap bitmap = BitmapFactory.decodeFile(imgFilePath);
+
+            statusesAPI.upload(content, bitmap, "0.0", "0.0", new RequestListener() {
+                @Override
+                public void onComplete(String s) {
+                    ToastUtils.showToast(WriteStatusActivity.this, "发送成功", Toast.LENGTH_SHORT);
+                    Intent data = new Intent();
+                    data.putExtra("sendStatusSuccess", true);
+                    setResult(RESULT_OK, data);
+                    WriteStatusActivity.this.finish();
+                }
+
+                @Override
+                public void onWeiboException(WeiboException e) {
+                    ToastUtils.showToast(WriteStatusActivity.this, "发送失败", Toast.LENGTH_SHORT);
+                }
+            });
+        } else {
+            statusesAPI.update(content, "0.0", "0.0", new RequestListener() {
+                @Override
+                public void onComplete(String s) {
+                    ToastUtils.showToast(WriteStatusActivity.this, "发送成功", Toast.LENGTH_SHORT);
+                    Intent data = new Intent();
+                    data.putExtra("sendStatusSuccess", true);
+                    setResult(RESULT_OK, data);
+                    WriteStatusActivity.this.finish();
+                }
+
+                @Override
+                public void onWeiboException(WeiboException e) {
+                    ToastUtils.showToast(WriteStatusActivity.this, "发送失败", Toast.LENGTH_SHORT);
+                }
+            });
+        }
+
+
 
         // 填写参数和uri地址
 //        String uri = Uri.comments_create;
@@ -94,71 +208,45 @@ public class WriteStatusActivity extends BaseActivity implements OnClickListener
          *
          * TODO 这里的请求头有必要对其重写
          */
+//        String uri = com.panda.pweibo.constants.Uri.STATUS_UPDATE + "?";
+//        JSONObject requestParams = new JSONObject();
+//        try {
+//            requestParams.put("access_token", mAccessToken.getToken());
+//            requestParams.put("status", content);
+//            requestParams.put("lat", "0.0");
+//            requestParams.put("long", "0.0");
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//
 //        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
 //                uri, requestParams, new Response.Listener<JSONObject>() {
 //            @Override
 //            public void onResponse(JSONObject jsonObject) {
-//                ToastUtils.showToast(WriteCommentActivity.this, "评论发送成功", Toast.LENGTH_SHORT);
+//                ToastUtils.showToast(WriteStatusActivity.this, "发送成功", Toast.LENGTH_SHORT);
 //
 //                // 评论发送成功后,设置result结果数据，并关闭本页面
 //                Intent data = new Intent();
 //                data.putExtra("sendCommentSuccess", true);
 //                setResult(RESULT_OK, data);
 //
-//                WriteCommentActivity.this.finish();
+//                WriteStatusActivity.this.finish();
 //            }
 //        }, new Response.ErrorListener() {
 //            @Override
 //            public void onErrorResponse(VolleyError volleyError) {
-//                ToastUtils.showToast(WriteCommentActivity.this, "网络发生错误,发送评论失败", Toast.LENGTH_SHORT);
+//                ToastUtils.showToast(WriteStatusActivity.this, "网络发生错误,发送失败", Toast.LENGTH_SHORT);
 //            }
 //        });
-
-//        Request request = new NormalPostRequest(uri, new Response.Listener<JSONObject>() {
-//            @Override
-//            public void onResponse(JSONObject jsonObject) {
-//                ToastUtils.showToast(WriteCommentActivity.this, "评论发送成功", Toast.LENGTH_SHORT);
 //
-//                // 评论发送成功后,设置result结果数据，并关闭本页面
-//                Intent data = new Intent();
-//                data.putExtra("sendCommentSuccess", true);
-//                setResult(RESULT_OK, data);
-//
-//                WriteCommentActivity.this.finish();
-//            }
-//        }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError volleyError) {
-//                ToastUtils.showToast(WriteCommentActivity.this, "网络发生错误,发送评论失败", Toast.LENGTH_SHORT);
-//            }
-//        }, map);
-
-//        requestQueue.add(jsonObjectRequest);
-
-        /** 新浪微博官方的api */
-        StatusesAPI statusesAPI = new StatusesAPI(this, Constants.APP_KEY, mAccessToken);
-        statusesAPI.update(content, "0.0", "0.0", new RequestListener() {
-            @Override
-            public void onComplete(String s) {
-                ToastUtils.showToast(WriteStatusActivity.this, "发送成功", Toast.LENGTH_SHORT);
-                Intent data = new Intent();
-                data.putExtra("sendStatusSuccess", true);
-                setResult(RESULT_OK, data);
-                WriteStatusActivity.this.finish();
-            }
-
-            @Override
-            public void onWeiboException(WeiboException e) {
-                ToastUtils.showToast(WriteStatusActivity.this, "发送失败", Toast.LENGTH_SHORT);
-            }
-        });
+//        mRequestQueue.add(jsonObjectRequest);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.pwb_iv_image:
-                ToastUtils.showToast(this, "加入图片", Toast.LENGTH_SHORT);
+                showPicSelect();
                 break;
 
             case R.id.pwb_iv_at:
@@ -182,25 +270,99 @@ public class WriteStatusActivity extends BaseActivity implements OnClickListener
         }
     }
 
-    /** 发带有图片的微博 */
-//    private void sendStatusWithPic() {
-//        final String content = pwb_et_write_status.getText().toString();
-//
-//        if (TextUtils.isEmpty(content)) {
-//            ToastUtils.showToast(this, "微博内容不能为空", Toast.LENGTH_LONG);
-//            return;
-//        }
-//        StatusesAPI statusesAPI = new StatusesAPI(this, Constants.APP_KEY, mAccessToken);
-//        statusesAPI.upload(content, bitmap, "0.0", "0.0", new RequestListener() {
-//            @Override
-//            public void onComplete(String s) {
-//
-//            }
-//
-//            @Override
-//            public void onWeiboException(WeiboException e) {
-//
-//            }
-//        });
-//    }
+    /**
+     * 更新图片显示
+     */
+    private void updateImgs() {
+        if(mImgUris.size() > 0) {
+            // 如果有图片则显示GridView,同时更新内容
+            pwb_gv_status_image.setVisibility(View.VISIBLE);
+            mStatusImgsAdapter.notifyDataSetChanged();
+        } else {
+            // 无图则不显示GridView
+            pwb_gv_status_image.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Object itemAdapter = parent.getAdapter();
+
+        if (itemAdapter instanceof WriteStatusGridImgsAdapter) {
+            // 点击的是添加的图片
+            if (position == mStatusImgsAdapter.getCount() - 1) {
+                // 如果点击了最后一个加号图标,则显示选择图片对话框
+                showPicSelect();
+                updateImgs();
+            }
+        }
+    }
+
+    /** 弹框让用户选择图片获取方式 */
+    private void showPicSelect() {
+        String[] items = new String[] {"拍照", "从手机中选择"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog dialog = builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                switch (which) {
+                    case 0:
+                        ImageUtils.openCameraImage(WriteStatusActivity.this);
+                        break;
+
+                    case 1:
+                        ImageUtils.openLocalImage(WriteStatusActivity.this);
+                        break;
+                }
+            }
+        }).show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case ImageUtils.GET_IMAGE_BY_CAMERA:
+                if(resultCode == RESULT_CANCELED) {
+                    // 如果拍照取消,将之前新增的图片地址删除
+                    ImageUtils.deleteImageUri(this, ImageUtils.imageUriFromCamera);
+                } else {
+                    // 拍照后将图片添加到页面上
+                    mImgUris.add(ImageUtils.imageUriFromCamera);
+                    mUri = data.getData();
+                    updateImgs();
+                }
+                break;
+
+            case ImageUtils.GET_IMAGE_FROM_PHONE:
+                if(resultCode != RESULT_CANCELED) {
+                    // 本地相册选择完后将图片添加到页面上
+                    mImgUris.add(data.getData());
+                    mUri = data.getData();
+                    Uri originalUri = data.getData(); //获得图片的uri
+
+                    ContentResolver resolver = getContentResolver();
+                    Bitmap bm;
+                    try {
+                        bm = MediaStore.Images.Media.getBitmap(resolver, originalUri); //显得到bitmap图片
+                        // 这里开始的第二部分，获取图片的路径：
+                        String[] proj = {MediaStore.Images.Media.DATA};
+                        Cursor cursor = managedQuery(originalUri, proj, null, null, null);
+                        //按我个人理解 这个是获得用户选择的图片的索引值
+                        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                        cursor.moveToFirst();
+                        //最后根据索引值获取图片路径
+                        String path = cursor.getString(column_index);
+                        updateImgs();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
 }
