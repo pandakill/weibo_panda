@@ -20,10 +20,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
 import com.panda.pweibo.R;
 import com.panda.pweibo.adapter.WriteStatusGridImgsAdapter;
@@ -36,10 +32,6 @@ import com.sina.weibo.sdk.exception.WeiboException;
 import com.sina.weibo.sdk.net.RequestListener;
 import com.sina.weibo.sdk.openapi.StatusesAPI;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -154,7 +146,7 @@ public class WriteStatusActivity extends BaseActivity implements OnClickListener
             // 微博API中只支持上传一张图片
             Uri uri = mImgUris.get(0);
 
-            imgFilePath = ImageUtils.getImageAbsolutePath(this, uri);
+            imgFilePath = ImageUtils.getImageAbsolutePath19(this, uri);
 
             Bitmap bitmap = BitmapFactory.decodeFile(imgFilePath);
 
@@ -246,7 +238,7 @@ public class WriteStatusActivity extends BaseActivity implements OnClickListener
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.pwb_iv_image:
-                showPicSelect();
+                ImageUtils.showImagePickDialog(this);
                 break;
 
             case R.id.pwb_iv_at:
@@ -292,31 +284,10 @@ public class WriteStatusActivity extends BaseActivity implements OnClickListener
             // 点击的是添加的图片
             if (position == mStatusImgsAdapter.getCount() - 1) {
                 // 如果点击了最后一个加号图标,则显示选择图片对话框
-                showPicSelect();
+                ImageUtils.showImagePickDialog(this);
                 updateImgs();
             }
         }
-    }
-
-    /** 弹框让用户选择图片获取方式 */
-    private void showPicSelect() {
-        String[] items = new String[] {"拍照", "从手机中选择"};
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        AlertDialog dialog = builder.setItems(items, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                switch (which) {
-                    case 0:
-                        ImageUtils.openCameraImage(WriteStatusActivity.this);
-                        break;
-
-                    case 1:
-                        ImageUtils.openLocalImage(WriteStatusActivity.this);
-                        break;
-                }
-            }
-        }).show();
     }
 
     @Override
@@ -324,43 +295,29 @@ public class WriteStatusActivity extends BaseActivity implements OnClickListener
         super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
-            case ImageUtils.GET_IMAGE_BY_CAMERA:
+            case ImageUtils.REQUEST_CODE_FROM_CAMERA:
                 if(resultCode == RESULT_CANCELED) {
-                    // 如果拍照取消,将之前新增的图片地址删除
-                    ImageUtils.deleteImageUri(this, ImageUtils.imageUriFromCamera);
-                } else {
-                    // 拍照后将图片添加到页面上
-                    mImgUris.add(ImageUtils.imageUriFromCamera);
-                    mUri = data.getData();
-                    updateImgs();
+                    return;
                 }
+                Uri imageUri = data.getData();
+                mImgUris.add(imageUri);
+                updateImgs();
                 break;
 
-            case ImageUtils.GET_IMAGE_FROM_PHONE:
+            case ImageUtils.REQUEST_CODE_FROM_ALBUM:
                 if(resultCode != RESULT_CANCELED) {
                     // 本地相册选择完后将图片添加到页面上
-                    mImgUris.add(data.getData());
-                    mUri = data.getData();
-                    Uri originalUri = data.getData(); //获得图片的uri
+                    if(resultCode == RESULT_CANCELED) {
+                        ImageUtils.deleteImageUri(this, ImageUtils.imageUriFromCamera);
+                    } else {
+                        Uri imageUriCamera = ImageUtils.imageUriFromCamera;
 
-                    ContentResolver resolver = getContentResolver();
-                    Bitmap bm;
-                    try {
-                        bm = MediaStore.Images.Media.getBitmap(resolver, originalUri); //显得到bitmap图片
-                        // 这里开始的第二部分，获取图片的路径：
-                        String[] proj = {MediaStore.Images.Media.DATA};
-                        Cursor cursor = managedQuery(originalUri, proj, null, null, null);
-                        //按我个人理解 这个是获得用户选择的图片的索引值
-                        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                        cursor.moveToFirst();
-                        //最后根据索引值获取图片路径
-                        String path = cursor.getString(column_index);
+                        mImgUris.add(imageUriCamera);
                         updateImgs();
-                    } catch (IOException e) {
-                        e.printStackTrace();
                     }
                 }
                 break;
+
             default:
                 break;
         }

@@ -2,9 +2,11 @@ package com.panda.pweibo.utils;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -13,16 +15,12 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.widget.Toast;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 /**
  * 图片的工具类
@@ -30,62 +28,139 @@ import java.util.Locale;
  * Created by Administrator on 2015/9/1:13:31.
  */
 public class ImageUtils {
-    public static final int GET_IMAGE_BY_CAMERA = 5001;
-    public static final int GET_IMAGE_FROM_PHONE = 5002;
+    public static final int REQUEST_CODE_FROM_CAMERA = 5001;
+    public static final int REQUEST_CODE_FROM_ALBUM = 5002;
+
+    /**
+     * 存放拍照图片的uri地址
+     */
     public static Uri imageUriFromCamera;
 
-    public static void openCameraImage(final Activity activity) {
-        ImageUtils.imageUriFromCamera = ImageUtils.createImagePathUri(activity);
+    /**
+     * 显示获取照片不同方式对话框
+     */
+    public static void showImagePickDialog(final Activity activity) {
+        String title = "选择获取图片方式";
+        String[] items = new String[]{"拍照", "从本地相机中获取"};
+        new AlertDialog.Builder(activity)
+                .setTitle(title)
+                .setItems(items, new DialogInterface.OnClickListener() {
 
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // MediaStore.EXTRA_OUTPUT参数不设置时,系统会自动生成一个uri,但是只会返回一个缩略图
-        // 返回图片在onActivityResult中通过以下代码获取
-        // Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, ImageUtils.imageUriFromCamera);
-        activity.startActivityForResult(intent, ImageUtils.GET_IMAGE_BY_CAMERA);
-    }
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        switch (which) {
+                            case 0:
+                                pickImageFromCamera(activity);
+                                break;
 
-    public static void openLocalImage(final Activity activity) {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        activity.startActivityForResult(intent, ImageUtils.GET_IMAGE_FROM_PHONE);
+                            case 1:
+                                pickImageFromAlbum(activity);
+                                break;
+
+                            default:
+                                break;
+                        }
+                    }
+                })
+                .show();
     }
 
     /**
-     * 创建一条图片地址uri,用于保存拍照后的照片
-     *
-     * @param context
-     * @return 图片的uri
+     * 打开相机拍照获取图片
      */
-    private static Uri createImagePathUri(Context context) {
-        Uri imageFilePath;
-        String status = Environment.getExternalStorageState();
-        SimpleDateFormat timeFormatter = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.CHINA);
-        long time = System.currentTimeMillis();
-        String imageName = timeFormatter.format(new Date(time));
-        // ContentValues是我们希望这条记录被创建时包含的数据信息
-        ContentValues values = new ContentValues(3);
-        values.put(MediaStore.Images.Media.DISPLAY_NAME, imageName);
-        values.put(MediaStore.Images.Media.DATE_TAKEN, time);
-        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-        if (status.equals(Environment.MEDIA_MOUNTED)) {// 判断是否有SD卡,优先使用SD卡存储,当没有SD卡时使用手机存储
-            imageFilePath = context.getContentResolver().insert(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        } else {
-            imageFilePath = context.getContentResolver().insert(
-                    MediaStore.Images.Media.INTERNAL_CONTENT_URI, values);
+    public static void pickImageFromCamera(final Activity activity) {
+        imageUriFromCamera = createImageUri(activity);
+
+        Intent intent = new Intent();
+        intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUriFromCamera);
+        activity.startActivityForResult(intent, REQUEST_CODE_FROM_CAMERA);
+    }
+
+    /**
+     * 打开本地相册选取图片
+     */
+    public static void pickImageFromAlbum(final Activity activity) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        activity.startActivityForResult(intent, REQUEST_CODE_FROM_ALBUM);
+    }
+
+    /**
+     * 打开本地相册选取图片2
+     */
+    public static void pickImageFromAlbum2(final Activity activity) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_PICK);
+        intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        activity.startActivityForResult(intent, REQUEST_CODE_FROM_ALBUM);
+    }
+
+    /**
+     * 将图片保存到SD中
+     */
+    public static void saveFile(Context context, Bitmap bm, String fileName) throws IOException {
+        // 未安装SD卡时不做保存
+        String storageState = Environment.getExternalStorageState();
+        if(!storageState.equals(Environment.MEDIA_MOUNTED)) {
+            ToastUtils.showToast(context, "未检测到SD卡", Toast.LENGTH_SHORT);
+            return;
         }
-        Log.i("tag/imageUtils", "生成的照片输出路径：" + imageFilePath.toString());
-        return imageFilePath;
+
+        // 图片文件保存路径
+        File storageDirectory = Environment.getExternalStorageDirectory();
+        File path = new File(storageDirectory, "/boreweibo/weiboimg");
+        // 图片路径不存在创建之
+        if (!path.exists()) {
+            path.mkdirs();
+        }
+        // 图片文件如果不存在创建之
+        File myCaptureFile = new File(path, fileName);
+        if (!myCaptureFile.exists()) {
+            myCaptureFile.createNewFile();
+        }
+        // 将图片压缩至文件对应的流里,即保存图片至该文件中
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(myCaptureFile));
+        bm.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+        bos.flush();
+        bos.close();
+    }
+
+    /**
+     * 创建一条图片uri,用于保存拍照后的照片
+     */
+    private static Uri createImageUri(Context context) {
+        String name = "boreWbImg" + System.currentTimeMillis();
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE, name);
+        values.put(MediaStore.Images.Media.DISPLAY_NAME, name + ".jpeg");
+        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+        Uri uri = context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        return uri;
     }
 
     /**
      * 删除一条图片
      */
     public static void deleteImageUri(Context context, Uri uri) {
-        context.getContentResolver().delete(uri, null, null);
+        context.getContentResolver().delete(imageUriFromCamera, null, null);
     }
+
+    /**
+     * 获取图片文件路径
+     */
+    public static String getImageAbsolutePath(Context context, Uri uri) {
+        Cursor cursor = MediaStore.Images.Media.query(context.getContentResolver(), uri,
+                new String[]{MediaStore.Images.Media.DATA});
+        if(cursor.moveToFirst()) {
+            return cursor.getString(0);
+        }
+        return null;
+    }
+
+    /////////////////////Android4.4以上版本特殊处理如下//////////////////////////////////////
 
     /**
      * 根据Uri获取图片绝对路径，解决Android4.4以上版本Uri转换
@@ -93,7 +168,7 @@ public class ImageUtils {
      * @param imageUri
      */
     @TargetApi(Build.VERSION_CODES.KITKAT)
-    public static String getImageAbsolutePath(Activity context, Uri imageUri) {
+    public static String getImageAbsolutePath19(Activity context, Uri imageUri) {
         if (context == null || imageUri == null)
             return null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT
@@ -188,28 +263,5 @@ public class ImageUtils {
      */
     private static boolean isGooglePhotosUri(Uri uri) {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
-    }
-
-    /** 保存图片 */
-    public static void saveFile(Context context, Bitmap bm, String fileName) throws IOException {
-        String storageState = Environment.getExternalStorageState();
-        if(!storageState.equals(Environment.MEDIA_MOUNTED)) {
-            ToastUtils.showToast(context, "未检测到SD卡", Toast.LENGTH_SHORT);
-            return;
-        }
-
-        File storageDirectory = Environment.getExternalStorageDirectory();
-        File path = new File(storageDirectory, "/pandaWB/weiboIMG");
-        if (!path.exists()) {
-            path.mkdirs();
-        }
-        File myCaptureFile = new File(path, fileName);
-        if (!myCaptureFile.exists()) {
-            myCaptureFile.createNewFile();
-        }
-        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(myCaptureFile));
-        bm.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-        bos.flush();
-        bos.close();
     }
 }
