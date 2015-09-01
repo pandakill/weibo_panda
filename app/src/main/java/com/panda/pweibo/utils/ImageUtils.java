@@ -25,7 +25,7 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * Í¼Æ¬µÄ¹¤¾ßÀà
+ * å›¾ç‰‡çš„å·¥å…·ç±»
  *
  * Created by Administrator on 2015/9/1:13:31.
  */
@@ -38,8 +38,8 @@ public class ImageUtils {
         ImageUtils.imageUriFromCamera = ImageUtils.createImagePathUri(activity);
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // MediaStore.EXTRA_OUTPUT²ÎÊı²»ÉèÖÃÊ±,ÏµÍ³»á×Ô¶¯Éú³ÉÒ»¸öuri,µ«ÊÇÖ»»á·µ»ØÒ»¸öËõÂÔÍ¼
-        // ·µ»ØÍ¼Æ¬ÔÚonActivityResultÖĞÍ¨¹ıÒÔÏÂ´úÂë»ñÈ¡
+        // MediaStore.EXTRA_OUTPUTå‚æ•°ä¸è®¾ç½®æ—¶,ç³»ç»Ÿä¼šè‡ªåŠ¨ç”Ÿæˆä¸€ä¸ªuri,ä½†æ˜¯åªä¼šè¿”å›ä¸€ä¸ªç¼©ç•¥å›¾
+        // è¿”å›å›¾ç‰‡åœ¨onActivityResultä¸­é€šè¿‡ä»¥ä¸‹ä»£ç è·å–
         // Bitmap bitmap = (Bitmap) data.getExtras().get("data");
         intent.putExtra(MediaStore.EXTRA_OUTPUT, ImageUtils.imageUriFromCamera);
         activity.startActivityForResult(intent, ImageUtils.GET_IMAGE_BY_CAMERA);
@@ -53,10 +53,10 @@ public class ImageUtils {
     }
 
     /**
-     * ´´½¨Ò»ÌõÍ¼Æ¬µØÖ·uri,ÓÃÓÚ±£´æÅÄÕÕºóµÄÕÕÆ¬
+     * åˆ›å»ºä¸€æ¡å›¾ç‰‡åœ°å€uri,ç”¨äºä¿å­˜æ‹ç…§åçš„ç…§ç‰‡
      *
      * @param context
-     * @return Í¼Æ¬µÄuri
+     * @return å›¾ç‰‡çš„uri
      */
     private static Uri createImagePathUri(Context context) {
         Uri imageFilePath;
@@ -64,31 +64,31 @@ public class ImageUtils {
         SimpleDateFormat timeFormatter = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.CHINA);
         long time = System.currentTimeMillis();
         String imageName = timeFormatter.format(new Date(time));
-        // ContentValuesÊÇÎÒÃÇÏ£ÍûÕâÌõ¼ÇÂ¼±»´´½¨Ê±°üº¬µÄÊı¾İĞÅÏ¢
+        // ContentValuesæ˜¯æˆ‘ä»¬å¸Œæœ›è¿™æ¡è®°å½•è¢«åˆ›å»ºæ—¶åŒ…å«çš„æ•°æ®ä¿¡æ¯
         ContentValues values = new ContentValues(3);
         values.put(MediaStore.Images.Media.DISPLAY_NAME, imageName);
         values.put(MediaStore.Images.Media.DATE_TAKEN, time);
         values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-        if (status.equals(Environment.MEDIA_MOUNTED)) {// ÅĞ¶ÏÊÇ·ñÓĞSD¿¨,ÓÅÏÈÊ¹ÓÃSD¿¨´æ´¢,µ±Ã»ÓĞSD¿¨Ê±Ê¹ÓÃÊÖ»ú´æ´¢
+        if (status.equals(Environment.MEDIA_MOUNTED)) {// åˆ¤æ–­æ˜¯å¦æœ‰SDå¡,ä¼˜å…ˆä½¿ç”¨SDå¡å­˜å‚¨,å½“æ²¡æœ‰SDå¡æ—¶ä½¿ç”¨æ‰‹æœºå­˜å‚¨
             imageFilePath = context.getContentResolver().insert(
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
         } else {
             imageFilePath = context.getContentResolver().insert(
                     MediaStore.Images.Media.INTERNAL_CONTENT_URI, values);
         }
-        Log.i("tag/imageUtils", "Éú³ÉµÄÕÕÆ¬Êä³öÂ·¾¶£º" + imageFilePath.toString());
+        Log.i("tag/imageUtils", "ç”Ÿæˆçš„ç…§ç‰‡è¾“å‡ºè·¯å¾„ï¼š" + imageFilePath.toString());
         return imageFilePath;
     }
 
     /**
-     * É¾³ıÒ»ÌõÍ¼Æ¬
+     * åˆ é™¤ä¸€æ¡å›¾ç‰‡
      */
     public static void deleteImageUri(Context context, Uri uri) {
         context.getContentResolver().delete(uri, null, null);
     }
 
     /**
-     * ¸ù¾İUri»ñÈ¡Í¼Æ¬¾ø¶ÔÂ·¾¶£¬½â¾öAndroid4.4ÒÔÉÏ°æ±¾Uri×ª»»
+     * æ ¹æ®Uriè·å–å›¾ç‰‡ç»å¯¹è·¯å¾„ï¼Œè§£å†³Android4.4ä»¥ä¸Šç‰ˆæœ¬Uriè½¬æ¢
      * @param context
      * @param imageUri
      */
@@ -190,11 +190,11 @@ public class ImageUtils {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
     }
 
-    /** ±£´æÍ¼Æ¬ */
+    /** ä¿å­˜å›¾ç‰‡ */
     public static void saveFile(Context context, Bitmap bm, String fileName) throws IOException {
         String storageState = Environment.getExternalStorageState();
         if(!storageState.equals(Environment.MEDIA_MOUNTED)) {
-            ToastUtils.showToast(context, "Î´¼ì²âµ½SD¿¨", Toast.LENGTH_SHORT);
+            ToastUtils.showToast(context, "æœªæ£€æµ‹åˆ°SDå¡", Toast.LENGTH_SHORT);
             return;
         }
 

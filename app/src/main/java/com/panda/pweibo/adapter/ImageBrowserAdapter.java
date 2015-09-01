@@ -69,24 +69,14 @@ public class ImageBrowserAdapter extends PagerAdapter {
     public View instantiateItem(ViewGroup container, int position) {
 
         int index = position % mPicUrlsList.size();
-
         PicUrls picUrl = mPicUrlsList.get(index);
 
         String url = picUrl.IsShowOriImg() ? picUrl.getOriginal_pic() : picUrl.getBmiddle_pic();
 
-        // 初始化每个item的控件
-        ScrollView sv = new ScrollView(mContext);
-        FrameLayout.LayoutParams svParams = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT);
-        sv.setLayoutParams(svParams);
-
-        LinearLayout ll = new LinearLayout(mContext);
-        LinearLayout.LayoutParams llParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-        ll.setLayoutParams(llParams);
-        sv.addView(ll);
+        ViewHolder holder = new ViewHolder();
+        holder.pwb_sv_item_image = (ScrollView) View.inflate(mContext, R.layout.item_grid_image, null);
+        holder.pwb_iv_image_browser
+                = (NetworkImageView) holder.pwb_sv_item_image.findViewById(R.id.pwb_iv_image_browser);
 
         // 获取屏幕宽高
         DisplayMetrics metric = new DisplayMetrics();
@@ -94,26 +84,21 @@ public class ImageBrowserAdapter extends PagerAdapter {
         final int screenHeight = metric.heightPixels;
         final int screenWidth = metric.widthPixels;
 
-        final NetworkImageView iv = new NetworkImageView(mContext);
-        iv.setScaleType(NetworkImageView.ScaleType.FIT_CENTER);
-        ll.addView(iv);
-
-        iv.setDefaultImageResId(R.drawable.pwb_test_image);
-        iv.setErrorImageResId(R.drawable.ic_com_sina_weibo_sdk_logo);
+        holder.pwb_iv_image_browser.setDefaultImageResId(R.drawable.pwb_test_image);
 
         // 设置图片的显示位置
         float scale = (float) getBitmap(position).getHeight() / getBitmap(position).getWidth();
         int height = Math.max((int) (screenWidth * scale), screenHeight);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(screenWidth, height);
-        iv.setLayoutParams(params);
+        holder.pwb_iv_image_browser.setLayoutParams(params);
 
         // 加载图片
-        iv.setImageUrl(url, mImageLoader);
+        holder.pwb_iv_image_browser.setImageUrl(url, mImageLoader);
 
         // 将scrollview加入viewGroup当中
-        container.addView(sv);
+        container.addView(holder.pwb_sv_item_image);
 
-        return sv;
+        return holder.pwb_sv_item_image;
 
     }
 
@@ -134,7 +119,7 @@ public class ImageBrowserAdapter extends PagerAdapter {
     public Bitmap getBitmap(int position) {
         Bitmap bitmap = null;
         View view = mPicViewList.get(position % mPicViewList.size());
-        ImageView iv_image_browser = (ImageView) view.findViewById(R.id.pwb_iv_image_browser);
+        NetworkImageView iv_image_browser = (NetworkImageView) view.findViewById(R.id.pwb_iv_image_browser);
         Drawable drawable = iv_image_browser.getDrawable();
         if(drawable != null && drawable instanceof BitmapDrawable) {
             BitmapDrawable bd = (BitmapDrawable) drawable;
@@ -142,5 +127,10 @@ public class ImageBrowserAdapter extends PagerAdapter {
         }
 
         return bitmap;
+    }
+
+    protected class ViewHolder {
+        private ScrollView pwb_sv_item_image;
+        private NetworkImageView pwb_iv_image_browser;
     }
 }
