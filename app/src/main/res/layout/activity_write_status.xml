@@ -31,6 +31,23 @@
                 android:hint="写评论..."
                 android:textColorHint="@color/txt_gray"/>
 
+            <com.panda.pweibo.widget.WrapHeightGridView
+                android:id="@+id/pwb_gv_status_image"
+                android:layout_width="272dp"
+                android:layout_height="wrap_content"
+                android:numColumns="3"
+                android:horizontalSpacing="4dp"
+                android:verticalSpacing="4dp"
+                android:cacheColorHint="@color/transparent"
+                android:listSelector="@color/transparent"
+                android:scrollbars="none"
+                android:visibility="gone"/>
+
+            <include
+                android:id="@+id/include_retweeted_card"
+                layout="@layout/include_small_status"
+                android:visibility="gone"/>
+
         </LinearLayout>
     </ScrollView>
 
@@ -62,7 +79,7 @@
             android:layout_weight="1"
             android:clickable="true"
             android:layout_margin="16dp"
-            android:src="@drawable/btn_insert_pic"/>
+            android:src="@drawable/btn_insert_at"/>
 
         <ImageView
             android:id="@+id/pwb_iv_topic"
@@ -71,7 +88,7 @@
             android:layout_weight="1"
             android:clickable="true"
             android:layout_margin="16dp"
-            android:src="@drawable/btn_insert_pic"/>
+            android:src="@drawable/btn_insert_topic"/>
 
         <ImageView
             android:id="@+id/pwb_iv_emoji"
@@ -80,7 +97,7 @@
             android:layout_weight="1"
             android:clickable="true"
             android:layout_margin="16dp"
-            android:src="@drawable/btn_insert_pic"/>
+            android:src="@drawable/btn_insert_emoji"/>
 
         <ImageView
             android:id="@+id/pwb_iv_add"
@@ -89,7 +106,7 @@
             android:layout_weight="1"
             android:clickable="true"
             android:layout_margin="16dp"
-            android:src="@drawable/btn_insert_pic"/>
+            android:src="@drawable/btn_insert_add"/>
 
     </LinearLayout>
 </LinearLayout>
