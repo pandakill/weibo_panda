@@ -117,25 +117,21 @@ public class ImageBrowserActivity extends BaseActivity implements View.OnClickLi
 
                 String title = fileName.substring(0, fileName.lastIndexOf("."));
                 String insertImage = MediaStore.Images.Media.insertImage(
-                        getContentResolver(), bitmap, title, "BoreWBImage");
+                        getContentResolver(), bitmap, title, "pandaWBImage");
                 if(insertImage == null) {
                     ToastUtils.showToast(ImageBrowserActivity.this, "图片保存失败", Toast.LENGTH_SHORT);
                 } else {
                     ToastUtils.showToast(ImageBrowserActivity.this, "图片保存成功", Toast.LENGTH_SHORT);
                 }
-
-//			try {
-//				ImageUtils.saveFile(this, bitmap, fileName);
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-
                 break;
+
             case R.id.pwb_btn_orgin:
                 picUrl.setShowOriImg(true);
                 mAdapter.notifyDataSetChanged();
-
                 pwb_btn_original_image.setVisibility(View.GONE);
+                break;
+
+            default:
                 break;
         }
     }

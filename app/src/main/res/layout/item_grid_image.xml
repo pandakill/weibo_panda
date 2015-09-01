@@ -2,9 +2,12 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:id="@+id/pwb_sv_item_image"
+    android:scrollbars="none">
 
     <LinearLayout
+        android:id="@+id/pwb_ll_item_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -13,7 +16,8 @@
             android:id="@+id/pwb_iv_image_browser"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scaleType="fitCenter"/>
+            android:layout_gravity="center"
+            android:src="@drawable/ic_com_sina_weibo_sdk_logo"/>
 
     </LinearLayout>
 
