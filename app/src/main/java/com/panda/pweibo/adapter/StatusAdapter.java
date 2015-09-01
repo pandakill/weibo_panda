@@ -107,12 +107,21 @@ public class StatusAdapter extends BaseAdapter {
                     status);
         }
         // 如果有转发的微博,则显示转发微博内容;如果转发的微博有图片,则显示转发微博布局的图片
+        String retweeted_content = "";
+
         if (retweeted_status != null) {
 
             holder.include_retweeted_status.setVisibility(View.VISIBLE);
 
-            String retweeted_content = "@" + retweeted_status.getUser().getName() + ":"
-                                          + retweeted_status.getText();
+            // 原微博未被删除
+            if (retweeted_status.getUser() != null) {
+
+                retweeted_content = "@" + retweeted_status.getUser().getName() + ":"
+                        + retweeted_status.getText();
+            } else {
+                // 原微博被删除
+                retweeted_content = retweeted_status.getText();
+            }
 
             holder.pwb_textview_retweeted_content.setText(
                     StringUtils.getWeiboContent(mContext, holder.pwb_textview_retweeted_content,
