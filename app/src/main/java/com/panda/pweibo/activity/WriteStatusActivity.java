@@ -148,8 +148,10 @@ public class WriteStatusActivity extends BaseActivity implements OnClickListener
 
             imgFilePath = ImageUtils.getImageAbsolutePath19(this, uri);
 
-            Bitmap bitmap = BitmapFactory.decodeFile(imgFilePath);
-
+            BitmapFactory.Options opts = new BitmapFactory.Options();
+            opts.inJustDecodeBounds = true;
+            Bitmap bitmap = BitmapFactory.decodeFile(imgFilePath, opts);
+//            Bitmap bitmap = BitmapFactory.
             statusesAPI.upload(content, bitmap, "0.0", "0.0", new RequestListener() {
                 @Override
                 public void onComplete(String s) {

@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.panda.pweibo.R;
+import com.panda.pweibo.activity.WriteStatusActivity;
 import com.panda.pweibo.utils.ImageUtils;
 import com.panda.pweibo.widget.WrapHeightGridView;
 
@@ -73,26 +74,30 @@ public class WriteStatusGridImgsAdapter extends BaseAdapter {
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, width);
         holder.pwb_iv_image_browser.setLayoutParams(params);
-//        Bitmap bitmap = ImageUtils.getBitmapFromUri(mContext, getItem(position));
-//        holder.pwb_iv_image_browser.setImageBitmap(bitmap);
 
 //        if(position < getCount() - 1) {
-        // set data
-        Uri item = getItem(position);
-        holder.pwb_iv_image_browser.setImageURI(item);
+            // set data
+            Uri item = getItem(position);
+            holder.pwb_iv_image_browser.setImageURI(item);
 
-        // 点击右上角的删除,则将该图片移除
-        holder.pwb_iv_delete.setVisibility(View.VISIBLE);
-        holder.pwb_iv_delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mUriList.remove(position);
-                notifyDataSetChanged();
-            }
-        });
+            // 点击右上角的删除,则将该图片移除
+            holder.pwb_iv_delete.setVisibility(View.VISIBLE);
+            holder.pwb_iv_delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mUriList.remove(position);
+                    notifyDataSetChanged();
+                }
+            });
 //        } else {
 //            holder.pwb_iv_image_browser.setImageResource(R.drawable.pwb_compose_pic_add);
 //            holder.pwb_iv_delete.setVisibility(View.GONE);
+//            holder.pwb_iv_image_browser.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    ImageUtils.showImagePickDialog((WriteStatusActivity)mContext);
+//                }
+//            });
 //        }
 
         return convertView;
