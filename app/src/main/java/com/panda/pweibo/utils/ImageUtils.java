@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -170,6 +171,8 @@ public class ImageUtils {
     {
         try
         {
+            BitmapFactory.Options opts = new BitmapFactory.Options();
+            opts.inJustDecodeBounds = true;
             // 读取uri所在的图片
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), uri);
             return bitmap;

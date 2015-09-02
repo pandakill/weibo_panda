@@ -1,6 +1,7 @@
 package com.panda.pweibo.activity;
 
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -18,8 +20,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
 import com.panda.pweibo.R;
+import com.panda.pweibo.WriteStatusRequest;
 import com.panda.pweibo.adapter.WriteStatusGridImgsAdapter;
 import com.panda.pweibo.constants.Constants;
 import com.panda.pweibo.utils.ImageUtils;
@@ -45,6 +52,7 @@ public class WriteStatusActivity extends BaseActivity implements OnClickListener
     private WriteStatusGridImgsAdapter mStatusImgsAdapter;
     private ArrayList<Uri>      mImgUris;
     private Uri                 mUri;
+    private ProgressDialog      mPd;
 
     /** 内容编辑框 */
     private TextView            pwb_et_write_status;
@@ -71,9 +79,6 @@ public class WriteStatusActivity extends BaseActivity implements OnClickListener
         super.onCreate(saveInstanceState);
         setContentView(R.layout.activity_write_status);
 
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
         mImgUris = new ArrayList<>();
 
         initView();
@@ -92,7 +97,11 @@ public class WriteStatusActivity extends BaseActivity implements OnClickListener
                 .setRightOnClickListner(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        sendStatus();
+                        try {
+                            sendStatus();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
 
@@ -135,7 +144,7 @@ public class WriteStatusActivity extends BaseActivity implements OnClickListener
     }
 
     /** 发送纯文字微博的实现 */
-    private void sendStatus() {
+    private void sendStatus() throws JSONException {
         final String content = pwb_et_write_status.getText().toString();
 
         if (TextUtils.isEmpty(content)) {
@@ -146,37 +155,52 @@ public class WriteStatusActivity extends BaseActivity implements OnClickListener
         /** 新浪微博官方的api */
         StatusesAPI statusesAPI = new StatusesAPI(this, Constants.APP_KEY, mAccessToken);
 
-        String imgFilePath = null;
+        mPd = ProgressDialog.show(WriteStatusActivity.this, "发送微博", "正在发送...");
+
         if (mImgUris.size() > 0) {
 
             // 微博API中只支持上传一张图片
             Uri uri = mImgUris.get(0);
 
-            imgFilePath = ImageUtils.getImageAbsolutePath19(this, uri);
+            // 通过uri生成bitmap （防止踩坑、做个标记）
+            Bitmap bitmap = ImageUtils.getBitmapFromUri(WriteStatusActivity.this, uri);
 
-            BitmapFactory.Options opts = new BitmapFactory.Options();
-            opts.inJustDecodeBounds = true;
-            Bitmap bitmap = BitmapFactory.decodeFile(imgFilePath, opts);
-            statusesAPI.upload(content, bitmap, "0.0", "0.0", new RequestListener() {
-                @Override
-                public void onComplete(String s) {
-                    ToastUtils.showToast(WriteStatusActivity.this, "发送成功", Toast.LENGTH_SHORT);
-                    Intent data = new Intent();
-                    data.putExtra("sendStatusSuccess", true);
-                    setResult(RESULT_OK, data);
-                    WriteStatusActivity.this.finish();
-                }
+            // 通过以下方法生成不了bitmap
+//            String imgFilePath = ImageUtils.getImageAbsolutePath19(this, uri);
+//            BitmapFactory.Options opts = new BitmapFactory.Options();
+//            opts.inJustDecodeBounds = true;
+//            Bitmap bitmap = BitmapFactory.decodeFile(imgFilePath, opts);
 
-                @Override
-                public void onWeiboException(WeiboException e) {
-                    e.printStackTrace();
-                    ToastUtils.showToast(WriteStatusActivity.this, "发送失败", Toast.LENGTH_SHORT);
-                }
-            });
+            if (null != bitmap || bitmap.getWidth() != 0 || bitmap.getHeight() != 0) {
+                statusesAPI.upload(content, bitmap, null, null, new RequestListener() {
+                    @Override
+                    public void onComplete(String s) {
+                        mPd.dismiss();
+                        ToastUtils.showToast(WriteStatusActivity.this, "发送成功", Toast.LENGTH_SHORT);
+                        Intent data = new Intent();
+                        data.putExtra("sendStatusSuccess", true);
+                        setResult(RESULT_OK, data);
+                        WriteStatusActivity.this.finish();
+                    }
+
+                    @Override
+                    public void onWeiboException(WeiboException e) {
+                        e.printStackTrace();
+                        mPd.dismiss();
+                        ToastUtils.showToast(WriteStatusActivity.this, "发送失败", Toast.LENGTH_SHORT);
+                    }
+                });
+            } else {
+                mPd.dismiss();
+                ToastUtils.showToast(WriteStatusActivity.this, "找不到图片", Toast.LENGTH_SHORT);
+            }
         } else {
-            statusesAPI.update(content, "0.0", "0.0", new RequestListener() {
+
+            mPd = ProgressDialog.show(WriteStatusActivity.this, "发送微博", "正在发送...");
+            statusesAPI.update(content, null, null, new RequestListener() {
                 @Override
                 public void onComplete(String s) {
+                    mPd.dismiss();
                     ToastUtils.showToast(WriteStatusActivity.this, "发送成功", Toast.LENGTH_SHORT);
                     Intent data = new Intent();
                     data.putExtra("sendStatusSuccess", true);
@@ -187,60 +211,12 @@ public class WriteStatusActivity extends BaseActivity implements OnClickListener
                 @Override
                 public void onWeiboException(WeiboException e) {
                     e.printStackTrace();
+                    mPd.dismiss();
                     ToastUtils.showToast(WriteStatusActivity.this, "发送失败", Toast.LENGTH_SHORT);
                 }
             });
         }
 
-
-
-        // 填写参数和uri地址
-//        String uri = Uri.comments_create;
-//        JSONObject requestParams = new JSONObject();
-//        try {
-//            requestParams.put("access_token", mAccessToken.getToken());
-//            requestParams.put("comment", comment);
-//            requestParams.put("id", status.getId());
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-
-        /** 请求头不能为json，如果为json，微博接口会403拒绝访问
-         *
-         * TODO 这里的请求头有必要对其重写
-         */
-//        String uri = com.panda.pweibo.constants.Uri.STATUS_UPDATE + "?";
-//        JSONObject requestParams = new JSONObject();
-//        try {
-//            requestParams.put("access_token", mAccessToken.getToken());
-//            requestParams.put("status", content);
-//            requestParams.put("lat", "0.0");
-//            requestParams.put("long", "0.0");
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
-//                uri, requestParams, new Response.Listener<JSONObject>() {
-//            @Override
-//            public void onResponse(JSONObject jsonObject) {
-//                ToastUtils.showToast(WriteStatusActivity.this, "发送成功", Toast.LENGTH_SHORT);
-//
-//                // 评论发送成功后,设置result结果数据，并关闭本页面
-//                Intent data = new Intent();
-//                data.putExtra("sendCommentSuccess", true);
-//                setResult(RESULT_OK, data);
-//
-//                WriteStatusActivity.this.finish();
-//            }
-//        }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError volleyError) {
-//                ToastUtils.showToast(WriteStatusActivity.this, "网络发生错误,发送失败", Toast.LENGTH_SHORT);
-//            }
-//        });
-//
-//        mRequestQueue.add(jsonObjectRequest);
     }
 
     @Override
