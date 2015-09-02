@@ -295,7 +295,7 @@ public class WriteStatusActivity extends BaseActivity implements OnClickListener
         super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
-            case ImageUtils.REQUEST_CODE_FROM_CAMERA:
+            case ImageUtils.REQUEST_CODE_FROM_ALBUM:
                 if(resultCode == RESULT_CANCELED) {
                     return;
                 }
@@ -304,17 +304,15 @@ public class WriteStatusActivity extends BaseActivity implements OnClickListener
                 updateImgs();
                 break;
 
-            case ImageUtils.REQUEST_CODE_FROM_ALBUM:
-                if(resultCode != RESULT_CANCELED) {
-                    // 本地相册选择完后将图片添加到页面上
-                    if(resultCode == RESULT_CANCELED) {
-                        ImageUtils.deleteImageUri(this, ImageUtils.imageUriFromCamera);
-                    } else {
-                        Uri imageUriCamera = ImageUtils.imageUriFromCamera;
+            case ImageUtils.REQUEST_CODE_FROM_CAMERA:
+                // 本地相册选择完后将图片添加到页面上
+                if(resultCode == RESULT_CANCELED) {
+                    ImageUtils.deleteImageUri(this, ImageUtils.imageUriFromCamera);
+                } else {
+                    Uri imageUriCamera = ImageUtils.imageUriFromCamera;
 
-                        mImgUris.add(imageUriCamera);
-                        updateImgs();
-                    }
+                    mImgUris.add(imageUriCamera);
+                    updateImgs();
                 }
                 break;
 

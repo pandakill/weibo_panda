@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/pwb_sv_item_image"
+    android:scrollbars="none">
+
+    <LinearLayout
+        android:id="@+id/pwb_ll_item_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/pwb_iv_image_browser"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_com_sina_weibo_sdk_logo"/>
+        
+        <ImageView
+            android:id="@+id/pwb_iv_delete"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:visibility="gone"
+            android:src="@drawable/pwb_icon_delete_black"
+            android:layout_alignParentRight="true"
+            android:padding="2dp"/>
+
+    </LinearLayout>
+
+</ScrollView>

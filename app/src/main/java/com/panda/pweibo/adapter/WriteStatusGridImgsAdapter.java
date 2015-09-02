@@ -2,6 +2,7 @@ package com.panda.pweibo.adapter;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.RelativeLayout;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.panda.pweibo.R;
+import com.panda.pweibo.utils.ImageUtils;
 import com.panda.pweibo.widget.WrapHeightGridView;
 
 import java.util.List;
@@ -55,14 +57,14 @@ public class WriteStatusGridImgsAdapter extends BaseAdapter {
         ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
-            convertView = View.inflate(mContext, R.layout.item_grid_image, null);
+            convertView = View.inflate(mContext, R.layout.item_write_grid_image, null);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
         holder.pwb_iv_image_browser
-                = (NetworkImageView) convertView.findViewById(R.id.pwb_iv_image_browser);
+                = (ImageView) convertView.findViewById(R.id.pwb_iv_image_browser);
         holder.pwb_iv_delete = (ImageView) convertView.findViewById(R.id.pwb_iv_delete);
 
         int horizontalSpacing = mGridView.getHorizontalSpacing();
@@ -71,6 +73,8 @@ public class WriteStatusGridImgsAdapter extends BaseAdapter {
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, width);
         holder.pwb_iv_image_browser.setLayoutParams(params);
+//        Bitmap bitmap = ImageUtils.getBitmapFromUri(mContext, getItem(position));
+//        holder.pwb_iv_image_browser.setImageBitmap(bitmap);
 
 //        if(position < getCount() - 1) {
         // set data
@@ -95,7 +99,7 @@ public class WriteStatusGridImgsAdapter extends BaseAdapter {
     }
 
     protected class ViewHolder {
-        public NetworkImageView pwb_iv_image_browser;
+        public ImageView        pwb_iv_image_browser;
         public ImageView        pwb_iv_delete;
     }
 }

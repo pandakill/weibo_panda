@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.BufferedOutputStream;
@@ -55,7 +56,7 @@ public class ImageUtils {
                                 break;
 
                             case 1:
-                                pickImageFromAlbum(activity);
+                                pickImageFromAlbum2(activity);
                                 break;
 
                             default:
@@ -158,6 +159,28 @@ public class ImageUtils {
             return cursor.getString(0);
         }
         return null;
+    }
+
+    /**
+     * 根据uri获取bitmap
+     * @param uri
+     * @return
+     */
+    public static Bitmap getBitmapFromUri(Context context, Uri uri)
+    {
+        try
+        {
+            // 读取uri所在的图片
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), uri);
+            return bitmap;
+        }
+        catch (Exception e)
+        {
+            Log.e("[Android]", e.getMessage());
+            Log.e("[Android]", "目录为：" + uri);
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /////////////////////Android4.4以上版本特殊处理如下//////////////////////////////////////
