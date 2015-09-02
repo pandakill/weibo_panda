@@ -8,6 +8,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,6 +24,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * 图片的工具类
@@ -171,10 +173,29 @@ public class ImageUtils {
     {
         try
         {
+            InputStream input = context.getContentResolver().openInputStream(uri);
+            BitmapFactory.Options onlyBoundsOptions = new BitmapFactory.Options();
+            onlyBoundsOptions.inJustDecodeBounds = true;
+            onlyBoundsOptions.inDither=true;//optional
+            onlyBoundsOptions.inPreferredConfig=Bitmap.Config.ARGB_8888;//optional
+            BitmapFactory.decodeStream(input, null, onlyBoundsOptions);
+            input.close();
+            if ((onlyBoundsOptions.outWidth == -1) || (onlyBoundsOptions.outHeight == -1))
+                return null;
+            int originalSize = (onlyBoundsOptions.outHeight > onlyBoundsOptions.outWidth) ? onlyBoundsOptions.outHeight : onlyBoundsOptions.outWidth;
+            double ratio = (originalSize > 512) ? (originalSize / 512) : 1.0;
+            BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+            bitmapOptions.inSampleSize = getPowerOfTwoForSampleRatio(ratio);
+            bitmapOptions.inDither=true;//optional
+            bitmapOptions.inPreferredConfig=Bitmap.Config.ARGB_8888;//optional
+            input = context.getContentResolver().openInputStream(uri);
+            Bitmap bitmap = BitmapFactory.decodeStream(input, null, bitmapOptions);
+            input.close();
+
             BitmapFactory.Options opts = new BitmapFactory.Options();
             opts.inJustDecodeBounds = true;
             // 读取uri所在的图片
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), uri);
+//            Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), uri);
             return bitmap;
         }
         catch (Exception e)
@@ -184,6 +205,58 @@ public class ImageUtils {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private static int getPowerOfTwoForSampleRatio(double ratio){
+        int k = Integer.highestOneBit((int)Math.floor(ratio));
+        if(k==0) return 1;
+        else return k;
+    }
+
+    /**
+     * 计算图片压缩比
+     *
+     * @param options   bitmapFactory.Option
+     * @param reqWidth  bitmap的宽度
+     * @param reqHeight bitmap的高度
+     * @return
+     */
+    public static int calculateInSampleSize(BitmapFactory.Options options,
+                                            int reqWidth, int reqHeight) {
+        // 源图片的高度和宽度
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+        if (height > reqHeight || width > reqWidth) {
+            // 计算出实际宽高和目标宽高的比率
+            final int heightRatio = Math.round((float) height / (float) reqHeight);
+            final int widthRatio = Math.round((float) width / (float) reqWidth);
+            // 选择宽和高中最小的比率作为inSampleSize的值，这样可以保证最终图片的宽和高
+            // 一定都会大于等于目标的宽和高。
+            inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+        }
+        return inSampleSize;
+    }
+
+    /**
+     *
+     * @param res
+     * @param resId
+     * @param reqWidth
+     * @param reqHeight
+     * @return
+     */
+    public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId,
+                                                         int reqWidth, int reqHeight) {
+        // 第一次解析将inJustDecodeBounds设置为true，来获取图片大小
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(res, resId, options);
+        // 调用上面定义的方法计算inSampleSize值
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+        // 使用获取到的inSampleSize值再次解析图片
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeResource(res, resId, options);
     }
 
     /////////////////////Android4.4以上版本特殊处理如下//////////////////////////////////////

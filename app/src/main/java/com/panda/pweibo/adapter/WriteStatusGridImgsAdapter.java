@@ -77,7 +77,8 @@ public class WriteStatusGridImgsAdapter extends BaseAdapter {
 
         // set data
         Uri item = getItem(position);
-        holder.pwb_iv_image_browser.setImageURI(item);
+        Bitmap bitmap = ImageUtils.getBitmapFromUri(mContext, item);
+        holder.pwb_iv_image_browser.setImageBitmap(bitmap);
 
         // 点击右上角的删除,则将该图片移除
         holder.pwb_iv_delete.setVisibility(View.VISIBLE);
