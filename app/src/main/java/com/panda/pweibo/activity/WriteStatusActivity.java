@@ -1,15 +1,13 @@
 package com.panda.pweibo.activity;
 
-import android.app.AlertDialog;
-import android.content.ContentResolver;
-import android.content.DialogInterface;
+import android.annotation.TargetApi;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.os.StrictMode;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -32,6 +30,10 @@ import com.sina.weibo.sdk.exception.WeiboException;
 import com.sina.weibo.sdk.net.RequestListener;
 import com.sina.weibo.sdk.openapi.StatusesAPI;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 /**
@@ -63,10 +65,14 @@ public class WriteStatusActivity extends BaseActivity implements OnClickListener
     private ImageView           pwb_iv_emoji;
     private ImageView           pwb_iv_add;
 
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     @Override
     public void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
         setContentView(R.layout.activity_write_status);
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         mImgUris = new ArrayList<>();
 
@@ -151,7 +157,6 @@ public class WriteStatusActivity extends BaseActivity implements OnClickListener
             BitmapFactory.Options opts = new BitmapFactory.Options();
             opts.inJustDecodeBounds = true;
             Bitmap bitmap = BitmapFactory.decodeFile(imgFilePath, opts);
-//            Bitmap bitmap = BitmapFactory.
             statusesAPI.upload(content, bitmap, "0.0", "0.0", new RequestListener() {
                 @Override
                 public void onComplete(String s) {
@@ -164,6 +169,7 @@ public class WriteStatusActivity extends BaseActivity implements OnClickListener
 
                 @Override
                 public void onWeiboException(WeiboException e) {
+                    e.printStackTrace();
                     ToastUtils.showToast(WriteStatusActivity.this, "发送失败", Toast.LENGTH_SHORT);
                 }
             });
@@ -180,6 +186,7 @@ public class WriteStatusActivity extends BaseActivity implements OnClickListener
 
                 @Override
                 public void onWeiboException(WeiboException e) {
+                    e.printStackTrace();
                     ToastUtils.showToast(WriteStatusActivity.this, "发送失败", Toast.LENGTH_SHORT);
                 }
             });

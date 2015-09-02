@@ -6,6 +6,7 @@ import android.app.Application;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.LruCache;
 
 import com.android.volley.RequestQueue;
@@ -34,6 +35,9 @@ public class BaseActivity extends Activity {
     @Override
     protected void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         mAccessToken = AccessTokenKeeper.readAccessToken(this);
         mRequestQueue = BaseApplication.getsRequestQueue();
