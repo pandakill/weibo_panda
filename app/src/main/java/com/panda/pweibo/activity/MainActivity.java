@@ -8,9 +8,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.LruCache;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
@@ -19,14 +21,16 @@ import com.android.volley.toolbox.Volley;
 import com.panda.pweibo.BaseApplication;
 import com.panda.pweibo.R;
 import com.panda.pweibo.fragment.FragmentController;
+import com.panda.pweibo.utils.ToastUtils;
 
 /**
  * 项目的主activity
  */
 public class MainActivity extends FragmentActivity implements RadioGroup.OnCheckedChangeListener, View.OnClickListener {
 
+    private long mExitTime = 0;
     private     ImageButton         mImageButton;
-    private     FragmentController  mController;
+    public     FragmentController  mController;
 
     public      RequestQueue        mRequestQueue;
     public      ImageCache          mImageCache;
@@ -109,5 +113,20 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
             default:
                 break;
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if ((System.currentTimeMillis() - mExitTime) > 2000) {//
+                // 如果两次按键时间间隔大于2000毫秒，则不退出
+                ToastUtils.showToast(this, "再按一次退出程序", Toast.LENGTH_SHORT);
+                mExitTime = System.currentTimeMillis();// 更新mExitTime
+            } else {
+                System.exit(0);// 否则退出程序
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

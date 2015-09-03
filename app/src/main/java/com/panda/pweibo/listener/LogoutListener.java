@@ -56,6 +56,9 @@ public class LogoutListener implements View.OnClickListener {
                             Intent intent = new Intent(mContext, PWBAuthActivity.class);
                             mContext.startActivity(intent);
                             ((MainActivity) mContext).finish();
+                            android.os.Process.killProcess(android.os.Process.myPid());//获取PID
+
+
                         } else {
                             ToastUtils.showToast(mContext, "退出发生异常", Toast.LENGTH_SHORT);
                         }
