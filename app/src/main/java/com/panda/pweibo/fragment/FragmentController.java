@@ -69,4 +69,12 @@ public class FragmentController {
         }
         return controller;
     }
+
+    public void fragmentFinish() {
+        FragmentTransaction ft = mFragmentManager.beginTransaction();
+        for (MyFragment fragment : mFragmentList) {
+            ft.detach(fragment);
+        }
+        ft.commitAllowingStateLoss();
+    }
 }

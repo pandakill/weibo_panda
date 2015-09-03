@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,7 +25,7 @@ import java.util.ArrayList;
  *
  * Created by Administrator on 2015/09/01.
  */
-public class ImageBrowserActivity extends BaseActivity implements View.OnClickListener {
+public class ImageBrowserActivity extends BaseActivity implements OnClickListener, OnItemClickListener {
 
     private Status              mStatus;
     private int                 mPosition;
@@ -134,5 +137,10 @@ public class ImageBrowserActivity extends BaseActivity implements View.OnClickLi
             default:
                 break;
         }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        ImageBrowserActivity.this.finish();
     }
 }
