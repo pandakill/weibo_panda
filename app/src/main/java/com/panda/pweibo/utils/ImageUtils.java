@@ -180,14 +180,15 @@ public class ImageUtils {
             onlyBoundsOptions.inPreferredConfig=Bitmap.Config.ARGB_8888;//optional
             BitmapFactory.decodeStream(input, null, onlyBoundsOptions);
             input.close();
-            if ((onlyBoundsOptions.outWidth == -1) || (onlyBoundsOptions.outHeight == -1))
+            if ((onlyBoundsOptions.outWidth == -1) || (onlyBoundsOptions.outHeight == -1)) {
                 return null;
+            }
             int originalSize = (onlyBoundsOptions.outHeight > onlyBoundsOptions.outWidth) ? onlyBoundsOptions.outHeight : onlyBoundsOptions.outWidth;
             double ratio = (originalSize > 512) ? (originalSize / 512) : 1.0;
             BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
             bitmapOptions.inSampleSize = getPowerOfTwoForSampleRatio(ratio);
-            bitmapOptions.inDither=true;//optional
-            bitmapOptions.inPreferredConfig=Bitmap.Config.ARGB_8888;//optional
+            bitmapOptions.inDither=true;
+            bitmapOptions.inPreferredConfig=Bitmap.Config.ARGB_8888;
             input = context.getContentResolver().openInputStream(uri);
             Bitmap bitmap = BitmapFactory.decodeStream(input, null, bitmapOptions);
             input.close();

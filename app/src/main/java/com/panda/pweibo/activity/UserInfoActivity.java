@@ -67,6 +67,9 @@ public class UserInfoActivity extends BaseActivity implements
     private boolean         mIsLoadingMore;
     private int             mCurScrollY;
 
+    /** 下拉刷新标记 */
+    private boolean         IS_REFLASHING = false;
+
     private int minImageHeight = -1;
     private int maxImageHeight = -1;
 
@@ -160,15 +163,14 @@ public class UserInfoActivity extends BaseActivity implements
         lv.addHeaderView(user_info_head);
         lv.addHeaderView(user_info_tab);
         plv_user_info.setOnRefreshListener(new OnRefreshListener<ListView>() {
-
             @Override
             public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+                IS_REFLASHING = true;
                 loadStatuses(1);
             }
         });
         plv_user_info.setOnLastItemVisibleListener(
                 new OnLastItemVisibleListener() {
-
                     @Override
                     public void onLastItemVisible() {
                         loadStatuses(mCurPage + 1);
@@ -357,6 +359,9 @@ public class UserInfoActivity extends BaseActivity implements
                                 long totalNum = response.getLong("total_number");
 
                                 addStatus(mListStatus, totalNum);
+                                if (IS_REFLASHING) {
+                                    plv_user_info.onRefreshComplete();
+                                }
 
                                 mIsLoadingMore = false;
                             }

@@ -69,6 +69,9 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
     private long                mTotalNum;
     private Boolean             mScroll2Comment = false;
 
+    /** 加载完毕标记 */
+    private boolean IS_REFLASHING = false;
+
     /** 微博信息的控件 */
     private View                status_detail_info;
     private ImageView           pwb_imageview_item_status_avatar;
@@ -174,7 +177,12 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
                     long totalNum = response.getLong("total_number");
 
                     mCurPage = page;
+
                     addData(mCommentList, totalNum);
+                    if (IS_REFLASHING) {
+                        IS_REFLASHING = false;
+                        pwb_plv_status_detail.onRefreshComplete();
+                    }
 
                     /** 判断是否需要滚动至评论部分 */
                     if (mScroll2Comment) {
@@ -401,6 +409,7 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
         pwb_plv_status_detail.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
             @Override
             public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+                IS_REFLASHING = true;
                 loadData(1);
             }
         });

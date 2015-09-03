@@ -40,14 +40,16 @@ public class MessageActivity extends BaseActivity implements OnClickListener {
     private MessageAdapter          mAdapter;
     private List<Comment>           mCommentList;
     private long                    mTotalNum;
-    private Intent                  mIntent;
     private int                     mMessageType;
 
     private PullToRefreshListView    pwb_plv_messages;
     private LinearLayout             foot_view;
 
     private long                     mCurPage = 1;
-    private int                      FLAG = 1;
+    private ProgressDialog           mPd;
+
+    private boolean IS_REFRESHING = false;
+    private int     FLAG          = 1;
 
     final private int MESSAGE_AT        = 1;
     final private int MESSAGE_COMMENT   = 2;
@@ -118,6 +120,7 @@ public class MessageActivity extends BaseActivity implements OnClickListener {
         pwb_plv_messages.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
             @Override
             public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+                IS_REFRESHING = true;
                 loadData(1);
             }
         });
@@ -132,7 +135,9 @@ public class MessageActivity extends BaseActivity implements OnClickListener {
 
     /** 读取我的评论列表 */
     private void loadData(final long page) {
-
+        if (FLAG ==1) {
+            mPd = ProgressDialog.show(MessageActivity.this, "获取数据", "加载ing");
+        }
         String uri = "";
         switch (mMessageType) {
             case MESSAGE_AT:
@@ -151,8 +156,6 @@ public class MessageActivity extends BaseActivity implements OnClickListener {
         // 设置uri
         uri += "?access_token=" + mAccessToken.getToken();
         uri += "&page=" + page;
-
-        final ProgressDialog mPd = ProgressDialog.show(this, "获取数据", "加载ing");
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, uri, null,
                 new Response.Listener<JSONObject>() {
@@ -173,13 +176,21 @@ public class MessageActivity extends BaseActivity implements OnClickListener {
 
                             mTotalNum = response.getLong("total_number");
                             mCurPage = page;
+
                             addData(mCommentList, mTotalNum);
+                            if (IS_REFRESHING) {
+                                IS_REFRESHING = false;
+                                pwb_plv_messages.onRefreshComplete();
+                            }
 
                             // mPd.dismiss();
                             // FLAG ++;
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+
+                        mPd.dismiss();
+                        FLAG ++;
                     }
                 }, new Response.ErrorListener() {
                     @Override
@@ -191,8 +202,6 @@ public class MessageActivity extends BaseActivity implements OnClickListener {
 
         // 将请求加入volley队列中
         mRequestQueue.add(jsonObjectRequest);
-
-        mPd.dismiss();
     }
 
     private void addData(List<Comment> listComments, long totalNum) {
@@ -210,8 +219,6 @@ public class MessageActivity extends BaseActivity implements OnClickListener {
             removeFootView(pwb_plv_messages, foot_view);
         }
     }
-
-
 
     /** 添加底部的刷新view */
     private void addFootView(PullToRefreshListView plv, View footView) {
@@ -244,6 +251,7 @@ public class MessageActivity extends BaseActivity implements OnClickListener {
                 boolean sendCommentSuccess = data.getBooleanExtra("sendCommentSuccess", false);
                 if (sendCommentSuccess) {
                     ToastUtils.showToast(MessageActivity.this, "发送成功", Toast.LENGTH_SHORT);
+                    mPd = ProgressDialog.show(MessageActivity.this, "获取数据", "加载ing");
                     loadData(1);
                 }
                 break;

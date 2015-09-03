@@ -59,6 +59,7 @@ public class HomeFragment extends MyFragment {
     private     View                        footer_loading;
 
     private int FLAG = 1;
+    private boolean IS_REFLASHING = false;
 
     public HomeFragment() {
     }
@@ -105,15 +106,15 @@ public class HomeFragment extends MyFragment {
         mAdapter = new StatusAdapter(mActivity, mStatusList, mActivity.mImageLoader);
         mPlv.setAdapter(mAdapter);
         mPlv.setOnRefreshListener(new OnRefreshListener<ListView>() {
+                @Override
+                public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+                    IS_REFLASHING = true;
+                    loadData(1);
+                }
+            });
+        mPlv.setOnLastItemVisibleListener(new PullToRefreshBase.OnLastItemVisibleListener(){
             @Override
-            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-                loadData(1);
-                mPlv.onRefreshComplete();
-            }
-        });
-        mPlv.setOnLastItemVisibleListener(new PullToRefreshBase.OnLastItemVisibleListener() {
-            @Override
-            public void onLastItemVisible() {
+            public void onLastItemVisible () {
                 loadData(mCurPage + 1);
             }
         });
@@ -153,7 +154,12 @@ public class HomeFragment extends MyFragment {
                     // json返回的微博总数
                     mTotalNum = response.getInt("total_number");
                     mCurPage = page;
+
                     addData(mStatusList, mTotalNum);
+                    if (IS_REFLASHING) {
+                        IS_REFLASHING = false;
+                        mPlv.onRefreshComplete();
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -167,6 +173,7 @@ public class HomeFragment extends MyFragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
+                mPlv.onRefreshComplete();
                 ToastUtils.showToast(mActivity, "网络发生异常,加载失败", Toast.LENGTH_SHORT);
                 mPd.dismiss();
                 FLAG ++;
