@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentActivity;
 import android.util.LruCache;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -28,9 +29,9 @@ import com.panda.pweibo.utils.ToastUtils;
  */
 public class MainActivity extends FragmentActivity implements RadioGroup.OnCheckedChangeListener, View.OnClickListener {
 
-    private long mExitTime = 0;
+    private     long                mExitTime;
     private     ImageButton         mImageButton;
-    public     FragmentController  mController;
+    private     FragmentController  mController;
 
     public      RequestQueue        mRequestQueue;
     public      ImageCache          mImageCache;
@@ -42,7 +43,6 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
     protected void onCreate(Bundle saveInstanceState) {
 
         super.onCreate(saveInstanceState);
-
         mController = FragmentController.getInstance(MainActivity.this, R.id.fl_content);
         //默认展示第一个
         mController.showFragment(0);
