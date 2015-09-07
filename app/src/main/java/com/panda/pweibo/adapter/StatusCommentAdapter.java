@@ -2,6 +2,8 @@ package com.panda.pweibo.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -97,6 +99,19 @@ public class StatusCommentAdapter extends BaseAdapter {
                         intent, Code.REQUEST_CODE_WRITE_COMMENT_BACK_TO_DETAIL);
             }
         });
+
+        // 将每个item通过canvas画布画出
+        convertView.measure(View.MeasureSpec.makeMeasureSpec(256, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(256, View.MeasureSpec.EXACTLY));
+        // 设置布局的尺寸和位置
+        convertView.layout(0, 0, convertView.getMeasuredWidth(), convertView.getMeasuredHeight());
+        // 生成bitmap
+        Bitmap bitmap = Bitmap.createBitmap(convertView.getWidth(), convertView.getHeight(),
+                Bitmap.Config.RGB_565);
+        // 利用bitmap生成画布
+        Canvas canvas = new Canvas(bitmap);
+        // 把view中的内容绘制在画布上
+        convertView.draw(canvas);
 
         return convertView;
     }
