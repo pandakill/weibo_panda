@@ -8,9 +8,11 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Build;
 import android.text.Html;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
@@ -234,17 +236,22 @@ public class StatusAdapter extends BaseAdapter {
         mImageLoader.get(user.getProfile_image_url(), listener);
 
         // TODO 将view转换为bitmap并绘制
+        // 获取屏幕宽度大小、设置bitmap的宽度
+        convertView.setDrawingCacheEnabled(true);
+        WindowManager windowManager = ((Activity) mContext).getWindowManager();
+        Display display = windowManager.getDefaultDisplay();
+
         // 如果没有调用这个方法，得到的bitmap为null
-        convertView.measure(View.MeasureSpec.makeMeasureSpec(256, View.MeasureSpec.EXACTLY),
-                View.MeasureSpec.makeMeasureSpec(256, View.MeasureSpec.EXACTLY));
+        // 高度最好选用UNSPECTIFIED模式、这样才会使得每个item的高度能自适应
+        convertView.measure(View.MeasureSpec.makeMeasureSpec(display.getWidth(), View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(256, View.MeasureSpec.UNSPECIFIED));
         // 设置布局的尺寸和位置
         convertView.layout(0, 0, convertView.getMeasuredWidth(), convertView.getMeasuredHeight());
-        // 生成bitmap
-        Bitmap bitmap = Bitmap.createBitmap(convertView.getWidth(), convertView.getHeight(),
-                Bitmap.Config.RGB_565);
-        // 利用bitmap生成画布
+        // 获得绘图缓存中的Bitmap
+        convertView.buildDrawingCache();
+        Bitmap bitmap = convertView.getDrawingCache();
+
         Canvas canvas = new Canvas(bitmap);
-        // 把view中的内容绘制在画布上
         convertView.draw(canvas);
 
         return convertView;
