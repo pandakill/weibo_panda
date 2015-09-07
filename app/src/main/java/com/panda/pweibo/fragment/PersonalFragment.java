@@ -180,9 +180,13 @@ public class PersonalFragment extends MyFragment implements OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.pwb_ll_status_count:
-                Intent intent = new Intent(mActivity, UserInfoActivity.class);
-                intent.putExtra("userName", mUser.getName());
-                startActivity(intent);
+                if (mUser != null) {
+                    Intent intent = new Intent(mActivity, UserInfoActivity.class);
+                    intent.putExtra("userName", mUser.getName());
+                    startActivity(intent);
+                } else {
+                    ToastUtils.showToast(mActivity, "网络连接错误,请稍后重试", Toast.LENGTH_SHORT);
+                }
                 break;
 
             case R.id.pwb_ll_follows_count:
