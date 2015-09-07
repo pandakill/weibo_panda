@@ -236,6 +236,7 @@ public class StatusAdapter extends BaseAdapter {
         mImageLoader.get(user.getProfile_image_url(), listener);
 
         // TODO 将view转换为bitmap并绘制
+        // 以下方法将bitmap加入缓存当中
         // 获取屏幕宽度大小、设置bitmap的宽度
         convertView.setDrawingCacheEnabled(true);
         WindowManager windowManager = ((Activity) mContext).getWindowManager();

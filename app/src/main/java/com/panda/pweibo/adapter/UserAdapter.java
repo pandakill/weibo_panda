@@ -1,8 +1,13 @@
 package com.panda.pweibo.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -67,6 +72,23 @@ public class UserAdapter extends BaseAdapter {
         holder.tv_subhead.setText(item.getSubhead());
         holder.tv_caption.setText(item.getCaption());
         holder.iv_left.setImageResource(item.getLeftImg());
+
+        // 获取屏幕宽度大小、设置bitmap的宽度
+        convertView.setDrawingCacheEnabled(true);
+        WindowManager windowManager = ((Activity)mContext).getWindowManager();
+        Display display = windowManager.getDefaultDisplay();
+
+        // 如果没有调用这个方法，得到的bitmap为null
+        convertView.measure(View.MeasureSpec.makeMeasureSpec(display.getWidth(), View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(256, View.MeasureSpec.UNSPECIFIED));
+        // 设置布局的尺寸和位置
+        convertView.layout(0, 0, convertView.getMeasuredWidth(), convertView.getMeasuredHeight());
+        // 获得绘图缓存中的Bitmap
+        convertView.buildDrawingCache();
+        Bitmap bitmap = convertView.getDrawingCache();
+
+        Canvas canvas = new Canvas(bitmap);
+        convertView.draw(canvas);
 
         return convertView;
     }
