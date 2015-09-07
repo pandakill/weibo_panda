@@ -1,6 +1,7 @@
 package com.panda.pweibo.adapter;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -150,6 +151,7 @@ public class StatusAdapter extends BaseAdapter {
                 intent.putExtra("status", status);
 
                 mContext.startActivity(intent);
+                ((Activity) mContext).overridePendingTransition(R.anim.scale_in, R.anim.scale_out);
             }
         });
 
@@ -160,6 +162,7 @@ public class StatusAdapter extends BaseAdapter {
                 Intent intent = new Intent(mContext, StatusDetailActivity.class);
                 intent.putExtra("status", status);
                 mContext.startActivity(intent);
+                ((Activity) mContext).overridePendingTransition(R.anim.scale_in, R.anim.scale_out);
             }
         });
 
@@ -170,6 +173,7 @@ public class StatusAdapter extends BaseAdapter {
                 Intent intent = new Intent(mContext, StatusDetailActivity.class);
                 intent.putExtra("status", retweeted_status);
                 mContext.startActivity(intent);
+                ((Activity) mContext).overridePendingTransition(R.anim.scale_in, R.anim.scale_out);
             }
         });
 
@@ -180,6 +184,7 @@ public class StatusAdapter extends BaseAdapter {
                 Intent intent = new Intent(mContext, StatusDetailActivity.class);
                 intent.putExtra("status", retweeted_status);
                 mContext.startActivity(intent);
+                ((Activity) mContext).overridePendingTransition(R.anim.scale_in, R.anim.scale_out);
             }
         });
 
@@ -206,6 +211,7 @@ public class StatusAdapter extends BaseAdapter {
                     Intent intent = new Intent(mContext, StatusDetailActivity.class);
                     intent.putExtra("status", status);
                     mContext.startActivity(intent);
+                    ((Activity) mContext).overridePendingTransition(R.anim.scale_in, R.anim.scale_out);
                 }
             }
         });

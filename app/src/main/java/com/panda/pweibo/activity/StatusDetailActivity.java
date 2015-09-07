@@ -555,4 +555,10 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
                 break;
         }
     }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.scale_in, R.anim.scale_out);
+    }
 }
