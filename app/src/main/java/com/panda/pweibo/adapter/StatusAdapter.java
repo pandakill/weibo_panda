@@ -4,6 +4,8 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.os.Build;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -207,6 +209,7 @@ public class StatusAdapter extends BaseAdapter {
                     Intent intent = new Intent(mContext, WriteCommentActivity.class);
                     intent.putExtra("status", status);
                     mContext.startActivity(intent);
+                    ((Activity) mContext).overridePendingTransition(R.anim.scale_in, R.anim.scale_out);
                 } else {
                     Intent intent = new Intent(mContext, StatusDetailActivity.class);
                     intent.putExtra("status", status);
@@ -224,12 +227,25 @@ public class StatusAdapter extends BaseAdapter {
             }
         });
 
-
         // 加载用户头像图片
         ImageListener listener;
         listener = ImageLoader.getImageListener(holder.pwb_imageview_item_status_avatar,
                 R.drawable.ic_com_sina_weibo_sdk_logo, R.drawable.pwb_avatar);
         mImageLoader.get(user.getProfile_image_url(), listener);
+
+        // TODO 将view转换为bitmap并绘制
+        // 如果没有调用这个方法，得到的bitmap为null
+        convertView.measure(View.MeasureSpec.makeMeasureSpec(256, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(256, View.MeasureSpec.EXACTLY));
+        // 设置布局的尺寸和位置
+        convertView.layout(0, 0, convertView.getMeasuredWidth(), convertView.getMeasuredHeight());
+        // 生成bitmap
+        Bitmap bitmap = Bitmap.createBitmap(convertView.getWidth(), convertView.getHeight(),
+                Bitmap.Config.RGB_565);
+        // 利用bitmap生成画布
+        Canvas canvas = new Canvas(bitmap);
+        // 把view中的内容绘制在画布上
+        convertView.draw(canvas);
 
         return convertView;
     }
