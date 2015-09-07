@@ -167,11 +167,12 @@ public class MessageAdapter extends BaseAdapter {
                 View.MeasureSpec.makeMeasureSpec(256, View.MeasureSpec.UNSPECIFIED));
         // 设置布局的尺寸和位置
         convertView.layout(0, 0, convertView.getMeasuredWidth(), convertView.getMeasuredHeight());
-        // 获得绘图缓存中的Bitmap
-        convertView.buildDrawingCache();
-        Bitmap bitmap = convertView.getDrawingCache();
-
+        // 生成bitmap
+        Bitmap bitmap = Bitmap.createBitmap(convertView.getWidth(), convertView.getHeight(),
+                Bitmap.Config.RGB_565);
+        // 利用bitmap生成画布
         Canvas canvas = new Canvas(bitmap);
+        // 把view中的内容绘制在画布上
         convertView.draw(canvas);
 
         return convertView;

@@ -68,6 +68,7 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
     private long                mCurPage = 1;
     private long                mTotalNum;
     private Boolean             mScroll2Comment = false;
+    private Boolean             IS_REFRESH = false;
 
     /** 加载完毕标记 */
     private boolean IS_REFLASHING = false;
@@ -178,16 +179,22 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
 
                     mCurPage = page;
 
-                    addData(mCommentList, totalNum);
-                    if (IS_REFLASHING) {
-                        IS_REFLASHING = false;
-                        pwb_plv_status_detail.onRefreshComplete();
-                    }
+                    if (!IS_REFRESH) {
+                        addData(mCommentList, totalNum);
+                        if (IS_REFLASHING) {
+                            IS_REFLASHING = false;
+                            pwb_plv_status_detail.onRefreshComplete();
+                        }
 
-                    /** 判断是否需要滚动至评论部分 */
-                    if (mScroll2Comment) {
-                        pwb_plv_status_detail.getRefreshableView().setSelection(2);
-                        mScroll2Comment = false;
+                        /** 判断是否需要滚动至评论部分 */
+                        if (mScroll2Comment) {
+                            pwb_plv_status_detail.getRefreshableView().setSelection(2);
+                            mScroll2Comment = false;
+                        }
+                        IS_REFRESH = true;
+                    } else {
+                        pwb_plv_status_detail.onRefreshComplete();
+                        IS_REFRESH = false;
                     }
 
                 } catch (JSONException e) {
