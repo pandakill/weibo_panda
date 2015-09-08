@@ -49,4 +49,9 @@
 
     </RadioGroup>
 
+    <com.panda.pweibo.widget.UnderlineStatusDetailView
+        android:id="@+id/uliv_status_detail"
+        android:layout_width="match_parent"
+        android:layout_height="4dp" />
+
 </LinearLayout>

@@ -46,6 +46,7 @@ import com.panda.pweibo.utils.DateUtils;
 import com.panda.pweibo.utils.StringUtils;
 import com.panda.pweibo.utils.TitlebarUtils;
 import com.panda.pweibo.utils.ToastUtils;
+import com.panda.pweibo.widget.UnderlineStatusDetailView;
 import com.panda.pweibo.widget.WrapHeightGridView;
 
 import org.json.JSONArray;
@@ -97,6 +98,7 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
     private RadioButton     pwb_radiobutton_share;
     private RadioButton     pwb_radiobutton_comment;
     private RadioButton     pwb_radiobutton_praise;
+    private UnderlineStatusDetailView uliv_status_detail;
 
     /** 顶部悬浮的菜单栏控件 */
     private View            shadow_status_detail_tab;
@@ -104,6 +106,7 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
     private RadioButton     shadow_radiobutton_share;
     private RadioButton     shadow_radiobutton_comment;
     private RadioButton     shadow_radiobutton_praise;
+    private UnderlineStatusDetailView shadow_status_detail;
 
 
     /** 下拉刷新控件 */
@@ -393,9 +396,11 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
         pwb_radiobutton_share        = (RadioButton)  include_status_detail_tab.findViewById(R.id.pwb_radiobutton_share);
         pwb_radiobutton_comment      = (RadioButton)  include_status_detail_tab.findViewById(R.id.pwb_radiobutton_comment);
         pwb_radiobutton_praise       = (RadioButton)  include_status_detail_tab.findViewById(R.id.pwb_radiobutton_praise);
+        uliv_status_detail           = (UnderlineStatusDetailView)  include_status_detail_tab.findViewById(R.id.uliv_status_detail);
         pwb_radiobutton_comment.setChecked(true);
         mCurrentItem =  pwb_radiogroup_status_detail.indexOfChild(pwb_radiobutton_comment);
         pwb_radiogroup_status_detail.setOnCheckedChangeListener(this);
+        uliv_status_detail.setCurrentItemWithoutAnim(1);
 
         /** 悬浮的菜单栏 */
         shadow_status_detail_tab    = findViewById(R.id.include_status_detail_tab);
@@ -403,8 +408,10 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
         shadow_radiobutton_share        = (RadioButton)  shadow_status_detail_tab.findViewById(R.id.pwb_radiobutton_share);
         shadow_radiobutton_comment      = (RadioButton)  shadow_status_detail_tab.findViewById(R.id.pwb_radiobutton_comment);
         shadow_radiobutton_praise       = (RadioButton)  shadow_status_detail_tab.findViewById(R.id.pwb_radiobutton_praise);
+        shadow_status_detail           = (UnderlineStatusDetailView)  shadow_status_detail_tab.findViewById(R.id.uliv_status_detail);
         shadow_radiobutton_comment.setChecked(true);
         shadow_radiogroup_status_detail.setOnCheckedChangeListener(this);
+        shadow_status_detail.setCurrentItemWithoutAnim(1);
     }
 
     /** 初始化listview */
@@ -551,84 +558,23 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
         }
     }
 
-    /**
-     * 设置radioGroup的选择动画,当radio被点击时,产生左右滑动的动画
-     * @param radioGroup radioGroup
-     * @param item 被点击的标志位
-     */
-    public void setCurrentItem(RadioGroup radioGroup, int item) {
-        ToastUtils.showToast(StatusDetailActivity.this, "animation begin", Toast.LENGTH_SHORT);
-        final View oldView = radioGroup.getChildAt(mCurrentItem);
-        final View newView = radioGroup.getChildAt(item);
-
-        TranslateAnimation translateAnimation = new TranslateAnimation(
-                Animation.RELATIVE_TO_SELF, 0,
-                Animation.RELATIVE_TO_SELF, item - mCurrentItem,
-                Animation.RELATIVE_TO_SELF, 0,
-                Animation.RELATIVE_TO_SELF, 0);
-
-        // 设置动画延迟为200毫秒
-        translateAnimation.setDuration(100);
-        translateAnimation.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                ToastUtils.showToast(StatusDetailActivity.this, "animation start", Toast.LENGTH_SHORT);
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                ToastUtils.showToast(StatusDetailActivity.this, "animation end", Toast.LENGTH_SHORT);
-                // 动画结束,设置被选择的radio为primary,将上一个选中的为透明
-                oldView.setBackgroundResource(R.drawable.layerlist_tab_indicator_sel);
-                newView.setBackgroundResource(R.drawable.layerlist_tab_indicator_primary);
-//                ((RadioButton)oldView).setChecked(false);
-//                ((RadioButton)newView).setChecked(true);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-        });
-
-        // 设置原先的radio动画
-        oldView.setAnimation(translateAnimation);
-        mCurrentItem = item;
-        radioGroup.invalidate();
-
-    }
-
-    /**
-     * 设置radioGroup没有动画效果的
-     * @param radioGroup radioGroup
-     * @param item 被点击的标志位
-     */
-    public void setCurrentItemWithoutAni(RadioGroup radioGroup, int item) {
-        final View oldView = radioGroup.getChildAt(mCurrentItem);
-        final View newView = radioGroup.getChildAt(item);
-
-        oldView.setBackgroundResource(R.drawable.layerlist_tab_indicator_sel);
-        newView.setBackgroundResource(R.drawable.layerlist_tab_indicator_primary);
-//        ((RadioButton)oldView).setChecked(false);
-//        ((RadioButton)newView).setChecked(true);
-
-        mCurrentItem = item;
-    }
-
     /** tab和shadow_tab保持一致性 */
     private void syncRadioButton(RadioGroup group, int checkedId) {
         int index = group.indexOfChild(group.findViewById(checkedId));
 
+        // 如果隐藏的tab显示出来、则将隐藏的tab部分的radioGroup的底部橙色高亮部分进行滑动效果
         if(shadow_status_detail_tab.getVisibility() == View.VISIBLE) {
-            setCurrentItem(shadow_radiogroup_status_detail, index);
+            // 将radioGroup的底部橙色高亮进行滑动效果
+            shadow_status_detail.setCurrentItem(index);
             ((RadioButton) pwb_radiogroup_status_detail.findViewById(checkedId)).setChecked(true);
             ((RadioButton) shadow_radiogroup_status_detail.getChildAt(index)).setChecked(true);
-            setCurrentItemWithoutAni(pwb_radiogroup_status_detail, index);
+            uliv_status_detail.setCurrentItemWithoutAnim(index);
         } else {
-            setCurrentItem(pwb_radiogroup_status_detail, index);
+            // 将非隐藏的tab部分的radioGroup的底部橙色高亮部分进行滑动效果
+            uliv_status_detail.setCurrentItem(index);
             ((RadioButton) shadow_radiogroup_status_detail.findViewById(checkedId)).setChecked(true);
             ((RadioButton) pwb_radiogroup_status_detail.getChildAt(index)).setChecked(true);
-            setCurrentItemWithoutAni(shadow_radiogroup_status_detail, index);
+            shadow_status_detail.setCurrentItemWithoutAnim(index);
         }
     }
 }
