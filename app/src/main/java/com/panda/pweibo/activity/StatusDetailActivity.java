@@ -9,6 +9,8 @@ import android.text.Html;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
@@ -69,6 +71,7 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
     private long                mTotalNum;
     private Boolean             mScroll2Comment = false;
     private Boolean             IS_REFRESH = false;
+    private int                 mCurrentItem;
 
     /** 加载完毕标记 */
     private boolean IS_REFLASHING = false;
@@ -390,6 +393,8 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
         pwb_radiobutton_share        = (RadioButton)  include_status_detail_tab.findViewById(R.id.pwb_radiobutton_share);
         pwb_radiobutton_comment      = (RadioButton)  include_status_detail_tab.findViewById(R.id.pwb_radiobutton_comment);
         pwb_radiobutton_praise       = (RadioButton)  include_status_detail_tab.findViewById(R.id.pwb_radiobutton_praise);
+        pwb_radiobutton_comment.setChecked(true);
+        mCurrentItem =  pwb_radiogroup_status_detail.indexOfChild(pwb_radiobutton_comment);
         pwb_radiogroup_status_detail.setOnCheckedChangeListener(this);
 
         /** 悬浮的菜单栏 */
@@ -398,6 +403,7 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
         shadow_radiobutton_share        = (RadioButton)  shadow_status_detail_tab.findViewById(R.id.pwb_radiobutton_share);
         shadow_radiobutton_comment      = (RadioButton)  shadow_status_detail_tab.findViewById(R.id.pwb_radiobutton_comment);
         shadow_radiobutton_praise       = (RadioButton)  shadow_status_detail_tab.findViewById(R.id.pwb_radiobutton_praise);
+        shadow_radiobutton_comment.setChecked(true);
         shadow_radiogroup_status_detail.setOnCheckedChangeListener(this);
     }
 
@@ -517,25 +523,7 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
     /** tab点击时,要保持悬浮菜单栏和tab一致 */
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
-        switch (checkedId) {
-            case R.id.pwb_radiobutton_comment:
-                shadow_radiobutton_comment.setChecked(true);
-                pwb_radiobutton_comment.setChecked(true);
-                break;
-
-            case R.id.pwb_radiobutton_share:
-                shadow_radiobutton_share.setChecked(true);
-                pwb_radiobutton_share.setChecked(true);
-                break;
-
-            case R.id.pwb_radiobutton_praise:
-                shadow_radiobutton_praise.setChecked(true);
-                pwb_radiobutton_praise.setChecked(true);
-                break;
-
-            default:
-                break;
-        }
+        syncRadioButton(group, checkedId);
     }
 
     /** 评论页面跳转回来的数据处理 */
@@ -563,9 +551,84 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
         }
     }
 
-    @Override
-    public void finish() {
-        super.finish();
-        overridePendingTransition(R.anim.scale_in, R.anim.scale_out);
+    /**
+     * 设置radioGroup的选择动画,当radio被点击时,产生左右滑动的动画
+     * @param radioGroup radioGroup
+     * @param item 被点击的标志位
+     */
+    public void setCurrentItem(RadioGroup radioGroup, int item) {
+        ToastUtils.showToast(StatusDetailActivity.this, "animation begin", Toast.LENGTH_SHORT);
+        final View oldView = radioGroup.getChildAt(mCurrentItem);
+        final View newView = radioGroup.getChildAt(item);
+
+        TranslateAnimation translateAnimation = new TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, 0,
+                Animation.RELATIVE_TO_SELF, item - mCurrentItem,
+                Animation.RELATIVE_TO_SELF, 0,
+                Animation.RELATIVE_TO_SELF, 0);
+
+        // 设置动画延迟为200毫秒
+        translateAnimation.setDuration(100);
+        translateAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                ToastUtils.showToast(StatusDetailActivity.this, "animation start", Toast.LENGTH_SHORT);
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                ToastUtils.showToast(StatusDetailActivity.this, "animation end", Toast.LENGTH_SHORT);
+                // 动画结束,设置被选择的radio为primary,将上一个选中的为透明
+                oldView.setBackgroundResource(R.drawable.layerlist_tab_indicator_sel);
+                newView.setBackgroundResource(R.drawable.layerlist_tab_indicator_primary);
+//                ((RadioButton)oldView).setChecked(false);
+//                ((RadioButton)newView).setChecked(true);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+
+        // 设置原先的radio动画
+        oldView.setAnimation(translateAnimation);
+        mCurrentItem = item;
+        radioGroup.invalidate();
+
+    }
+
+    /**
+     * 设置radioGroup没有动画效果的
+     * @param radioGroup radioGroup
+     * @param item 被点击的标志位
+     */
+    public void setCurrentItemWithoutAni(RadioGroup radioGroup, int item) {
+        final View oldView = radioGroup.getChildAt(mCurrentItem);
+        final View newView = radioGroup.getChildAt(item);
+
+        oldView.setBackgroundResource(R.drawable.layerlist_tab_indicator_sel);
+        newView.setBackgroundResource(R.drawable.layerlist_tab_indicator_primary);
+//        ((RadioButton)oldView).setChecked(false);
+//        ((RadioButton)newView).setChecked(true);
+
+        mCurrentItem = item;
+    }
+
+    /** tab和shadow_tab保持一致性 */
+    private void syncRadioButton(RadioGroup group, int checkedId) {
+        int index = group.indexOfChild(group.findViewById(checkedId));
+
+        if(shadow_status_detail_tab.getVisibility() == View.VISIBLE) {
+            setCurrentItem(shadow_radiogroup_status_detail, index);
+            ((RadioButton) pwb_radiogroup_status_detail.findViewById(checkedId)).setChecked(true);
+            ((RadioButton) shadow_radiogroup_status_detail.getChildAt(index)).setChecked(true);
+            setCurrentItemWithoutAni(pwb_radiogroup_status_detail, index);
+        } else {
+            setCurrentItem(pwb_radiogroup_status_detail, index);
+            ((RadioButton) shadow_radiogroup_status_detail.findViewById(checkedId)).setChecked(true);
+            ((RadioButton) pwb_radiogroup_status_detail.getChildAt(index)).setChecked(true);
+            setCurrentItemWithoutAni(shadow_radiogroup_status_detail, index);
+        }
     }
 }

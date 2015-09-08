@@ -18,7 +18,7 @@
             android:layout_weight="1"
             android:textSize="@dimen/txtsize_subhead"
             android:textColor="@color/txt_black"
-            android:background="@drawable/layerlist_tab_indicator_sel"
+            android:background="@color/white"
             android:button="@null"
             android:gravity="center"
             android:text="转发"/>
@@ -30,10 +30,9 @@
             android:layout_weight="1"
             android:textSize="@dimen/txtsize_subhead"
             android:textColor="@color/txt_black"
-            android:background="@drawable/layerlist_tab_indicator_sel"
+            android:background="@color/white"
             android:button="@null"
             android:gravity="center"
-            android:checked="true"
             android:text="评论"/>
 
         <RadioButton
@@ -43,7 +42,7 @@
             android:layout_weight="1"
             android:textSize="@dimen/txtsize_subhead"
             android:textColor="@color/txt_black"
-            android:background="@drawable/layerlist_tab_indicator_sel"
+            android:background="@color/white"
             android:button="@null"
             android:gravity="center"
             android:text="赞"/>
