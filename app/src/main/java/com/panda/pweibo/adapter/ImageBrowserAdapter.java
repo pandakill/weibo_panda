@@ -19,6 +19,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.panda.pweibo.R;
 import com.panda.pweibo.models.PicUrls;
+import com.panda.pweibo.widget.TouchNetworkImageView;
 
 import java.util.ArrayList;
 
@@ -76,7 +77,7 @@ public class ImageBrowserAdapter extends PagerAdapter {
         ViewHolder holder = new ViewHolder();
         holder.pwb_sv_item_image = (ScrollView) View.inflate(mContext, R.layout.item_grid_image, null);
         holder.pwb_iv_image_browser
-                = (NetworkImageView) holder.pwb_sv_item_image.findViewById(R.id.pwb_iv_image_browser);
+                = (TouchNetworkImageView) holder.pwb_sv_item_image.findViewById(R.id.pwb_iv_image_browser);
 
         // 获取屏幕宽高
         DisplayMetrics metric = new DisplayMetrics();
@@ -131,6 +132,6 @@ public class ImageBrowserAdapter extends PagerAdapter {
 
     protected class ViewHolder {
         private ScrollView pwb_sv_item_image;
-        private NetworkImageView pwb_iv_image_browser;
+        private TouchNetworkImageView pwb_iv_image_browser;
     }
 }

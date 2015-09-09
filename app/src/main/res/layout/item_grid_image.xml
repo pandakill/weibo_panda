@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <com.android.volley.toolbox.NetworkImageView
+        <com.panda.pweibo.widget.TouchNetworkImageView
             android:id="@+id/pwb_iv_image_browser"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
