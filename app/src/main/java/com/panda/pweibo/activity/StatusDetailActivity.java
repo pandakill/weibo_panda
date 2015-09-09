@@ -72,7 +72,6 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
     private long                mTotalNum;
     private Boolean             mScroll2Comment = false;
     private Boolean             IS_REFRESH = false;
-    private Boolean             IS_CHECKED = false;
 
     /** 加载完毕标记 */
     private boolean IS_REFLASHING = false;
@@ -529,7 +528,6 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
     /** tab点击时,要保持悬浮菜单栏和tab一致 */
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
-        IS_CHECKED = false;
         syncRadioButton(group, checkedId);
     }
 
@@ -562,23 +560,19 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
     private void syncRadioButton(RadioGroup group, int checkedId) {
         int index = group.indexOfChild(group.findViewById(checkedId));
 
-        if (!IS_CHECKED) {
-            // 如果隐藏的tab显示出来、则将隐藏的tab部分的radioGroup的底部橙色高亮部分进行滑动效果
-            if(shadow_status_detail_tab.getVisibility() == View.VISIBLE) {
-                // 将radioGroup的底部橙色高亮进行滑动效果
-                shadow_status_detail.setCurrentItem(index);
-                ((RadioButton) pwb_radiogroup_status_detail.findViewById(checkedId)).setChecked(true);
-                ((RadioButton) shadow_radiogroup_status_detail.getChildAt(index)).setChecked(true);
-                uliv_status_detail.setCurrentItemWithoutAnim(index);
-                IS_CHECKED = true;
-            } else {
-                // 将非隐藏的tab部分的radioGroup的底部橙色高亮部分进行滑动效果
-                uliv_status_detail.setCurrentItem(index);
-                ((RadioButton) shadow_radiogroup_status_detail.findViewById(checkedId)).setChecked(true);
-                ((RadioButton) pwb_radiogroup_status_detail.getChildAt(index)).setChecked(true);
-                shadow_status_detail.setCurrentItemWithoutAnim(index);
-            }
-            IS_CHECKED = true;
+        // 如果隐藏的tab显示出来、则将隐藏的tab部分的radioGroup的底部橙色高亮部分进行滑动效果
+        if(shadow_status_detail_tab.getVisibility() == View.VISIBLE) {
+            // 将radioGroup的底部橙色高亮进行滑动效果
+            shadow_status_detail.setCurrentItem(index);
+            ((RadioButton) pwb_radiogroup_status_detail.findViewById(checkedId)).setChecked(true);
+            ((RadioButton) shadow_radiogroup_status_detail.getChildAt(index)).setChecked(true);
+            uliv_status_detail.setCurrentItemWithoutAnim(index);
+        } else {
+            // 将非隐藏的tab部分的radioGroup的底部橙色高亮部分进行滑动效果
+            uliv_status_detail.setCurrentItem(index);
+            ((RadioButton) shadow_radiogroup_status_detail.findViewById(checkedId)).setChecked(true);
+            ((RadioButton) pwb_radiogroup_status_detail.getChildAt(index)).setChecked(true);
+            shadow_status_detail.setCurrentItemWithoutAnim(index);
         }
     }
 }

@@ -9,7 +9,8 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:splitMotionEvents="false">
         
         <RadioButton
             android:id="@+id/pwb_radiobutton_share"

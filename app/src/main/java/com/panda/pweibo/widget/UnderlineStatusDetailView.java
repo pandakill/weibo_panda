@@ -35,8 +35,8 @@ public class UnderlineStatusDetailView extends LinearLayout {
     }
 
     /**
-     * ¶Ô³ÈÉ«¸ßÁÁ²¿·ÖµÄÇĞ»»²»ÉèÖÃ¶¯»­Ğ§¹û
-     * @param item radioGroupµÄÏÂ±ê¡¢¶ÔÓ¦µÄÊÇ¸ÃlayoutµÄµÚitemÏÂ±ê
+     * å¯¹æ©™è‰²é«˜äº®éƒ¨åˆ†çš„åˆ‡æ¢ä¸è®¾ç½®åŠ¨ç”»æ•ˆæœ
+     * @param item radioGroupçš„ä¸‹æ ‡ã€å¯¹åº”çš„æ˜¯è¯¥layoutçš„ç¬¬itemä¸‹æ ‡
      */
     public void setCurrentItemWithoutAnim(int item) {
         final View oldChild = getChildAt(mCurrentPosition);
@@ -50,8 +50,8 @@ public class UnderlineStatusDetailView extends LinearLayout {
     }
 
     /**
-     * ½«Ñ¡ÖĞµÄ³ÈÉ«µ×²¿ÉèÖÃ»¬¶¯¶¯»­
-     * @param item radioGroupµÄÏÂ±ê¡¢¶ÔÓ¦µÄÊÇ¸ÃlayoutµÄµÚitemÏÂ±ê
+     * å°†é€‰ä¸­çš„æ©™è‰²åº•éƒ¨è®¾ç½®æ»‘åŠ¨åŠ¨ç”»
+     * @param item radioGroupçš„ä¸‹æ ‡ã€å¯¹åº”çš„æ˜¯è¯¥layoutçš„ç¬¬itemä¸‹æ ‡
      */
     public void setCurrentItem(int item) {
         final View oldChild = getChildAt(mCurrentPosition);
