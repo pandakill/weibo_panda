@@ -20,7 +20,7 @@ import java.util.Comparator;
  */
 public class ImageFileCacheUtils {
     private static final String CHCHEDIR = "ImageChace";//缓存目录
-    private static final String WHOLESALE_CONV = "";//缓存文件后缀名
+    private static final String WHOLESALE_CONV = ".cache";//缓存文件后缀名
     private static final int MB = 1024 * 1024;
     private static final int CACHE_SIZE = 80;//缓存最大容量（超过就会利用lru算法删除最近最少使用的缓存文件）
     private static final int FREE_SD_SPACE_NEEDED_TO_CACHE = 100;//缓存所需SD卡所剩的最小容量
@@ -142,12 +142,12 @@ public class ImageFileCacheUtils {
 
     /**
      * 将url转成文件名
-     * @param url 文件的uri地址
-     * @return 返回图片的绝对路径
+     * @param url 文件的url地址
+     * @return 返回缓存文件的名字
      */
     private String convertUrlToFileName(String url) {
         String[] strs = url.split("/");
-        return strs[strs.length - 1] + WHOLESALE_CONV;
+        return strs[strs.length - 2] + strs[strs.length - 1] + WHOLESALE_CONV;
     }
 
     /**
