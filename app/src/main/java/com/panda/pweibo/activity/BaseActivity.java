@@ -13,6 +13,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageLoader.ImageCache;
 import com.panda.pweibo.BaseApplication;
 import com.panda.pweibo.constants.AccessTokenKeeper;
+import com.panda.pweibo.utils.ImageFileCacheUtils;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 
 /**
@@ -42,12 +43,12 @@ public class BaseActivity extends Activity {
         mImageCache = new ImageCache() {
             @Override
             public Bitmap getBitmap(String key) {
-                return mLruCache.get(key);
+                return ImageFileCacheUtils.getInstance().getImage(key);
             }
 
             @Override
             public void putBitmap(String key, Bitmap value) {
-                mLruCache.put(key, value);
+                ImageFileCacheUtils.getInstance().saveBitmap(value, key);
             }
         };
 

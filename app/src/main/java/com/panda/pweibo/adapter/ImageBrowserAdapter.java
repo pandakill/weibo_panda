@@ -85,16 +85,14 @@ public class ImageBrowserAdapter extends PagerAdapter {
         final int screenHeight = metric.heightPixels;
         final int screenWidth = metric.widthPixels;
 
-        holder.pwb_iv_image_browser.setDefaultImageResId(R.drawable.pwb_test_image);
+        // 加载图片
+        holder.pwb_iv_image_browser.setImageUrl(url, mImageLoader);
 
         // 设置图片的显示位置
         float scale = (float) getBitmap(position).getHeight() / getBitmap(position).getWidth();
         int height = Math.max((int) (screenWidth * scale), screenHeight);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(screenWidth, height);
         holder.pwb_iv_image_browser.setLayoutParams(params);
-
-        // 加载图片
-        holder.pwb_iv_image_browser.setImageUrl(url, mImageLoader);
 
         // 将scrollview加入viewGroup当中
         container.addView(holder.pwb_sv_item_image);
@@ -120,7 +118,7 @@ public class ImageBrowserAdapter extends PagerAdapter {
     public Bitmap getBitmap(int position) {
         Bitmap bitmap = null;
         View view = mPicViewList.get(position % mPicViewList.size());
-        NetworkImageView iv_image_browser = (NetworkImageView) view.findViewById(R.id.pwb_iv_image_browser);
+        TouchNetworkImageView iv_image_browser = (TouchNetworkImageView) view.findViewById(R.id.pwb_iv_image_browser);
         Drawable drawable = iv_image_browser.getDrawable();
         if(drawable != null && drawable instanceof BitmapDrawable) {
             BitmapDrawable bd = (BitmapDrawable) drawable;

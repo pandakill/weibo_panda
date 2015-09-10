@@ -1,6 +1,7 @@
 package com.panda.pweibo.widget;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.FloatMath;
 import android.view.MotionEvent;
@@ -29,7 +30,7 @@ public class TouchNetworkImageView extends NetworkImageView {
 
     private float mBeforeLenght;     // 两触点的距离
     private float mAfterLenght;      // 两触点的距离
-    private float mScale = 0.04f;    //缩放的比例,xy方向都是这个值,越大缩放的速度越快
+    final static float RATE = 0.04f;    //缩放的比例,xy方向都是这个值,越大缩放的速度越快
 
     /**
      * 图片的高宽
@@ -64,8 +65,8 @@ public class TouchNetworkImageView extends NetworkImageView {
     /**
      * 在动态创建时，制定图片的初始高宽
      * @param context
-     * @param w
-     * @param h
+     * @param w 宽度
+     * @param h 高度
      */
     public TouchNetworkImageView(Context context, int w, int h) {
         super(context);
@@ -88,7 +89,7 @@ public class TouchNetworkImageView extends NetworkImageView {
      * 处理触碰事件
      */
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public boolean onTouchEvent(@NonNull MotionEvent event) {
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 // 设置当前为拖动模式
@@ -120,7 +121,7 @@ public class TouchNetworkImageView extends NetworkImageView {
                 if (getHeight() <= mScreenH || this.getTop() < 0) {
                     if (this.getTop() < 0) {
                         int dis = getTop();
-                        this.layout(this.getLeft(), 0, this.getRight(), 0 + this.getHeight());
+                        this.layout(this.getLeft(), 0, this.getRight(), this.getHeight());
                         disY = dis - getTop();
                     } else if(this.getBottom() > mScreenH) {
                         disY = getHeight()- mScreenH + getTop();
@@ -132,7 +133,7 @@ public class TouchNetworkImageView extends NetworkImageView {
                     if(this.getLeft()<0)
                     {
                         disX = getLeft();
-                        this.layout(0, this.getTop(), 0 + getWidth(), this.getBottom());
+                        this.layout(0, this.getTop(), getWidth(), this.getBottom());
                     }
                     else if(this.getRight()>mScreenW)
                     {
@@ -162,7 +163,7 @@ public class TouchNetworkImageView extends NetworkImageView {
                         mToY = (int) event.getRawY();
                     }
                 }
-                /*处理缩放*/
+                // 处理缩放
                 else if (mMode == ZOOM) {
                     if(spacing(event)>10f)
                     {
@@ -175,9 +176,9 @@ public class TouchNetworkImageView extends NetworkImageView {
                         {
                             if(gapLenght>0) {
 
-                                this.setScale(mScale, BIGGER);
+                                this.setScale(RATE, BIGGER);
                             }else {
-                                this.setScale(mScale, SMALLER);
+                                this.setScale(RATE, SMALLER);
                             }
                             mBeforeLenght = mAfterLenght;
                         }
