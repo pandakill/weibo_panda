@@ -2,7 +2,10 @@ package com.panda.pweibo.adapter;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -13,6 +16,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.panda.pweibo.R;
 import com.panda.pweibo.models.PicUrls;
+import com.panda.pweibo.utils.ImageFileCacheUtils;
 import com.panda.pweibo.utils.ToastUtils;
 import com.panda.pweibo.widget.WrapHeightGridView;
 
@@ -77,8 +81,21 @@ public class StatusGridViewAdapter extends BaseAdapter{
 
         // 加载图片
         final PicUrls urls = getItem(position);
-        holder.imageView.setTag(urls.getThumbnail_pic());
-        holder.imageView.setImageUrl(urls.getThumbnail_pic(), mImageLoader);
+//        holder.imageView.setTag(urls.getThumbnail_pic());
+        Bitmap thumBitmap = ImageFileCacheUtils.getInstance().getImage(urls.getThumbnail_pic());
+        Bitmap origBitmap = ImageFileCacheUtils.getInstance().getImage(urls.getOriginal_pic());
+        Bitmap bmidBitmap = ImageFileCacheUtils.getInstance().getImage(urls.getBmiddle_pic());
+
+        if (origBitmap != null) {
+            holder.imageView.setImageUrl(urls.getOriginal_pic(), mImageLoader);
+            Log.i("originBitmap", urls.getOriginal_pic() + "---" +(origBitmap==null));
+        } else if (bmidBitmap != null) {
+            holder.imageView.setImageUrl(urls.getBmiddle_pic(), mImageLoader);
+            Log.i("bmidBitmap", urls.getBmiddle_pic() + "---" +(bmidBitmap==null));
+        } else {
+            holder.imageView.setImageUrl(urls.getThumbnail_pic(), mImageLoader);
+            Log.i("thumBitmap", urls.getThumbnail_pic() + "---" +(thumBitmap==null));
+        }
 
         return convertView;
     }

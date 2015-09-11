@@ -35,6 +35,7 @@ import com.panda.pweibo.models.PicUrls;
 import com.panda.pweibo.models.Status;
 import com.panda.pweibo.models.User;
 import com.panda.pweibo.utils.DateUtils;
+import com.panda.pweibo.utils.ImageFileCacheUtils;
 import com.panda.pweibo.utils.StringUtils;
 import com.panda.pweibo.utils.ToastUtils;
 import com.panda.pweibo.widget.WrapHeightGridView;
@@ -289,7 +290,16 @@ public class StatusAdapter extends BaseAdapter {
             iv.setVisibility(View.VISIBLE);
 
             iv.setTag(list.get(0).getThumbnail_pic());
-            iv.setImageUrl(list.get(0).getThumbnail_pic(), mImageLoader);
+            // 判断缓存中是否存在图片高清图片,有则加载高清图片,否则请求缩略图
+            Bitmap origBitmap = ImageFileCacheUtils.getInstance().getImage(list.get(0).getOriginal_pic());
+            Bitmap bmidBitmap = ImageFileCacheUtils.getInstance().getImage(list.get(0).getBmiddle_pic());
+            if (origBitmap != null) {
+                iv.setImageUrl(list.get(0).getOriginal_pic(), mImageLoader);
+            } else if (bmidBitmap != null) {
+                iv.setImageUrl(list.get(0).getBmiddle_pic(), mImageLoader);
+            } else {
+                iv.setImageUrl(list.get(0).getThumbnail_pic(), mImageLoader);
+            }
 
             /** 增加图片点击的监听器 */
             iv.setOnClickListener(new View.OnClickListener() {

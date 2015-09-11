@@ -3,14 +3,13 @@ package com.panda.pweibo.activity;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
@@ -33,6 +32,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.panda.pweibo.constants.Code;
+import com.panda.pweibo.utils.ImageFileCacheUtils;
 import com.panda.pweibo.widget.Pull2RefreshListView;
 import com.panda.pweibo.R;
 import com.panda.pweibo.adapter.StatusCommentAdapter;
@@ -314,7 +314,16 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
             iv.setVisibility(View.VISIBLE);
 
             iv.setTag(list.get(0).getThumbnail_pic());
-            iv.setImageUrl(list.get(0).getThumbnail_pic(), mImageLoader);
+            // 判断缓存中是否存在图片高清图片,有则加载高清图片,否则请求缩略图
+            Bitmap origBitmap = ImageFileCacheUtils.getInstance().getImage(list.get(0).getOriginal_pic());
+            Bitmap bmidBitmap = ImageFileCacheUtils.getInstance().getImage(list.get(0).getBmiddle_pic());
+            if (origBitmap != null) {
+                iv.setImageUrl(list.get(0).getOriginal_pic(), mImageLoader);
+            } else if (bmidBitmap != null) {
+                iv.setImageUrl(list.get(0).getBmiddle_pic(), mImageLoader);
+            } else {
+                iv.setImageUrl(list.get(0).getThumbnail_pic(), mImageLoader);
+            }
 
             /** 增加图片点击的监听器 */
             iv.setOnClickListener(new View.OnClickListener() {
