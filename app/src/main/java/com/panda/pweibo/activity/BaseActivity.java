@@ -23,11 +23,11 @@ import com.sina.weibo.sdk.auth.Oauth2AccessToken;
  */
 public class BaseActivity extends Activity {
 
-    protected RequestQueue              mRequestQueue;
+    public RequestQueue              mRequestQueue;
     protected ImageCache                mImageCache;
     protected ImageLoader               mImageLoader;
     protected LruCache<String, Bitmap>  mLruCache;
-    protected Oauth2AccessToken         mAccessToken;
+    private Oauth2AccessToken         mAccessToken;
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     @Override
@@ -37,7 +37,7 @@ public class BaseActivity extends Activity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        mAccessToken = AccessTokenKeeper.readAccessToken(this);
+        setmAccessToken(AccessTokenKeeper.readAccessToken(this));
         mRequestQueue = BaseApplication.getsRequestQueue();
         mLruCache = new LruCache<>(40);
         mImageCache = new ImageCache() {
@@ -53,5 +53,13 @@ public class BaseActivity extends Activity {
         };
 
         mImageLoader = new ImageLoader(mRequestQueue, mImageCache);
+    }
+
+    public Oauth2AccessToken getmAccessToken() {
+        return mAccessToken;
+    }
+
+    public void setmAccessToken(Oauth2AccessToken mAccessToken) {
+        this.mAccessToken = mAccessToken;
     }
 }

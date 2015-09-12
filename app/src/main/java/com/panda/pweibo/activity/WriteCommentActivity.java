@@ -69,7 +69,7 @@ public class WriteCommentActivity extends BaseActivity {
         mComment = (Comment) getIntent().getSerializableExtra("comment");
         mType = getIntent().getIntExtra("type", 0);
 
-        mCommentsAPI = new CommentsAPI(this, Constants.APP_KEY, mAccessToken);
+        mCommentsAPI = new CommentsAPI(this, Constants.APP_KEY, getmAccessToken());
         mParameters = new WeiboParameters(Constants.APP_KEY);
     }
 

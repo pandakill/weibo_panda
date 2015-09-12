@@ -29,8 +29,8 @@ public class SplashActivity extends BaseActivity {
         setContentView(R.layout.activity_splash);
 
         // 读取token信息,判断授权是否过期,如token有效,则在进程发送延时消息WHAT_INTENT2MAIN
-        mAccessToken = AccessTokenKeeper.readAccessToken(SplashActivity.this);
-        if (mAccessToken.isSessionValid()) {
+        setmAccessToken(AccessTokenKeeper.readAccessToken(SplashActivity.this));
+        if (getmAccessToken().isSessionValid()) {
             handler.sendEmptyMessageDelayed(WHAT_INTENT2MAIN, SPLASH_DUE_TIME);
         } else {
             handler.sendEmptyMessageDelayed(WHAT_INTENT2LOGIN, SPLASH_DUE_TIME);

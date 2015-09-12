@@ -154,7 +154,7 @@ public class MessageActivity extends BaseActivity implements OnClickListener {
                 break;
         }
         // 设置uri
-        uri += "?access_token=" + mAccessToken.getToken();
+        uri += "?access_token=" + getmAccessToken().getToken();
         uri += "&page=" + page;
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, uri, null,

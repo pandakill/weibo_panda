@@ -99,10 +99,10 @@ public class PWBAuthActivity extends BaseActivity {
         @Override
         public void onComplete(Bundle values) {
             // 从 Bundle 中解析 Token
-            mAccessToken = Oauth2AccessToken.parseAccessToken(values);
+            setmAccessToken(Oauth2AccessToken.parseAccessToken(values));
             //从这里获取用户输入的 电话号码信息
             //phoneNum =  mAccessToken.getPhoneNum();
-            if (mAccessToken.isSessionValid()) {
+            if (getmAccessToken().isSessionValid()) {
 
                 // 授权成功，显示 Token
                 // 跳转至activity_main
@@ -110,7 +110,7 @@ public class PWBAuthActivity extends BaseActivity {
 
 
                 // 保存 Token 到 SharedPreferences
-                AccessTokenKeeper.writeAccessToken(PWBAuthActivity.this, mAccessToken);
+                AccessTokenKeeper.writeAccessToken(PWBAuthActivity.this, getmAccessToken());
                 Toast.makeText(PWBAuthActivity.this,
                         R.string.pwb_toast_auth_success, Toast.LENGTH_SHORT).show();
             } else {
@@ -147,11 +147,11 @@ public class PWBAuthActivity extends BaseActivity {
      */
     private void updateTokenView(boolean hasExisted) {
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(
-                new java.util.Date(mAccessToken.getExpiresTime()));
+                new java.util.Date(getmAccessToken().getExpiresTime()));
         String format = getString(R.string.pwb_token_to_string_format_1);
         //Toast.makeText(PWBAuthActivity.this, String.format(format, mAccessToken.getToken(), date), Toast.LENGTH_SHORT);
 
-        String message = String.format(format, mAccessToken.getToken(), date);
+        String message = String.format(format, getmAccessToken().getToken(), date);
         if (hasExisted) {
             ToastUtils.showToast(PWBAuthActivity.this, "授权已过期,请重新授权", Toast.LENGTH_SHORT);
         } else {

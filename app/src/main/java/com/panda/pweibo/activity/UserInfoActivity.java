@@ -282,7 +282,7 @@ public class UserInfoActivity extends BaseActivity implements
     /** 读取用户信息 */
     private void loadUserInfo() {
         String uri = Uri.USER_SHOW;
-        uri += "?access_token=" + mAccessToken.getToken();
+        uri += "?access_token=" + getmAccessToken().getToken();
         mUserName = URLEncoder.encode(mUserName);
         uri += "&screen_name=" + mUserName;
 
@@ -324,7 +324,7 @@ public class UserInfoActivity extends BaseActivity implements
 
         mIsLoadingMore = true;
         String uri = Uri.STATUS_USER_TIMELINE;
-        uri += "?access_token=" + mAccessToken.getToken();
+        uri += "?access_token=" + getmAccessToken().getToken();
         uri += "&screen_name=" + mUserName;
         uri += "&since_id=0&max_id=0&count=25&base_app=0&feature=0&trim_user=0&page=" + requestPage;
 

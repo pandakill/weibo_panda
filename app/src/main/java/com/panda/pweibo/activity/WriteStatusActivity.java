@@ -143,7 +143,7 @@ public class WriteStatusActivity extends BaseActivity implements OnClickListener
         }
 
         /** 新浪微博官方的api */
-        StatusesAPI statusesAPI = new StatusesAPI(this, Constants.APP_KEY, mAccessToken);
+        StatusesAPI statusesAPI = new StatusesAPI(this, Constants.APP_KEY, getmAccessToken());
 
         mPd = ProgressDialog.show(WriteStatusActivity.this, "发送微博", "正在发送...");
 
