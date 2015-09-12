@@ -13,16 +13,23 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <com.panda.pweibo.widget.Pull2RefreshListView
-            android:id="@+id/pwb_plv_status_detail"
+        <android.support.v4.view.ViewPager
+            android:id="@+id/pwb_vp_status_detail"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:cacheColorHint="@color/transparent"
-            android:listSelector="@color/transparent"
-            android:divider="@color/divider_gray"
-            android:dividerHeight="1px"
-            android:scrollbars="vertical">
-        </com.panda.pweibo.widget.Pull2RefreshListView>
+            android:layout_height="match_parent">
+
+        </android.support.v4.view.ViewPager>
+
+        <!--<com.panda.pweibo.widget.Pull2RefreshListView-->
+            <!--android:id="@+id/pwb_plv_status_detail"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:cacheColorHint="@color/transparent"-->
+            <!--android:listSelector="@color/transparent"-->
+            <!--android:divider="@color/divider_gray"-->
+            <!--android:dividerHeight="1px"-->
+            <!--android:scrollbars="vertical">-->
+        <!--</com.panda.pweibo.widget.Pull2RefreshListView>-->
 
         <include
             android:id="@+id/include_status_detail_tab"

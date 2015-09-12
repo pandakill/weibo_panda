@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.text.Html;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -17,8 +18,6 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,8 +29,10 @@ import com.android.volley.toolbox.ImageLoader.ImageListener;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.panda.pweibo.adapter.StatusTabAdapter;
 import com.panda.pweibo.constants.Code;
 import com.panda.pweibo.utils.ImageFileCacheUtils;
+import com.panda.pweibo.view.CommentListView;
 import com.panda.pweibo.widget.Pull2RefreshListView;
 import com.panda.pweibo.R;
 import com.panda.pweibo.adapter.StatusCommentAdapter;
@@ -65,15 +66,12 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
 
 
     private Status              mStatus;
-    private StatusCommentAdapter mAdapter;
-    private List<Comment>       mCommentList;
-    private long                mCurPage = 1;
     private long                mTotalNum;
-    private Boolean             mScroll2Comment = false;
-    private Boolean             IS_REFRESH = false;
+    private StatusTabAdapter    mAdapter;
+    private List<View>          mViewList;      // 存放listveiw的对象
 
-    /** 加载完毕标记 */
-    private boolean IS_REFLASHING = false;
+    private CommentListView     mCommentView;
+
 
     /** 微博信息的控件 */
     private View                status_detail_info;
@@ -90,27 +88,8 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
     private WrapHeightGridView  pwb_gridview_retweeted_status_image;
     private NetworkImageView    pwb_imageview_retweeted_status_image;
 
-    /** 中部viewgroup控件 */
-    private View            include_status_detail_tab;
-    private LinearLayout    pwb_ll_status_detail;
-    private TextView        pwb_tv_share;
-    private TextView        pwb_tv_comment;
-    private TextView        pwb_tv_praise;
-    private Underline       pwb_ul_status_detail;
-
-    /** 顶部悬浮的菜单栏控件 */
-    private View            shadow_status_detail_tab;
-    private LinearLayout    shadow_ll_status_detail;
-    private TextView        shadow_tv_share;
-    private TextView        shadow_tv_comment;
-    private TextView        shadow_tv_praise;
-    private Underline       shadow_ul_status_detail;
-
-    /** 下拉刷新控件 */
-    private Pull2RefreshListView   pwb_plv_status_detail;
-
-    /** 加载更多的view */
-    private View foot_view;
+    /** 评论、转发、点赞内容的viewpager */
+    private ViewPager pwb_vp_status_detail;
 
     /** 底部控件 */
     private LinearLayout    inlude_status_control;
@@ -127,15 +106,9 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
         super.onCreate(saveInstanceState);
         setContentView(R.layout.activity_status_detail);
 
-        foot_view = View.inflate(this, R.layout.footer_loading, null);
-        mCommentList = new ArrayList<>();
-
         /** 获取intent传入的内容 */
         mStatus = (Status) getIntent().getSerializableExtra("status");
         mTotalNum = mStatus.getComments_count();
-
-        /** 读取评论列表 */
-        loadData(1);
 
         /** 初始化view */
         initView();
@@ -147,73 +120,23 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
     private void initView() {
         initTitleBar();
         initDetailHead();
-        initTab();
-        initLstView();
+        initViewPager();
         initControlBar();
     }
 
-    /** 传入页码,加载评论 */
-    private void loadData(final long page) {
-        String uri = Uri.COMMENTS_SHOW;
-        uri += "?access_token=" + mAccessToken.getToken() + "&id=" + mStatus.getId();
-        uri += "&page="+page;
+    /**
+     * 初始化viewpager,设置为三个listview
+     */
+    private void initViewPager() {
+        mViewList = new ArrayList<>();
+        mCommentView = new CommentListView(this, mImageLoader, mStatus, status_detail_info);
+        mViewList.add(mCommentView.listView);
+        mViewList.add(mCommentView.listView);
+        mViewList.add(mCommentView.listView);
 
-        final ProgressDialog pd = ProgressDialog.show(this, "加载评论", "正在加载ing...");
-
-        /** 发送volley的JsonObjectRequest请求 */
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, uri,
-                null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    /** 如果页码为1,则将评论listComments清空 */
-                    if (page == 1) {
-                        mCommentList.clear();
-                    }
-
-                    JSONArray jsonArray = response.getJSONArray("comments");
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        Comment comment = new Comment();
-                        comment = comment.parseJson(jsonArray.getJSONObject(i));
-                        mCommentList.add(comment);
-                    }
-
-                    long totalNum = response.getLong("total_number");
-
-                    mCurPage = page;
-
-                    if (!IS_REFRESH) {
-                        addData(mCommentList, totalNum);
-                        if (IS_REFLASHING) {
-                            IS_REFLASHING = false;
-                            pwb_plv_status_detail.onRefreshComplete();
-                        }
-
-                        /** 判断是否需要滚动至评论部分 */
-                        if (mScroll2Comment) {
-                            pwb_plv_status_detail.getRefreshableView().setSelection(2);
-                            mScroll2Comment = false;
-                        }
-                        IS_REFRESH = true;
-                    } else {
-                        pwb_plv_status_detail.onRefreshComplete();
-                        IS_REFRESH = false;
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                ToastUtils.showToast(StatusDetailActivity.this, "加载评论失败", Toast.LENGTH_SHORT);
-            }
-        });
-
-        pd.dismiss();
-
-        mRequestQueue.add(jsonObjectRequest);
+        pwb_vp_status_detail = (ViewPager) findViewById(R.id.pwb_vp_status_detail);
+        mAdapter = new StatusTabAdapter(StatusDetailActivity.this, mViewList);
+        pwb_vp_status_detail.setAdapter(mAdapter);
     }
 
     /** 对控件进行数据填充 */
@@ -258,14 +181,6 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
             setImages(include_retweeted_status_image, pwb_gridview_retweeted_status_image,
                     pwb_imageview_retweeted_status_image, retweeted_status);
         }
-
-        /** 设置tab的内容 */
-        pwb_tv_share.setText("转发 " + mStatus.getReposts_count());
-        pwb_tv_comment.setText("评论 " + mStatus.getComments_count());
-        pwb_tv_praise.setText("赞 " + mStatus.getAttitudes_count());
-        shadow_tv_share.setText("转发 " + mStatus.getReposts_count());
-        shadow_tv_comment.setText("评论 " + mStatus.getComments_count());
-        shadow_tv_praise.setText("赞 " + mStatus.getAttitudes_count());
 
         /** 设置底部control的内容 */
         textview_share_bottom.setText(
@@ -337,32 +252,6 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
         }
     }
 
-    /** 往listView中加item */
-    public void addData(List<Comment> listComments, long totalNum) {
-        for (Comment comment : listComments) {
-            if (!listComments.contains(comment)) {
-                listComments.add(comment);
-            }
-        }
-        if (totalNum != mStatus.getComments_count()) {
-            /** 设置tab的内容 */
-            pwb_tv_comment.setText("评论 " + totalNum);
-            shadow_tv_comment.setText("评论 " + totalNum);
-
-            /** 设置底部control的内容 */
-            textview_comment_bottom.setText(
-                    (mStatus.getComments_count() == 0) ? "评论" : totalNum + "");
-        }
-
-        mAdapter.notifyDataSetChanged();
-
-        if (listComments.size() < totalNum) {
-            addFootView(pwb_plv_status_detail, foot_view);
-        } else {
-            removeFootView(pwb_plv_status_detail, foot_view);
-        }
-    }
-
     /** 初始化标题栏 */
     private void initTitleBar() {
         new TitlebarUtils(this)
@@ -395,74 +284,6 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
         pwb_textview_retweeted_content.setOnClickListener(this);
     }
 
-    /** 初始化中部radiogroup */
-    private void initTab() {
-        include_status_detail_tab    = View.inflate(this,R.layout.include_status_detail_tab, null);
-        pwb_ll_status_detail = (LinearLayout)   include_status_detail_tab.findViewById(R.id.pwb_ll_status_detail);
-        pwb_tv_share        = (TextView)  pwb_ll_status_detail.findViewById(R.id.pwb_tv_share);
-        pwb_tv_comment      = (TextView)  pwb_ll_status_detail.findViewById(R.id.pwb_tv_comment);
-        pwb_tv_praise       = (TextView)  pwb_ll_status_detail.findViewById(R.id.pwb_tv_praise);
-        pwb_ul_status_detail           = (Underline)  include_status_detail_tab.findViewById(R.id.pwb_ul_status_detail);
-        pwb_tv_share.setOnClickListener(this);
-        pwb_tv_comment.setOnClickListener(this);
-        pwb_tv_praise.setOnClickListener(this);
-//        pwb_radiogroup_status_detail.setOnCheckedChangeListener(this);
-        pwb_ul_status_detail.setCurrentItemWithoutAni(1);
-
-        /** 悬浮的菜单栏 */
-        shadow_status_detail_tab    = findViewById(R.id.include_status_detail_tab);
-        shadow_ll_status_detail = (LinearLayout)   shadow_status_detail_tab.findViewById(R.id.pwb_ll_status_detail);
-        shadow_tv_share        = (TextView)  shadow_ll_status_detail.findViewById(R.id.pwb_tv_share);
-        shadow_tv_comment      = (TextView)  shadow_ll_status_detail.findViewById(R.id.pwb_tv_comment);
-        shadow_tv_praise       = (TextView)  shadow_ll_status_detail.findViewById(R.id.pwb_tv_praise);
-        shadow_ul_status_detail           = (Underline)  shadow_status_detail_tab.findViewById(R.id.pwb_ul_status_detail);
-//        shadow_radiogroup_status_detail.setOnCheckedChangeListener(this);
-        shadow_ul_status_detail.setCurrentItemWithoutAni(1);
-    }
-
-    /** 初始化listview */
-    private void initLstView() {
-        pwb_plv_status_detail = (Pull2RefreshListView) findViewById(R.id.pwb_plv_status_detail);
-        mAdapter = new StatusCommentAdapter(this, mCommentList, mImageLoader);
-
-        pwb_plv_status_detail.setAdapter(mAdapter);
-
-        final ListView lv = pwb_plv_status_detail.getRefreshableView();
-        lv.addHeaderView(status_detail_info);
-        lv.addHeaderView(include_status_detail_tab);
-
-        // 下拉刷新监听
-        pwb_plv_status_detail.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
-            @Override
-            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-                IS_REFLASHING = true;
-                loadData(1);
-            }
-        });
-
-        // 滑动到最后一个item的监听
-        pwb_plv_status_detail.setOnLastItemVisibleListener(new PullToRefreshBase.OnLastItemVisibleListener() {
-            @Override
-            public void onLastItemVisible() {
-                loadData(mCurPage + 1);
-            }
-        });
-
-        // 设置滚动监听器
-        pwb_plv_status_detail.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                // 如果滚动到tab第一个item时,则显示顶部隐藏的shadow_tab,作为悬浮菜单栏
-                shadow_status_detail_tab.setVisibility(firstVisibleItem >= 2 ? View.VISIBLE : View.GONE);
-            }
-        });
-    }
-
     /** 初始化底部控件 */
     private void initControlBar() {
         inlude_status_control   = (LinearLayout) findViewById(R.id.inlude_status_control);
@@ -474,39 +295,12 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
         textview_praise_bottom  = (TextView)     inlude_status_control.findViewById(R.id.textview_praise_bottom);
     }
 
-    /** 添加底部的刷新view */
-    private void addFootView(Pull2RefreshListView plv, View footView) {
-        ListView lv = plv.getRefreshableView();
-        if (lv.getFooterViewsCount() == 1) {
-            lv.addFooterView(footView);
-        }
-    }
-
-    /** 去除底部的刷新view */
-    private void removeFootView(Pull2RefreshListView plv, View footView) {
-        ListView lv = plv.getRefreshableView();
-        if (lv.getFooterViewsCount() > 1) {
-            lv.removeFooterView(footView);
-        }
-    }
-
     /** 本activity的监听事件 */
     @Override
     public void onClick(View v) {
         Intent intent;
 
         switch (v.getId()) {
-            case R.id.pwb_tv_share:
-                syncTextView(0);
-                break;
-
-            case R.id.pwb_tv_comment:
-                syncTextView(1);
-                break;
-
-            case R.id.pwb_tv_praise:
-                syncTextView(2);
-                break;
 
             case R.id.titlebar_textview_left:
                 StatusDetailActivity.this.finish();
@@ -546,6 +340,7 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
     }
 
     /** 评论页面跳转回来的数据处理 */
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -560,8 +355,8 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
                 boolean sendCommentSuccess = data.getBooleanExtra("sendCommentSuccess", false);
                 if (sendCommentSuccess) {
                     ToastUtils.showToast(StatusDetailActivity.this, "发送成功", Toast.LENGTH_SHORT);
-                    mScroll2Comment = true;
-                    loadData(1);
+                    mCommentView.mScroll2Comment = true;
+                    mCommentView.loadData(1);
                 }
                 break;
 
@@ -570,19 +365,4 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
         }
     }
 
-    /** tab和shadow_tab保持一致性 */
-    private void syncTextView(int index) {
-//        int index = group.indexOfChild(group.findViewById(checkedId));
-
-        // 如果隐藏的tab显示出来、则将隐藏的tab部分的radioGroup的底部橙色高亮部分进行滑动效果
-        if(shadow_status_detail_tab.getVisibility() == View.VISIBLE) {
-            // 将radioGroup的底部橙色高亮进行滑动效果
-            shadow_ul_status_detail.setCurrentItem(index);
-            pwb_ul_status_detail.setCurrentItemWithoutAni(index);
-        } else {
-            // 将非隐藏的tab部分的radioGroup的底部橙色高亮部分进行滑动效果
-            pwb_ul_status_detail.setCurrentItem(index);
-            shadow_ul_status_detail.setCurrentItemWithoutAni(index);
-        }
-    }
 }
