@@ -4,54 +4,51 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <RadioGroup
-        android:id="@+id/pwb_radiogroup_status_detail"
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/pwb_ll_status_detail"
         android:background="@color/white"
         android:orientation="horizontal"
         android:splitMotionEvents="false">
-        
-        <RadioButton
-            android:id="@+id/pwb_radiobutton_share"
+
+        <TextView
+            android:id="@+id/pwb_tv_share"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_weight="1"
             android:textSize="@dimen/txtsize_subhead"
             android:textColor="@color/txt_black"
             android:background="@color/white"
-            android:button="@null"
             android:gravity="center"
             android:text="转发"/>
 
-        <RadioButton
-            android:id="@+id/pwb_radiobutton_comment"
+        <TextView
+            android:id="@+id/pwb_tv_comment"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_weight="1"
             android:textSize="@dimen/txtsize_subhead"
             android:textColor="@color/txt_black"
             android:background="@color/white"
-            android:button="@null"
             android:gravity="center"
             android:text="评论"/>
 
-        <RadioButton
-            android:id="@+id/pwb_radiobutton_praise"
+        <TextView
+            android:id="@+id/pwb_tv_praise"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_weight="1"
             android:textSize="@dimen/txtsize_subhead"
             android:textColor="@color/txt_black"
             android:background="@color/white"
-            android:button="@null"
             android:gravity="center"
             android:text="赞"/>
 
-    </RadioGroup>
+    </LinearLayout>
 
-    <com.panda.pweibo.widget.UnderlineStatusDetailView
-        android:id="@+id/uliv_status_detail"
+    <com.panda.pweibo.widget.Underline
+        android:id="@+id/pwb_ul_status_detail"
         android:layout_width="match_parent"
         android:layout_height="4dp" />
 

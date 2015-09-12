@@ -19,7 +19,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,7 +45,7 @@ import com.panda.pweibo.utils.DateUtils;
 import com.panda.pweibo.utils.StringUtils;
 import com.panda.pweibo.utils.TitlebarUtils;
 import com.panda.pweibo.utils.ToastUtils;
-import com.panda.pweibo.widget.UnderlineStatusDetailView;
+import com.panda.pweibo.widget.Underline;
 import com.panda.pweibo.widget.WrapHeightGridView;
 
 import org.json.JSONArray;
@@ -61,7 +60,7 @@ import java.util.List;
  *
  * Created by Administrator on 2015/8/26:9:52.
  */
-public class StatusDetailActivity extends BaseActivity implements OnClickListener,OnCheckedChangeListener {
+public class StatusDetailActivity extends BaseActivity implements OnClickListener {
 
 
 
@@ -93,20 +92,19 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
 
     /** 中部viewgroup控件 */
     private View            include_status_detail_tab;
-    private RadioGroup      pwb_radiogroup_status_detail;
-    private RadioButton     pwb_radiobutton_share;
-    private RadioButton     pwb_radiobutton_comment;
-    private RadioButton     pwb_radiobutton_praise;
-    private UnderlineStatusDetailView uliv_status_detail;
+    private LinearLayout    pwb_ll_status_detail;
+    private TextView        pwb_tv_share;
+    private TextView        pwb_tv_comment;
+    private TextView        pwb_tv_praise;
+    private Underline       pwb_ul_status_detail;
 
     /** 顶部悬浮的菜单栏控件 */
     private View            shadow_status_detail_tab;
-    private RadioGroup      shadow_radiogroup_status_detail;
-    private RadioButton     shadow_radiobutton_share;
-    private RadioButton     shadow_radiobutton_comment;
-    private RadioButton     shadow_radiobutton_praise;
-    private UnderlineStatusDetailView shadow_status_detail;
-
+    private LinearLayout    shadow_ll_status_detail;
+    private TextView        shadow_tv_share;
+    private TextView        shadow_tv_comment;
+    private TextView        shadow_tv_praise;
+    private Underline       shadow_ul_status_detail;
 
     /** 下拉刷新控件 */
     private Pull2RefreshListView   pwb_plv_status_detail;
@@ -262,12 +260,12 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
         }
 
         /** 设置tab的内容 */
-        pwb_radiobutton_share.setText("转发 " + mStatus.getReposts_count());
-        pwb_radiobutton_comment.setText("评论 " + mStatus.getComments_count());
-        pwb_radiobutton_praise.setText("赞 " + mStatus.getAttitudes_count());
-        shadow_radiobutton_share.setText("转发 " + mStatus.getReposts_count());
-        shadow_radiobutton_comment.setText("评论 " + mStatus.getComments_count());
-        shadow_radiobutton_praise.setText("赞 " + mStatus.getAttitudes_count());
+        pwb_tv_share.setText("转发 " + mStatus.getReposts_count());
+        pwb_tv_comment.setText("评论 " + mStatus.getComments_count());
+        pwb_tv_praise.setText("赞 " + mStatus.getAttitudes_count());
+        shadow_tv_share.setText("转发 " + mStatus.getReposts_count());
+        shadow_tv_comment.setText("评论 " + mStatus.getComments_count());
+        shadow_tv_praise.setText("赞 " + mStatus.getAttitudes_count());
 
         /** 设置底部control的内容 */
         textview_share_bottom.setText(
@@ -348,8 +346,8 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
         }
         if (totalNum != mStatus.getComments_count()) {
             /** 设置tab的内容 */
-            pwb_radiobutton_comment.setText("评论 " + totalNum);
-            shadow_radiobutton_comment.setText("评论 " + totalNum);
+            pwb_tv_comment.setText("评论 " + totalNum);
+            shadow_tv_comment.setText("评论 " + totalNum);
 
             /** 设置底部control的内容 */
             textview_comment_bottom.setText(
@@ -400,25 +398,26 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
     /** 初始化中部radiogroup */
     private void initTab() {
         include_status_detail_tab    = View.inflate(this,R.layout.include_status_detail_tab, null);
-        pwb_radiogroup_status_detail = (RadioGroup)   include_status_detail_tab.findViewById(R.id.pwb_radiogroup_status_detail);
-        pwb_radiobutton_share        = (RadioButton)  include_status_detail_tab.findViewById(R.id.pwb_radiobutton_share);
-        pwb_radiobutton_comment      = (RadioButton)  include_status_detail_tab.findViewById(R.id.pwb_radiobutton_comment);
-        pwb_radiobutton_praise       = (RadioButton)  include_status_detail_tab.findViewById(R.id.pwb_radiobutton_praise);
-        uliv_status_detail           = (UnderlineStatusDetailView)  include_status_detail_tab.findViewById(R.id.uliv_status_detail);
-        pwb_radiobutton_comment.setChecked(true);
-        pwb_radiogroup_status_detail.setOnCheckedChangeListener(this);
-        uliv_status_detail.setCurrentItemWithoutAnim(1);
+        pwb_ll_status_detail = (LinearLayout)   include_status_detail_tab.findViewById(R.id.pwb_ll_status_detail);
+        pwb_tv_share        = (TextView)  pwb_ll_status_detail.findViewById(R.id.pwb_tv_share);
+        pwb_tv_comment      = (TextView)  pwb_ll_status_detail.findViewById(R.id.pwb_tv_comment);
+        pwb_tv_praise       = (TextView)  pwb_ll_status_detail.findViewById(R.id.pwb_tv_praise);
+        pwb_ul_status_detail           = (Underline)  include_status_detail_tab.findViewById(R.id.pwb_ul_status_detail);
+        pwb_tv_share.setOnClickListener(this);
+        pwb_tv_comment.setOnClickListener(this);
+        pwb_tv_praise.setOnClickListener(this);
+//        pwb_radiogroup_status_detail.setOnCheckedChangeListener(this);
+        pwb_ul_status_detail.setCurrentItemWithoutAni(1);
 
         /** 悬浮的菜单栏 */
         shadow_status_detail_tab    = findViewById(R.id.include_status_detail_tab);
-        shadow_radiogroup_status_detail = (RadioGroup)   shadow_status_detail_tab.findViewById(R.id.pwb_radiogroup_status_detail);
-        shadow_radiobutton_share        = (RadioButton)  shadow_status_detail_tab.findViewById(R.id.pwb_radiobutton_share);
-        shadow_radiobutton_comment      = (RadioButton)  shadow_status_detail_tab.findViewById(R.id.pwb_radiobutton_comment);
-        shadow_radiobutton_praise       = (RadioButton)  shadow_status_detail_tab.findViewById(R.id.pwb_radiobutton_praise);
-        shadow_status_detail           = (UnderlineStatusDetailView)  shadow_status_detail_tab.findViewById(R.id.uliv_status_detail);
-        shadow_radiobutton_comment.setChecked(true);
-        shadow_radiogroup_status_detail.setOnCheckedChangeListener(this);
-        shadow_status_detail.setCurrentItemWithoutAnim(1);
+        shadow_ll_status_detail = (LinearLayout)   shadow_status_detail_tab.findViewById(R.id.pwb_ll_status_detail);
+        shadow_tv_share        = (TextView)  shadow_ll_status_detail.findViewById(R.id.pwb_tv_share);
+        shadow_tv_comment      = (TextView)  shadow_ll_status_detail.findViewById(R.id.pwb_tv_comment);
+        shadow_tv_praise       = (TextView)  shadow_ll_status_detail.findViewById(R.id.pwb_tv_praise);
+        shadow_ul_status_detail           = (Underline)  shadow_status_detail_tab.findViewById(R.id.pwb_ul_status_detail);
+//        shadow_radiogroup_status_detail.setOnCheckedChangeListener(this);
+        shadow_ul_status_detail.setCurrentItemWithoutAni(1);
     }
 
     /** 初始化listview */
@@ -497,6 +496,18 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
         Intent intent;
 
         switch (v.getId()) {
+            case R.id.pwb_tv_share:
+                syncTextView(0);
+                break;
+
+            case R.id.pwb_tv_comment:
+                syncTextView(1);
+                break;
+
+            case R.id.pwb_tv_praise:
+                syncTextView(2);
+                break;
+
             case R.id.titlebar_textview_left:
                 StatusDetailActivity.this.finish();
                 break;
@@ -534,12 +545,6 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
         }
     }
 
-    /** tab点击时,要保持悬浮菜单栏和tab一致 */
-    @Override
-    public void onCheckedChanged(RadioGroup group, int checkedId) {
-        syncRadioButton(group, checkedId);
-    }
-
     /** 评论页面跳转回来的数据处理 */
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -566,22 +571,18 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
     }
 
     /** tab和shadow_tab保持一致性 */
-    private void syncRadioButton(RadioGroup group, int checkedId) {
-        int index = group.indexOfChild(group.findViewById(checkedId));
+    private void syncTextView(int index) {
+//        int index = group.indexOfChild(group.findViewById(checkedId));
 
         // 如果隐藏的tab显示出来、则将隐藏的tab部分的radioGroup的底部橙色高亮部分进行滑动效果
         if(shadow_status_detail_tab.getVisibility() == View.VISIBLE) {
             // 将radioGroup的底部橙色高亮进行滑动效果
-            shadow_status_detail.setCurrentItem(index);
-            ((RadioButton) pwb_radiogroup_status_detail.findViewById(checkedId)).setChecked(true);
-            ((RadioButton) shadow_radiogroup_status_detail.getChildAt(index)).setChecked(true);
-            uliv_status_detail.setCurrentItemWithoutAnim(index);
+            shadow_ul_status_detail.setCurrentItem(index);
+            pwb_ul_status_detail.setCurrentItemWithoutAni(index);
         } else {
             // 将非隐藏的tab部分的radioGroup的底部橙色高亮部分进行滑动效果
-            uliv_status_detail.setCurrentItem(index);
-            ((RadioButton) shadow_radiogroup_status_detail.findViewById(checkedId)).setChecked(true);
-            ((RadioButton) pwb_radiogroup_status_detail.getChildAt(index)).setChecked(true);
-            shadow_status_detail.setCurrentItemWithoutAnim(index);
+            pwb_ul_status_detail.setCurrentItem(index);
+            shadow_ul_status_detail.setCurrentItemWithoutAni(index);
         }
     }
 }
