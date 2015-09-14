@@ -20,6 +20,7 @@ import com.panda.pweibo.adapter.StatusCommentAdapter;
 import com.panda.pweibo.constants.Uri;
 import com.panda.pweibo.models.Comment;
 import com.panda.pweibo.models.Status;
+import com.panda.pweibo.models.User;
 import com.panda.pweibo.utils.ToastUtils;
 import com.panda.pweibo.widget.Pull2RefreshListView;
 import com.panda.pweibo.widget.Underline;
@@ -49,6 +50,8 @@ public class CommentListView implements View.OnClickListener {
     private long                    mCurPage = 1;
     public  Boolean                 mScroll2Comment = false;
     private Boolean                 IS_REFRESH = false;
+
+    private final int flag = 0;
 
     private View mStatusDetailView;
 
@@ -83,8 +86,6 @@ public class CommentListView implements View.OnClickListener {
     public CommentListView (StatusDetailActivity activity,
                             ImageLoader loader, Status status, View statusView) {
         init(activity, loader, status, statusView);
-
-        loadData(1);
     }
 
     /**
@@ -95,24 +96,24 @@ public class CommentListView implements View.OnClickListener {
     private void init(StatusDetailActivity activity,
                       ImageLoader loader, Status status, View statusView) {
         mActivity = activity;
+        listView = (Pull2RefreshListView) View.inflate(mActivity, R.layout.item_status_detail, null);
         mCommentList = new ArrayList<>();
         mImageLoader = loader;
         mStatus = status;
         mStatusDetailView = statusView;
 
-        initLstView();
+        loadData(1);
         initTab();
+        initLstView();
+
+        mAdapter = new StatusCommentAdapter(mActivity, mCommentList, mImageLoader);
+        listView.setAdapter(mAdapter);
     }
 
     /** 初始化listview */
     private void initLstView() {
 
         foot_view = View.inflate(mActivity, R.layout.footer_loading, null);
-
-        listView = new Pull2RefreshListView(mActivity);
-
-        mAdapter = new StatusCommentAdapter(mActivity, mCommentList, mImageLoader);
-        listView.setAdapter(mAdapter);
 
         final ListView lv = listView.getRefreshableView();
         lv.addHeaderView(mStatusDetailView);
@@ -145,7 +146,7 @@ public class CommentListView implements View.OnClickListener {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 // 如果滚动到tab第一个item时,则显示顶部隐藏的shadow_tab,作为悬浮菜单栏
-                listView.setVisibility(firstVisibleItem >= 2 ? View.VISIBLE : View.GONE);
+                shadow_ll_status_detail.setVisibility(firstVisibleItem >= 2 ? View.VISIBLE : View.GONE);
             }
         });
     }
@@ -247,8 +248,9 @@ public class CommentListView implements View.OnClickListener {
         }
     }
 
-    /** 初始化中部radiogroup */
+    /** 初始化中部菜单栏（导航栏） */
     private void initTab() {
+        /** 位于微博详细下面的菜单栏 */
         include_status_detail_tab    = View.inflate(mActivity,R.layout.include_status_detail_tab, null);
         pwb_ll_status_detail = (LinearLayout)   include_status_detail_tab.findViewById(R.id.pwb_ll_status_detail);
         pwb_tv_share        = (TextView)  pwb_ll_status_detail.findViewById(R.id.pwb_tv_share);

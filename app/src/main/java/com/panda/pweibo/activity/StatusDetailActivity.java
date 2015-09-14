@@ -63,10 +63,7 @@ import java.util.List;
  */
 public class StatusDetailActivity extends BaseActivity implements OnClickListener {
 
-
-
     private Status              mStatus;
-    private long                mTotalNum;
     private StatusTabAdapter    mAdapter;
     private List<View>          mViewList;      // 存放listveiw的对象
 
@@ -108,7 +105,6 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
 
         /** 获取intent传入的内容 */
         mStatus = (Status) getIntent().getSerializableExtra("status");
-        mTotalNum = mStatus.getComments_count();
 
         /** 初始化view */
         initView();
@@ -124,20 +120,6 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
         initControlBar();
     }
 
-    /**
-     * 初始化viewpager,设置为三个listview
-     */
-    private void initViewPager() {
-        mViewList = new ArrayList<>();
-        mCommentView = new CommentListView(this, mImageLoader, mStatus, status_detail_info);
-        mViewList.add(mCommentView.listView);
-        mViewList.add(mCommentView.listView);
-        mViewList.add(mCommentView.listView);
-
-        pwb_vp_status_detail = (ViewPager) findViewById(R.id.pwb_vp_status_detail);
-        mAdapter = new StatusTabAdapter(StatusDetailActivity.this, mViewList);
-        pwb_vp_status_detail.setAdapter(mAdapter);
-    }
 
     /** 对控件进行数据填充 */
     private void setData() {
@@ -282,6 +264,21 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
         // 设置转发微博部分的监听器
         include_retweeted_status.setOnClickListener(this);
         pwb_textview_retweeted_content.setOnClickListener(this);
+    }
+    /**
+     * 初始化viewpager,设置为三个listview
+     */
+    private void initViewPager() {
+        mViewList = new ArrayList<>();
+        mCommentView = new CommentListView(StatusDetailActivity.this, mImageLoader, mStatus, status_detail_info);
+        // 设置viewpager中第一个为转发列表、第二个为评论列表、第三个为赞列表
+        mViewList.add(mCommentView.listView);
+        mViewList.add(new CommentListView(StatusDetailActivity.this, mImageLoader, mStatus, status_detail_info).listView);
+        mViewList.add(new CommentListView(StatusDetailActivity.this, mImageLoader, mStatus, status_detail_info).listView);
+
+        pwb_vp_status_detail = (ViewPager) findViewById(R.id.pwb_vp_status_detail);
+        mAdapter = new StatusTabAdapter(StatusDetailActivity.this, mViewList);
+        pwb_vp_status_detail.setAdapter(mAdapter);
     }
 
     /** 初始化底部控件 */

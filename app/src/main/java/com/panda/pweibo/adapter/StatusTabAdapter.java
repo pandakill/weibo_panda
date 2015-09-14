@@ -5,8 +5,6 @@ import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.panda.pweibo.widget.Pull2RefreshListView;
-
 import java.util.List;
 
 /**

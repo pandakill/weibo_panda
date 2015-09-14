@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.panda.pweibo.widget.Pull2RefreshListView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pwb_plv_status_detail"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:cacheColorHint="@color/transparent"
+    android:listSelector="@color/transparent"
+    android:divider="@color/divider_gray"
+    android:dividerHeight="1px"
+    android:scrollbars="vertical">
+
+</com.panda.pweibo.widget.Pull2RefreshListView>
