@@ -116,7 +116,7 @@ public class CommentListView implements View.OnClickListener {
         foot_view = View.inflate(mActivity, R.layout.footer_loading, null);
 
         final ListView lv = listView.getRefreshableView();
-        lv.addHeaderView(mStatusDetailView);
+//        lv.addHeaderView(mStatusDetailView);
         lv.addHeaderView(include_status_detail_tab);
 
         // 下拉刷新监听

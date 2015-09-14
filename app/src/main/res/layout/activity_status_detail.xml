@@ -13,10 +13,15 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
+        <include
+            android:id="@+id/pwb_status_card"
+            layout="@layout/item_status"/>
+
         <android.support.v4.view.ViewPager
             android:id="@+id/pwb_vp_status_detail"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:layout_below="@id/pwb_status_card">
 
         </android.support.v4.view.ViewPager>
 

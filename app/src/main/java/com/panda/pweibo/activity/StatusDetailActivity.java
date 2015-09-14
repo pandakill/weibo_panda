@@ -18,6 +18,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,6 +62,7 @@ import java.util.List;
  *
  * Created by Administrator on 2015/8/26:9:52.
  */
+@SuppressWarnings("ResourceType")
 public class StatusDetailActivity extends BaseActivity implements OnClickListener {
 
     private Status              mStatus;
@@ -68,6 +70,9 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
     private List<View>          mViewList;      // 存放listveiw的对象
 
     private CommentListView     mCommentView;
+
+    /** 微博详情页 */
+    private RelativeLayout      pwb_rl_body;
 
 
     /** 微博信息的控件 */
@@ -245,7 +250,7 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
 
     /** 初始化微博信息 */
     private void initDetailHead() {
-        status_detail_info = View.inflate(this, R.layout.item_status, null);
+        status_detail_info = findViewById(R.id.pwb_status_card);
         status_detail_info.setBackgroundResource(R.color.white);
         status_detail_info.findViewById(R.id.include_status_control).setVisibility(View.GONE);
         pwb_imageview_item_status_avatar = (ImageView) status_detail_info.findViewById(R.id.pwb_imageview_item_status_avatar);
@@ -269,6 +274,7 @@ public class StatusDetailActivity extends BaseActivity implements OnClickListene
      * 初始化viewpager,设置为三个listview
      */
     private void initViewPager() {
+
         mViewList = new ArrayList<>();
         mCommentView = new CommentListView(StatusDetailActivity.this, mImageLoader, mStatus, status_detail_info);
         // 设置viewpager中第一个为转发列表、第二个为评论列表、第三个为赞列表
